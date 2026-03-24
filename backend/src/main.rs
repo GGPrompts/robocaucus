@@ -3,12 +3,14 @@ use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 mod adapter;
+mod agentmd;
 mod context;
 mod db;
 mod mention;
 mod reconcile;
 mod routes;
 mod state;
+mod templates;
 mod tmux;
 
 use state::AppState;

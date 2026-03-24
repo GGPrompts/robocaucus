@@ -1,4 +1,6 @@
+pub mod agentmd;
 pub mod agents;
+pub mod chat;
 pub mod conversations;
 pub mod providers;
 
@@ -9,6 +11,8 @@ pub fn api_routes() -> Router<AppState> {
     Router::new()
         .route("/health", get(|| async { "ok" }))
         .merge(agents::agent_routes())
+        .merge(agentmd::agentmd_routes())
+        .merge(chat::chat_routes())
         .merge(conversations::conversation_routes())
         .merge(providers::provider_routes())
 }
