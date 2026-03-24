@@ -41,6 +41,7 @@ export default function PlaybookBrowser({ onRunPlaybook, onClose }: PlaybookBrow
         setPlaybooks(pbs);
         setLoading(false);
       })
+      // TODO: [code-review] e.message assumes Error instance — use e instanceof Error ? e.message : String(e) (85%)
       .catch((e) => {
         setError(e.message);
         setLoading(false);

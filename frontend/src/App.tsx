@@ -12,6 +12,7 @@ import { fetchConversations, fetchAgents, createConversation, createAgent } from
 import { themes, type ThemeId } from './themes';
 import type { Room, Agent } from './types';
 
+// TODO: [code-review] localStorage.getItem() can throw in private/incognito — wrap in try/catch (85%)
 function getInitialTheme(): ThemeId {
   const stored = localStorage.getItem('robocaucus-theme');
   if (stored && themes.some((t) => t.id === stored)) return stored as ThemeId;

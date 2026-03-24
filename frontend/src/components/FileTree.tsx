@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { fetchFileList, type FileEntry } from '../lib/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -268,7 +268,7 @@ export function FileTree({ basePath, onFileSelect }: FileTreeProps) {
   }, [basePath]);
 
   // Load on first render / basePath change
-  useMemo(() => {
+  useEffect(() => {
     loadRoot();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [basePath]);

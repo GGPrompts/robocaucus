@@ -84,8 +84,8 @@ async fn git_graph(Query(params): Query<GitGraphParams>) -> impl IntoResponse {
         Err(e) => return e,
     };
 
-    let limit = params.limit.unwrap_or(50);
-    let skip = params.skip.unwrap_or(0);
+    let limit = params.limit.unwrap_or(50).min(5000);
+    let skip = params.skip.unwrap_or(0).min(100_000);
 
     // Request limit+1 to detect hasMore
     let format_str = "%H|%h|%an|%ae|%aI|%P|%D|%s";

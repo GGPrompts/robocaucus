@@ -150,7 +150,9 @@ async fn update_agent(
         Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
     };
     let provider = body.provider.as_deref().unwrap_or("");
-    let agent_home = body.agent_home.as_deref().unwrap_or("");
+    // Ignore user-supplied agent_home to prevent path traversal; recompute from name.
+    let agent_home = agent_home_dir(&body.name);
+    let agent_home = agent_home.as_str();
     let scope = body.scope.as_deref().unwrap_or("global");
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
@@ -194,6 +196,24 @@ async fn delete_agent(
     }
 }
 
+/// Validate that agent_home is within the expected base directory (~/.robocaucus/agents/).
+fn validate_agent_home(agent_home: &str) -> Result<(), &'static str> {
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/tmp".to_owned());
+    let expected_base = format!("{home}/.robocaucus/agents/");
+    let canonical = std::path::Path::new(agent_home)
+        .canonicalize()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_else(|_| agent_home.to_string());
+    let canonical_base = std::path::Path::new(&expected_base)
+        .canonicalize()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or(expected_base);
+    if !canonical.starts_with(&canonical_base) {
+        return Err("agent_home path escapes allowed directory");
+    }
+    Ok(())
+}
+
 /// Return the config file path and format for a given provider and agent_home.
 fn config_path_and_format(provider: &str, agent_home: &str) -> Option<(std::path::PathBuf, &'static str)> {
     let base = std::path::Path::new(agent_home);
@@ -220,6 +240,10 @@ async fn get_agent_config(
         Ok(None) => return (StatusCode::NOT_FOUND, Json(serde_json::json!({ "error": "Agent not found" }))).into_response(),
         Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))).into_response(),
     };
+
+    if let Err(msg) = validate_agent_home(&agent.agent_home) {
+        return (StatusCode::FORBIDDEN, Json(serde_json::json!({ "error": msg }))).into_response();
+    }
 
     let (path, format) = match config_path_and_format(&agent.provider, &agent.agent_home) {
         Some(v) => v,
@@ -254,6 +278,10 @@ async fn update_agent_config(
         Ok(None) => return (StatusCode::NOT_FOUND, Json(serde_json::json!({ "error": "Agent not found" }))).into_response(),
         Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))).into_response(),
     };
+
+    if let Err(msg) = validate_agent_home(&agent.agent_home) {
+        return (StatusCode::FORBIDDEN, Json(serde_json::json!({ "error": msg }))).into_response();
+    }
 
     let (path, _format) = match config_path_and_format(&agent.provider, &agent.agent_home) {
         Some(v) => v,
