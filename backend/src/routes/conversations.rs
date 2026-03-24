@@ -51,12 +51,7 @@ async fn create_conversation(
     State(state): State<AppState>,
     Json(req): Json<CreateConversationRequest>,
 ) -> Result<(StatusCode, Json<Conversation>), (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     let mode = req.orchestration_mode.as_deref().unwrap_or("manual");
 
@@ -79,12 +74,7 @@ async fn create_conversation(
 async fn list_conversations(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<Conversation>>, (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     let convs = db
         .list_conversations()
@@ -98,12 +88,7 @@ async fn get_conversation(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<ConversationDetail>, (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     let conversation = db
         .get_conversation(&id)
@@ -136,12 +121,7 @@ async fn update_conversation(
     Path(id): Path<String>,
     Json(req): Json<UpdateConversationRequest>,
 ) -> Result<Json<Conversation>, (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     // Fetch existing conversation to fill in defaults for unchanged fields
     let existing = db
@@ -188,12 +168,7 @@ async fn delete_conversation(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<StatusCode, (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     let deleted = db
         .delete_conversation(&id)
@@ -214,12 +189,7 @@ async fn list_messages(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<Vec<Message>>, (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     // Verify conversation exists
     db.get_conversation(&id)
@@ -244,12 +214,7 @@ async fn create_message(
     Path(id): Path<String>,
     Json(req): Json<CreateMessageRequest>,
 ) -> Result<(StatusCode, Json<Message>), (StatusCode, String)> {
-    let db = state.db.lock().map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Lock error: {e}"),
-        )
-    })?;
+    let db = state.db()?;
 
     // Verify conversation exists
     db.get_conversation(&id)

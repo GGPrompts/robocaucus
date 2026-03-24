@@ -1,4 +1,5 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard};
+use axum::http::StatusCode;
 use tokio::sync::broadcast;
 
 use crate::db::Database;
@@ -16,5 +17,12 @@ impl AppState {
             tx,
             db: Arc::new(Mutex::new(db)),
         }
+    }
+
+    /// Acquire the database mutex, returning an Axum-compatible error on poisoning.
+    pub fn db(&self) -> Result<MutexGuard<'_, Database>, (StatusCode, String)> {
+        self.db.lock().map_err(|e| {
+            (StatusCode::INTERNAL_SERVER_ERROR, format!("Database lock error: {e}"))
+        })
     }
 }

@@ -201,9 +201,19 @@ impl CliAdapter for ClaudeAdapter {
             // approach for the gentler SIGTERM.
             #[cfg(unix)]
             {
-                // Safety: sending a signal to a known PID.
-                unsafe {
-                    libc::kill(process_id as libc::pid_t, libc::SIGTERM);
+                // SAFETY: `process_id` was obtained from `tokio::process::Child::id()`
+                // immediately after a successful spawn, so it is a valid PID.
+                // SIGTERM is a standard signal. The child is still tracked in our
+                // map, so the process is (or was) running under our control.
+                let ret = unsafe {
+                    libc::kill(process_id as libc::pid_t, libc::SIGTERM)
+                };
+                if ret == -1 {
+                    tracing::warn!(
+                        pid = process_id,
+                        errno = std::io::Error::last_os_error().raw_os_error(),
+                        "libc::kill(SIGTERM) failed for claude adapter"
+                    );
                 }
             }
             #[cfg(not(unix))]

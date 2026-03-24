@@ -172,7 +172,16 @@ async fn chat_send(
     // 1. Validate conversation exists
     // ------------------------------------------------------------------
     let conversation = {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         match db.get_conversation(&conversation_id) {
             Ok(Some(c)) => c,
             Ok(None) => {
@@ -200,7 +209,16 @@ async fn chat_send(
     // 2. Save user message to DB
     // ------------------------------------------------------------------
     {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         if let Err(e) = db.create_message(
             &conversation_id,
             None, // user message has no agent_id
@@ -222,7 +240,16 @@ async fn chat_send(
     // 3. Determine target agent(s)
     // ------------------------------------------------------------------
     let room_agents = {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         db.get_conversation_agents(&conversation_id)
             .unwrap_or_default()
     };
@@ -251,7 +278,16 @@ async fn chat_send(
     // 4. Get target agent from DB
     // ------------------------------------------------------------------
     let target_agent = {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         match db.get_agent(target_agent_id) {
             Ok(Some(a)) => a,
             Ok(None) => {
@@ -279,12 +315,30 @@ async fn chat_send(
     // 5. Build identity-aware context
     // ------------------------------------------------------------------
     let messages = {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         db.list_messages(&conversation_id).unwrap_or_default()
     };
 
     let all_agents = {
-        let db = state.db.lock().unwrap();
+        let db = match state.db() {
+            Ok(db) => db,
+            Err((_status, msg)) => {
+                return (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(ErrorBody { error: msg }),
+                )
+                    .into_response();
+            }
+        };
         db.get_conversation_agents(&conversation_id)
             .unwrap_or_default()
     };
@@ -352,6 +406,9 @@ async fn chat_send(
 
     let (sse_tx, sse_rx) = tokio::sync::mpsc::channel::<Result<Event, Infallible>>(64);
 
+    // Fire-and-forget: the JoinHandle is intentionally dropped. The spawned
+    // task drives the SSE stream independently; if it panics, tokio logs it and
+    // the client sees a broken stream — no server-wide impact.
     tokio::spawn(async move {
         let mut full_response = String::new();
         let mut had_text = false;
@@ -393,14 +450,23 @@ async fn chat_send(
             // On Done: save the accumulated response to DB.
             if matches!(chunk.chunk_type, ChunkType::Done) {
                 if had_text {
-                    let db = db.lock().unwrap();
-                    let _ = db.create_message(
-                        &conv_id,
-                        Some(&agent_id),
-                        "assistant",
-                        &full_response,
-                        Some(&agent_model),
-                    );
+                    match db.lock() {
+                        Ok(db) => {
+                            let _ = db.create_message(
+                                &conv_id,
+                                Some(&agent_id),
+                                "assistant",
+                                &full_response,
+                                Some(&agent_model),
+                            );
+                        }
+                        Err(e) => {
+                            tracing::error!(
+                                "Failed to acquire DB lock to save assistant message for conversation {}: {e}",
+                                conv_id
+                            );
+                        }
+                    }
                 }
                 break;
             }

@@ -46,7 +46,10 @@ async fn create_agent(
     State(state): State<AppState>,
     Json(body): Json<CreateAgentRequest>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
     let scope = body.scope.as_deref().unwrap_or("global");
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
@@ -65,7 +68,10 @@ async fn list_agents(
     State(state): State<AppState>,
     Query(params): Query<ListAgentsQuery>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
     let scope_filter = params.scope.as_deref();
 
     match db.list_agents(scope_filter) {
@@ -82,7 +88,10 @@ async fn get_agent(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
 
     match db.get_agent(&id) {
         Ok(Some(agent)) => (StatusCode::OK, Json(agent)).into_response(),
@@ -104,7 +113,10 @@ async fn update_agent(
     Path(id): Path<String>,
     Json(body): Json<UpdateAgentRequest>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
     let scope = body.scope.as_deref().unwrap_or("global");
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
@@ -128,7 +140,10 @@ async fn delete_agent(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
 
     match db.delete_agent(&id) {
         Ok(true) => StatusCode::NO_CONTENT.into_response(),

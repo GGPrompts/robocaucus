@@ -30,7 +30,10 @@ async fn import_agent(
     };
 
     // Persist to DB.
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
     match db.create_agent(
         &data.name,
         &data.model,
@@ -56,7 +59,10 @@ async fn export_agent(
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> impl IntoResponse {
-    let db = state.db.lock().unwrap();
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
 
     match db.get_agent(&id) {
         Ok(Some(agent)) => {
