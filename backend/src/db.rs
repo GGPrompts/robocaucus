@@ -206,6 +206,71 @@ impl Database {
         rows.collect()
     }
 
+    pub fn get_conversation(&self, id: &str) -> SqlResult<Option<Conversation>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, title, workspace_path, orchestration_mode, created_at, updated_at
+             FROM conversations WHERE id = ?1",
+        )?;
+        let mut rows = stmt.query_map(params![id], |row| {
+            Ok(Conversation {
+                id: row.get(0)?,
+                title: row.get(1)?,
+                workspace_path: row.get(2)?,
+                orchestration_mode: row.get(3)?,
+                created_at: row.get(4)?,
+                updated_at: row.get(5)?,
+            })
+        })?;
+        match rows.next() {
+            Some(Ok(conv)) => Ok(Some(conv)),
+            Some(Err(e)) => Err(e),
+            None => Ok(None),
+        }
+    }
+
+    pub fn update_conversation(
+        &self,
+        id: &str,
+        title: &str,
+        mode: &str,
+    ) -> SqlResult<Option<Conversation>> {
+        let now = Self::now_iso8601();
+        let changed = self.conn.execute(
+            "UPDATE conversations SET title = ?1, orchestration_mode = ?2, updated_at = ?3
+             WHERE id = ?4",
+            params![title, mode, now, id],
+        )?;
+        if changed == 0 {
+            return Ok(None);
+        }
+        self.get_conversation(id)
+    }
+
+    pub fn delete_conversation(&self, id: &str) -> SqlResult<bool> {
+        // Delete related rows first (messages, conversation_agents), then the conversation.
+        self.conn.execute(
+            "DELETE FROM messages WHERE conversation_id = ?1",
+            params![id],
+        )?;
+        self.conn.execute(
+            "DELETE FROM conversation_agents WHERE conversation_id = ?1",
+            params![id],
+        )?;
+        let changed = self.conn.execute(
+            "DELETE FROM conversations WHERE id = ?1",
+            params![id],
+        )?;
+        Ok(changed > 0)
+    }
+
+    pub fn remove_agents_from_conversation(&self, conversation_id: &str) -> SqlResult<()> {
+        self.conn.execute(
+            "DELETE FROM conversation_agents WHERE conversation_id = ?1",
+            params![conversation_id],
+        )?;
+        Ok(())
+    }
+
     // -----------------------------------------------------------------------
     // Agents CRUD
     // -----------------------------------------------------------------------
@@ -271,6 +336,62 @@ impl Database {
             })
         })?;
         rows.collect()
+    }
+
+    pub fn get_agent(&self, id: &str) -> SqlResult<Option<Agent>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, name, model, color, scope, system_prompt, workspace_path, created_at, updated_at
+             FROM agents WHERE id = ?1",
+        )?;
+        let mut rows = stmt.query_map(params![id], |row| {
+            Ok(Agent {
+                id: row.get(0)?,
+                name: row.get(1)?,
+                model: row.get(2)?,
+                color: row.get(3)?,
+                scope: row.get(4)?,
+                system_prompt: row.get(5)?,
+                workspace_path: row.get(6)?,
+                created_at: row.get(7)?,
+                updated_at: row.get(8)?,
+            })
+        })?;
+        match rows.next() {
+            Some(Ok(agent)) => Ok(Some(agent)),
+            Some(Err(e)) => Err(e),
+            None => Ok(None),
+        }
+    }
+
+    pub fn update_agent(
+        &self,
+        id: &str,
+        name: &str,
+        model: &str,
+        color: &str,
+        scope: &str,
+        system_prompt: &str,
+        workspace_path: Option<&str>,
+    ) -> SqlResult<Option<Agent>> {
+        let now = Self::now_iso8601();
+        let changed = self.conn.execute(
+            "UPDATE agents SET name = ?1, model = ?2, color = ?3, scope = ?4,
+                    system_prompt = ?5, workspace_path = ?6, updated_at = ?7
+             WHERE id = ?8",
+            params![name, model, color, scope, system_prompt, workspace_path, now, id],
+        )?;
+        if changed == 0 {
+            return Ok(None);
+        }
+        self.get_agent(id)
+    }
+
+    pub fn delete_agent(&self, id: &str) -> SqlResult<bool> {
+        let changed = self.conn.execute(
+            "DELETE FROM agents WHERE id = ?1",
+            params![id],
+        )?;
+        Ok(changed > 0)
     }
 
     // -----------------------------------------------------------------------

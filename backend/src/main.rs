@@ -2,9 +2,11 @@ use axum::Router;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
+mod adapter;
 mod db;
 mod routes;
 mod state;
+mod tmux;
 
 use state::AppState;
 
@@ -12,7 +14,8 @@ use state::AppState;
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let state = AppState::new();
+    let db = db::Database::new("robocaucus.db").expect("failed to open database");
+    let state = AppState::new(db);
 
     let cors = CorsLayer::new()
         .allow_origin([
