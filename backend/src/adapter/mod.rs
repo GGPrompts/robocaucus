@@ -1,4 +1,5 @@
 pub mod claude;
+pub mod codex;
 
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
