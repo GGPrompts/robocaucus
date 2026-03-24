@@ -1,0 +1,570 @@
+/* Noir Theme */
+/* Film noir aesthetic - film grain, dramatic shadows, typewriter feel */
+
+.theme-noir {
+  /* Typography */
+  --font-typewriter: 'Courier Prime', 'Courier New', monospace;
+  --font-headline: 'Playfair Display', Georgia, serif;
+  --font-condensed: 'Oswald', 'Arial Narrow', sans-serif;
+
+  /* Noir Color Palette */
+  --noir-black: #0a0a0a;
+  --noir-charcoal: #141414;
+  --noir-dark: #1a1a1a;
+  --noir-shadow: #222222;
+  --noir-gray: #333333;
+  --noir-mid: #4a4a4a;
+  --noir-light: #6a6a6a;
+  --noir-pale: #8a8a8a;
+  --noir-silver: #b0b0b0;
+  --noir-white: #e8e8e8;
+  --noir-pure-white: #f5f5f5;
+
+  /* Accent Colors */
+  --blood-red: #8b0000;
+  --blood-bright: #b22222;
+  --cigarette-ember: #ff4500;
+  --cigarette-glow: #ff6b35;
+  --whiskey-amber: #d4a574;
+  --gold-badge: #c9a227;
+
+  /* Theme Variables */
+  --bg-primary: var(--noir-black);
+  --bg-secondary: var(--noir-charcoal);
+  --bg-elevated: var(--noir-dark);
+  --text-primary: var(--noir-white);
+  --text-secondary: var(--noir-silver);
+  --text-muted: var(--noir-pale);
+  --accent: var(--cigarette-glow);
+  --terminal-bg: linear-gradient(145deg, #0a0a0a 0%, #0f0f0f 40%, #080808 100%);
+  --accent-hover: var(--cigarette-ember);
+  --border: var(--noir-gray);
+  --border-subtle: var(--noir-shadow);
+
+  --font-body: var(--font-typewriter);
+  --font-heading: var(--font-headline);
+  --font-mono: var(--font-typewriter);
+  --radius: 0;
+
+  /* Shadows */
+  --shadow-dramatic: 0 20px 60px rgba(0, 0, 0, 0.8);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.6);
+  --shadow-glow-red: 0 0 30px rgba(139, 0, 0, 0.3);
+  --shadow-glow-ember: 0 0 20px rgba(255, 69, 0, 0.4);
+}
+
+/* ============================================
+   FILM GRAIN OVERLAY
+============================================ */
+.theme-noir::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* ============================================
+   DRAMATIC VIGNETTE - Centered on content area (offset right to spare sidebar)
+============================================ */
+.theme-noir::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Shift vignette center right to keep sidebar more visible */
+  background: radial-gradient(ellipse at 60% 50%, transparent 0%, transparent 35%, rgba(0, 0, 0, 0.6) 100%);
+  pointer-events: none;
+  z-index: 998;
+}
+
+/* ============================================
+   MOUSE SPOTLIGHT - Follows cursor over content
+============================================ */
+.theme-noir .noir-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    500px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 999;
+  transition: background 0.1s ease-out;
+}
+
+/* ============================================
+   NAVIGATION
+============================================ */
+.theme-noir header nav a:hover {
+  color: var(--noir-pure-white);
+  text-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+}
+
+/* ============================================
+   TYPOGRAPHY
+============================================ */
+.theme-noir .prose h1,
+.theme-noir .prose h2,
+.theme-noir .prose h3,
+.theme-noir .prose h4,
+.theme-noir .prose h5,
+.theme-noir .prose h6 {
+  font-family: var(--font-headline);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.theme-noir .prose h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow:
+    4px 4px 0 var(--noir-shadow),
+    8px 8px 20px rgba(0, 0, 0, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+.theme-noir .prose h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  text-shadow: 2px 2px 0 var(--noir-shadow);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.theme-noir .prose h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-shadow: 1px 1px 0 var(--noir-shadow);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.theme-noir .prose h4 {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Body Text - Typewriter Feel */
+.theme-noir .prose {
+  font-family: var(--font-typewriter);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.theme-noir .prose p {
+  margin-bottom: 1rem;
+  max-width: 65ch;
+}
+
+/* ============================================
+   BLOCKQUOTES - Interrogation Style
+============================================ */
+.theme-noir .prose blockquote {
+  border-left: 4px solid var(--blood-red);
+  background: linear-gradient(90deg, rgba(139, 0, 0, 0.15), transparent 80%);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--text-secondary);
+  position: relative;
+  box-shadow: var(--shadow-card);
+}
+
+.theme-noir .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--blood-red);
+  box-shadow: var(--shadow-glow-red);
+}
+
+.theme-noir .prose blockquote p {
+  margin: 0;
+}
+
+/* ============================================
+   HORIZONTAL RULES - Venetian Blind Style
+============================================ */
+.theme-noir .prose hr {
+  border: none;
+  height: 20px;
+  margin: 2rem 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.1) 3px,
+    rgba(255, 255, 255, 0.1) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  position: relative;
+}
+
+.theme-noir .prose hr::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--noir-white), transparent);
+}
+
+/* ============================================
+   CODE BLOCKS - Case File Style
+============================================ */
+.theme-noir .prose code {
+  font-family: var(--font-typewriter);
+  background: rgba(139, 0, 0, 0.15);
+  border: 1px solid rgba(139, 0, 0, 0.3);
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  color: var(--whiskey-amber);
+}
+
+.theme-noir .prose pre {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.theme-noir .prose pre::before {
+  content: 'CASE FILE';
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: var(--font-typewriter);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--blood-red);
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-noir .prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--noir-white);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* ============================================
+   LINKS - Blood Red Accent
+============================================ */
+.theme-noir .prose a {
+  color: var(--blood-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.theme-noir .prose a:hover {
+  color: var(--cigarette-ember);
+  text-shadow: var(--shadow-glow-ember);
+}
+
+/* ============================================
+   STRONG/EMPHASIS
+============================================ */
+.theme-noir .prose strong {
+  color: var(--noir-pure-white);
+  font-weight: 700;
+}
+
+.theme-noir .prose em {
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   LISTS - Evidence Style
+============================================ */
+.theme-noir .prose ul {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.theme-noir .prose ul li {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.theme-noir .prose ul li::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  background: var(--blood-red);
+  box-shadow: var(--shadow-glow-red);
+}
+
+.theme-noir .prose ol {
+  list-style: none;
+  padding-left: 2rem;
+  counter-reset: noir-counter;
+}
+
+.theme-noir .prose ol li {
+  position: relative;
+  margin-bottom: 0.75rem;
+  counter-increment: noir-counter;
+}
+
+.theme-noir .prose ol li::before {
+  content: counter(noir-counter, decimal-leading-zero);
+  position: absolute;
+  left: -2rem;
+  top: 0;
+  font-family: var(--font-typewriter);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold-badge);
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   TABLES - Dossier Style
+============================================ */
+.theme-noir .prose table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  margin: 1.5rem 0;
+}
+
+.theme-noir .prose th {
+  font-family: var(--font-typewriter);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-noir .prose td {
+  font-family: var(--font-typewriter);
+  font-size: 0.9rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.theme-noir .prose tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.theme-noir .prose tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================
+   IMAGES - Evidence Photo Style
+============================================ */
+.theme-noir .prose img {
+  border: 4px solid var(--noir-pure-white);
+  padding: 4px;
+  background: var(--noir-pure-white);
+  box-shadow: var(--shadow-dramatic);
+  margin: 1.5rem 0;
+}
+
+/* ============================================
+   CARDS/CONTAINERS - With Blood Red Hover
+============================================ */
+.theme-noir .card,
+.theme-noir .prose > div {
+  position: relative;
+}
+
+.theme-noir .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: var(--blood-red);
+  transition: height 0.25s ease;
+}
+
+.theme-noir .card:hover::before {
+  height: 100%;
+}
+
+.theme-noir .card:hover {
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   SELECTION
+============================================ */
+.theme-noir ::selection {
+  background: var(--blood-red);
+  color: var(--noir-white);
+}
+
+/* ============================================
+   SCROLLBAR
+============================================ */
+.theme-noir ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-noir ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.theme-noir ::-webkit-scrollbar-thumb {
+  background: var(--noir-gray);
+}
+
+.theme-noir ::-webkit-scrollbar-thumb:hover {
+  background: var(--noir-mid);
+}
+
+/* ============================================
+   STREAMDOWN CARET - Cigarette Ember
+============================================ */
+.theme-noir .streamdown-content [data-caret] {
+  background-color: var(--cigarette-ember);
+  box-shadow: var(--shadow-glow-ember);
+}
+
+/* ============================================
+   SHIKI CODE THEME OVERRIDE
+============================================ */
+.theme-noir .streamdown-content pre[data-streamdown] {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border);
+}
+
+.theme-noir .streamdown-content .shiki code {
+  font-family: var(--font-typewriter);
+  background: transparent;
+}
+
+/* ============================================
+   SPOTLIGHT EFFECT (Optional class)
+============================================ */
+.theme-noir .spotlight {
+  position: relative;
+}
+
+.theme-noir .spotlight::after {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -50px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ============================================
+   METADATA BAR OVERRIDES
+============================================ */
+.theme-noir .metadata-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.theme-noir .metadata-tag {
+  background: rgba(139, 0, 0, 0.2);
+  color: var(--blood-bright);
+  border: 1px solid rgba(139, 0, 0, 0.4);
+}
+
+.theme-noir .metadata-tag:hover {
+  background: rgba(139, 0, 0, 0.3);
+}
+
+/* ============================================
+   SIDEBAR OVERRIDES - Better contrast for selections
+============================================ */
+.theme-noir {
+  /* Selection color override - use white text on accent background */
+  --selection-text: var(--noir-pure-white);
+  --selection-bg: color-mix(in srgb, var(--blood-red) 30%, transparent);
+}
+
+/* Sidebar stays above vignette for better visibility */
+.theme-noir aside {
+  position: relative;
+  z-index: 1001; /* Above vignette (998) and spotlight (999) */
+}
+
+/* Header also above vignette */
+.theme-noir header {
+  position: relative;
+  z-index: 1001;
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Noir
+   ======================================== */
+
+.theme-noir {
+  /* Shiki base colors */
+  --shiki-foreground: var(--noir-white);
+  --shiki-background: var(--bg-secondary);
+
+  /* Shiki token colors - readable noir palette (no dark reds) */
+  --shiki-token-constant: var(--gold-badge);      /* Gold for constants */
+  --shiki-token-string: var(--cigarette-glow);    /* Warm orange for strings */
+  --shiki-token-comment: var(--noir-silver);      /* Brighter silver for comments */
+  --shiki-token-keyword: var(--cigarette-ember);  /* Bright ember for keywords */
+  --shiki-token-parameter: var(--noir-silver);    /* Silver for parameters */
+  --shiki-token-function: var(--whiskey-amber);   /* Amber for functions */
+  --shiki-token-string-expression: var(--cigarette-glow);
+  --shiki-token-punctuation: var(--noir-pale);    /* Pale gray for punctuation */
+  --shiki-token-link: var(--cigarette-glow);      /* Warm orange for links */
+}

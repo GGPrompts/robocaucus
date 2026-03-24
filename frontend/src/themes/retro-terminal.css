@@ -1,0 +1,614 @@
+/* Retro Terminal Theme
+ * Green phosphor CRT aesthetic with scanlines, screen glow, and digital nostalgia.
+ * The hum of old monitors at midnight.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap');
+
+.theme-retro-terminal {
+  /* PHOSPHOR GREENS */
+  --phosphor-bright: #00ff00;
+  --phosphor-mid: #33ff33;
+  --phosphor-dim: #00cc00;
+  --phosphor-dark: #009900;
+  --phosphor-faded: #006600;
+  --phosphor-ghost: #003300;
+
+  /* SCREEN BLACKS */
+  --crt-black: #000a00;
+  --crt-deep: #001100;
+  --crt-surface: #001a00;
+  --crt-elevated: #002200;
+
+  /* AMBER VARIANT (for accents) */
+  --amber-bright: #ffb000;
+  --amber-mid: #cc8800;
+  --amber-dim: #996600;
+
+  /* STATUS COLORS */
+  --status-error: #ff3333;
+  --status-warning: #ffcc00;
+  --status-success: #00ff00;
+  --status-info: #00ccff;
+
+  /* Theme Variables */
+  --bg-primary: var(--crt-black);
+  --bg-secondary: var(--crt-deep);
+  --text-primary: var(--phosphor-mid);
+  --text-secondary: var(--phosphor-dim);
+  --text-muted: var(--phosphor-faded);
+  --accent: var(--phosphor-bright);
+  --terminal-bg: radial-gradient(ellipse at 50% 50%, #001a00 0%, #000a00 70%, #000000 100%);
+  --accent-hover: var(--phosphor-mid);
+  --accent-secondary: var(--amber-bright);
+  --border: var(--phosphor-dark);
+  --code-bg: var(--crt-black);
+
+  /* Typography */
+  --font-display: 'VT323', monospace;
+  --font-heading: 'VT323', monospace;
+  --font-body: 'IBM Plex Mono', monospace;
+  --font-mono: 'Fira Code', 'IBM Plex Mono', monospace;
+
+  /* No border radius for CRT hard pixel edges */
+  --radius: 0;
+
+  /* Glow Effects */
+  --glow-soft: 0 0 5px var(--phosphor-bright), 0 0 10px var(--phosphor-dim);
+  --glow-medium: 0 0 10px var(--phosphor-bright), 0 0 20px var(--phosphor-dim), 0 0 30px var(--phosphor-dark);
+  --glow-intense: 0 0 10px var(--phosphor-bright), 0 0 20px var(--phosphor-mid), 0 0 40px var(--phosphor-dim), 0 0 80px var(--phosphor-dark);
+
+  /* Shadows */
+  --shadow-inset: inset 0 0 20px rgba(0, 255, 0, 0.05);
+}
+
+/* ========================================
+   CRT SCREEN EFFECTS
+   Scanlines and screen curvature vignette
+   ======================================== */
+
+/* Scanlines overlay */
+.theme-retro-terminal::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.2) 2px,
+      rgba(0, 0, 0, 0.2) 4px
+    );
+}
+
+/* Screen curvature vignette */
+.theme-retro-terminal::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 10, 0, 0.3) 80%,
+    rgba(0, 10, 0, 0.6) 100%
+  );
+}
+
+/* Content container positioning */
+.theme-retro-terminal > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-retro-terminal > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-retro-terminal > div {
+  z-index: 1;
+}
+
+/* ========================================
+   BODY TYPOGRAPHY
+   ======================================== */
+
+.theme-retro-terminal .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--phosphor-mid);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================
+   HEADINGS
+   Glowing phosphor display text
+   ======================================== */
+
+.theme-retro-terminal .prose h1 {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--phosphor-bright);
+  text-shadow: var(--glow-intense);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.theme-retro-terminal .prose h1::before {
+  content: '> ';
+  color: var(--phosphor-dim);
+}
+
+.theme-retro-terminal .prose h2 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--phosphor-bright);
+  text-shadow: var(--glow-medium);
+  border-bottom: 1px dashed var(--phosphor-dark);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.theme-retro-terminal .prose h2::before {
+  content: '// ';
+  color: var(--phosphor-dark);
+}
+
+.theme-retro-terminal .prose h3 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor-mid);
+  text-shadow: var(--glow-soft);
+  margin-bottom: 0.75rem;
+}
+
+.theme-retro-terminal .prose h4 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--phosphor-mid);
+  text-shadow: var(--glow-soft);
+  margin-bottom: 0.5rem;
+}
+
+.theme-retro-terminal .prose h5 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+  margin-bottom: 0.5rem;
+}
+
+.theme-retro-terminal .prose h6 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+  margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   PARAGRAPHS
+   ======================================== */
+
+.theme-retro-terminal .prose p {
+  color: var(--phosphor-mid);
+  margin-bottom: 1rem;
+}
+
+/* ========================================
+   BLOCKQUOTES
+   Terminal output / system message style
+   ======================================== */
+
+.theme-retro-terminal .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--crt-surface);
+  color: var(--phosphor-dim);
+  border: 1px solid var(--phosphor-ghost);
+  border-left: 3px solid var(--phosphor-dim);
+  position: relative;
+}
+
+.theme-retro-terminal .prose blockquote::before {
+  content: '>';
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--phosphor-bright);
+  text-shadow: var(--glow-soft);
+}
+
+.theme-retro-terminal .prose blockquote p {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+/* ========================================
+   LINKS
+   Glowing phosphor links
+   ======================================== */
+
+.theme-retro-terminal .prose a {
+  color: var(--phosphor-bright);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--phosphor-dim);
+  transition: all 0.2s ease;
+}
+
+.theme-retro-terminal .prose a:hover {
+  text-shadow: var(--glow-soft);
+  border-bottom-style: solid;
+  border-bottom-color: var(--phosphor-bright);
+}
+
+/* ========================================
+   HORIZONTAL RULES
+   Scanline divider
+   ======================================== */
+
+.theme-retro-terminal .prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--phosphor-dim), transparent);
+  margin: 2.5rem 0;
+  position: relative;
+}
+
+.theme-retro-terminal .prose hr::before {
+  content: '----------------------------------------';
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--phosphor-ghost);
+  letter-spacing: -0.1em;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* ========================================
+   CODE BLOCKS
+   Dark terminal with phosphor text
+   ======================================== */
+
+.theme-retro-terminal .prose pre {
+  background: var(--crt-black);
+  border: 1px solid var(--phosphor-dark);
+  box-shadow: var(--shadow-inset);
+  padding: 1.5rem;
+  overflow-x: auto;
+  position: relative;
+}
+
+.theme-retro-terminal .prose pre::before {
+  content: 'OUTPUT';
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--phosphor-ghost);
+  padding: 0.25rem 0.5rem;
+  border-left: 1px solid var(--phosphor-ghost);
+  border-bottom: 1px solid var(--phosphor-ghost);
+}
+
+.theme-retro-terminal .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--phosphor-bright);
+  background: transparent;
+  text-shadow: 0 0 2px var(--phosphor-dim);
+}
+
+/* ========================================
+   INLINE CODE
+   ======================================== */
+
+.theme-retro-terminal .prose :not(pre) > code {
+  background: var(--crt-surface);
+  border: 1px solid var(--phosphor-ghost);
+  color: var(--phosphor-bright);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ========================================
+   LISTS
+   Terminal-style bullet points
+   ======================================== */
+
+.theme-retro-terminal .prose ul,
+.theme-retro-terminal .prose ol {
+  color: var(--phosphor-mid);
+  padding-left: 1.5rem;
+}
+
+.theme-retro-terminal .prose ul {
+  list-style: none;
+}
+
+.theme-retro-terminal .prose ul > li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.theme-retro-terminal .prose ul > li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: var(--phosphor-bright);
+  font-family: var(--font-mono);
+}
+
+.theme-retro-terminal .prose ol {
+  list-style: none;
+  counter-reset: terminal-counter;
+}
+
+.theme-retro-terminal .prose ol > li {
+  position: relative;
+  padding-left: 2.5rem;
+  counter-increment: terminal-counter;
+}
+
+.theme-retro-terminal .prose ol > li::before {
+  content: '[' counter(terminal-counter, decimal-leading-zero) ']';
+  position: absolute;
+  left: 0;
+  color: var(--phosphor-dim);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.theme-retro-terminal .prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   TABLES
+   Data grid display
+   ======================================== */
+
+.theme-retro-terminal .prose table {
+  background: var(--crt-surface);
+  border: 1px solid var(--phosphor-dark);
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.theme-retro-terminal .prose th {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--phosphor-bright);
+  border-bottom: 2px solid var(--phosphor-dark);
+  background: var(--crt-deep);
+  padding: 1rem;
+  text-align: left;
+  text-shadow: var(--glow-soft);
+}
+
+.theme-retro-terminal .prose td {
+  border-bottom: 1px solid var(--phosphor-ghost);
+  padding: 0.75rem 1rem;
+  color: var(--phosphor-mid);
+}
+
+.theme-retro-terminal .prose tr:hover td {
+  background: var(--crt-elevated);
+  color: var(--phosphor-bright);
+}
+
+/* ========================================
+   STRONG / BOLD
+   ======================================== */
+
+.theme-retro-terminal .prose strong {
+  color: var(--phosphor-bright);
+  font-weight: 600;
+  text-shadow: 0 0 3px var(--phosphor-dim);
+}
+
+/* ========================================
+   EMPHASIS / ITALIC
+   ======================================== */
+
+.theme-retro-terminal .prose em {
+  color: var(--amber-bright);
+  font-style: italic;
+}
+
+/* ========================================
+   IMAGES
+   CRT monitor frame
+   ======================================== */
+
+.theme-retro-terminal .prose img {
+  border: 2px solid var(--phosphor-dark);
+  box-shadow:
+    0 0 10px rgba(0, 255, 0, 0.1),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  filter: contrast(1.05) brightness(0.95);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Retro Terminal
+   High contrast phosphor palette for readability
+   ======================================== */
+
+.theme-retro-terminal {
+  /* Shiki base colors */
+  --shiki-foreground: #33ff33;
+  --shiki-background: #000a00;
+
+  /* Shiki token colors - phosphor palette with good contrast */
+  --shiki-token-constant: var(--amber-bright);           /* Amber for constants - high contrast */
+  --shiki-token-string: #66ff66;                         /* Bright green for strings */
+  --shiki-token-comment: var(--phosphor-faded);          /* Faded green for comments */
+  --shiki-token-keyword: var(--phosphor-bright);         /* Bright phosphor for keywords */
+  --shiki-token-parameter: #99ffcc;                      /* Cyan-green for parameters */
+  --shiki-token-function: var(--status-info);            /* Cyan for functions - contrast */
+  --shiki-token-string-expression: #66ff66;              /* Bright green for string expressions */
+  --shiki-token-punctuation: var(--phosphor-dim);        /* Dim green for punctuation */
+  --shiki-token-link: var(--amber-bright);               /* Amber for links */
+}
+
+/* ========================================
+   SHIKI CODE BLOCK STYLING
+   ======================================== */
+
+.theme-retro-terminal .streamdown-content pre[data-streamdown] {
+  background: var(--crt-black) !important;
+  border: 1px solid var(--phosphor-dark);
+  box-shadow: var(--shadow-inset);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-retro-terminal pre:not(.prose pre) {
+  background: #000a00;
+  color: #33ff33;
+}
+
+.theme-retro-terminal pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-retro-terminal .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.8;
+}
+
+.theme-retro-terminal .streamdown-content [data-caret] {
+  background-color: var(--phosphor-bright);
+  box-shadow: var(--glow-soft);
+  animation: blink 1s infinite;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-retro-terminal ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-retro-terminal ::-webkit-scrollbar-track {
+  background: var(--crt-black);
+  border-left: 1px solid var(--phosphor-ghost);
+}
+
+.theme-retro-terminal ::-webkit-scrollbar-thumb {
+  background: var(--phosphor-dark);
+  border: 1px solid var(--phosphor-ghost);
+}
+
+.theme-retro-terminal ::-webkit-scrollbar-thumb:hover {
+  background: var(--phosphor-dim);
+  box-shadow: var(--glow-soft);
+}
+
+/* ========================================
+   TASK LIST CHECKBOXES
+   Terminal checkbox style
+   ======================================== */
+
+.theme-retro-terminal .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--crt-black);
+  border: 2px solid var(--phosphor-dark);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.theme-retro-terminal .prose input[type="checkbox"]:checked {
+  background: var(--crt-surface);
+  border-color: var(--phosphor-bright);
+  box-shadow: var(--glow-soft);
+  position: relative;
+}
+
+.theme-retro-terminal .prose input[type="checkbox"]:checked::after {
+  content: 'X';
+  position: absolute;
+  left: 2px;
+  top: -2px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--phosphor-bright);
+  text-shadow: var(--glow-soft);
+}
+
+/* ========================================
+   ANIMATIONS
+   CRT flicker and blink effects
+   ======================================== */
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: var(--glow-soft); }
+  50% { text-shadow: var(--glow-medium); }
+}
+
+/* ========================================
+   LANDING PAGE OVERRIDES
+   ======================================== */
+
+.theme-retro-terminal .landing-title,
+.theme-retro-terminal .landing-card-title {
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

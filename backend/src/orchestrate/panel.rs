@@ -1,5 +1,7 @@
 use crate::adapter::claude::ClaudeAdapter;
 use crate::adapter::codex::CodexAdapter;
+use crate::adapter::copilot::CopilotAdapter;
+use crate::adapter::gemini::GeminiAdapter;
 use crate::adapter::{AdapterError, CliAdapter, OutputChunk};
 use crate::db::Agent;
 use tokio::sync::mpsc;
@@ -46,14 +48,18 @@ pub struct TaggedChunk {
 /// Return the appropriate [`CliAdapter`] for a model identifier.
 ///
 /// Currently supported:
-/// - `"claude"` -> [`ClaudeAdapter`]
-/// - `"codex"`  -> [`CodexAdapter`]
+/// - `"claude"`  -> [`ClaudeAdapter`]
+/// - `"codex"`   -> [`CodexAdapter`]
+/// - `"copilot"` -> [`CopilotAdapter`]
+/// - `"gemini"`  -> [`GeminiAdapter`]
 ///
 /// Everything else yields [`AdapterError::CliNotFound`].
 pub fn select_adapter(model: &str) -> Result<Box<dyn CliAdapter>, AdapterError> {
     match model {
         "claude" => Ok(Box::new(ClaudeAdapter::default())),
         "codex" => Ok(Box::new(CodexAdapter::default())),
+        "copilot" => Ok(Box::new(CopilotAdapter::default())),
+        "gemini" => Ok(Box::new(GeminiAdapter::default())),
         other => Err(AdapterError::CliNotFound(format!(
             "unsupported model: {other}"
         ))),
@@ -84,20 +90,20 @@ pub fn spawn_panel(
         let prompt = prompt.clone();
         let agent_id = agent.id.clone();
         let agent_name = agent.name.clone();
-        let system_prompt = if agent.system_prompt.is_empty() {
+        let agent_home = if agent.agent_home.is_empty() {
             None
         } else {
-            Some(agent.system_prompt.clone())
+            Some(agent.agent_home.clone())
         };
-        let cwd = agent.workspace_path.clone();
+        let workspace = agent.workspace_path.clone();
 
         tokio::spawn(async move {
             // Attempt to spawn the CLI process for this agent.
             let mut chunk_rx = match adapter
                 .spawn(
                     &prompt,
-                    system_prompt.as_deref(),
-                    cwd.as_deref(),
+                    agent_home.as_deref(),
+                    workspace.as_deref(),
                 )
                 .await
             {
@@ -159,6 +165,18 @@ mod tests {
     fn test_select_adapter_codex() {
         let adapter = select_adapter("codex").expect("should return CodexAdapter");
         assert_eq!(adapter.name(), "codex");
+    }
+
+    #[test]
+    fn test_select_adapter_copilot() {
+        let adapter = select_adapter("copilot").expect("should return CopilotAdapter");
+        assert_eq!(adapter.name(), "copilot");
+    }
+
+    #[test]
+    fn test_select_adapter_gemini() {
+        let adapter = select_adapter("gemini").expect("should return GeminiAdapter");
+        assert_eq!(adapter.name(), "gemini");
     }
 
     #[test]

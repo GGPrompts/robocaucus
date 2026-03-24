@@ -1,0 +1,540 @@
+/* Circuit Board Theme
+ * PCB hardware electronics aesthetic.
+ * Solder mask green, copper traces, silkscreen labels.
+ * Technical precision. Component grids. Hardware-authentic.
+ */
+
+.theme-circuit-board {
+  /* PCB SUBSTRATE COLORS */
+  --pcb-green: #1A472A;
+  --pcb-green-light: #2D5A3D;
+  --pcb-green-dark: #0F2D1A;
+  --pcb-green-substrate: #143D23;
+
+  /* COPPER TRACES */
+  --copper: #B87333;
+  --copper-light: #D4956A;
+  --copper-bright: #E8B796;
+  --copper-dark: #8B5A2B;
+  --gold: #FFD700;
+  --gold-pale: #DAA520;
+
+  /* SILKSCREEN */
+  --silkscreen: #F5F5F0;
+  --silkscreen-dim: #C8C8C0;
+  --silkscreen-faint: #A0A098;
+
+  /* SOLDER & METAL */
+  --solder: #C0C0C0;
+  --solder-bright: #E8E8E8;
+  --tin: #8B8B8B;
+
+  /* COMPONENT COLORS */
+  --led-green: #33FF33;
+  --led-amber: #FFBF00;
+  --ic-body: #2D2D2D;
+
+  /* Theme Variables */
+  --bg-primary: var(--pcb-green-dark);
+  --bg-secondary: var(--pcb-green);
+  --text-primary: var(--silkscreen);
+  --text-secondary: var(--silkscreen-dim);
+  --text-muted: var(--silkscreen-faint);
+  --accent: var(--copper);
+  --terminal-bg: linear-gradient(145deg, #061a06 0%, #0a3d0a 40%, #082008 100%);
+  --accent-hover: var(--copper-light);
+  --accent-secondary: var(--gold);
+  --border: var(--copper-dark);
+  --code-bg: var(--ic-body);
+
+  /* Typography - Technical mono fonts */
+  --font-display: 'Orbitron', 'Arial', sans-serif;
+  --font-heading: 'Share Tech Mono', 'Courier New', monospace;
+  --font-body: 'JetBrains Mono', 'Consolas', monospace;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* No border radius for technical precision */
+  --radius: 0;
+
+  /* Shadows */
+  --shadow-trace: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --shadow-component: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Fiberglass Weave Background Texture */
+.theme-circuit-board::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 4px
+    ),
+    radial-gradient(circle at center, rgba(184, 115, 51, 0.03) 1px, transparent 1px);
+  background-size: 4px 4px, 4px 4px, 16px 16px;
+}
+
+/* Copper Trace Accent Strip at Top */
+.theme-circuit-board::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--gold) 0px,
+    var(--gold) 20px,
+    var(--pcb-green-dark) 20px,
+    var(--pcb-green-dark) 24px
+  );
+}
+
+/* Content container positioning */
+.theme-circuit-board > * {
+  position: relative;
+}
+
+/* Landing page - Orbitron display font */
+.theme-circuit-board .landing-title,
+.theme-circuit-board .landing-card-title {
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-circuit-board > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-circuit-board > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-circuit-board .prose {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Silkscreen Label Style */
+.theme-circuit-board .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--silkscreen);
+  text-shadow: 2px 2px 0 var(--pcb-green-dark);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.theme-circuit-board .prose h1::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--copper-light), var(--copper), var(--copper-dark));
+}
+
+.theme-circuit-board .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silkscreen);
+  border-bottom: 2px solid var(--copper);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.theme-circuit-board .prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle at 30% 30%, var(--copper-bright), var(--copper) 50%, var(--copper-dark));
+  border-radius: 50%;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.4);
+}
+
+.theme-circuit-board .prose h3,
+.theme-circuit-board .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--silkscreen-dim);
+}
+
+.theme-circuit-board .prose h3::before {
+  content: '//';
+  color: var(--copper);
+  margin-right: 0.5em;
+}
+
+.theme-circuit-board .prose h5,
+.theme-circuit-board .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--silkscreen-faint);
+}
+
+/* Blockquotes - Component Box Style */
+.theme-circuit-board .prose blockquote {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: none;
+  background: var(--pcb-green);
+  color: var(--silkscreen-dim);
+  position: relative;
+  border: 2px solid var(--copper-dark);
+}
+
+.theme-circuit-board .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  height: 6px;
+  background: linear-gradient(90deg, var(--copper-light), var(--copper), var(--copper-dark));
+}
+
+.theme-circuit-board .prose blockquote::after {
+  content: 'NOTE';
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  font-family: var(--font-heading);
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  color: var(--silkscreen);
+  background: var(--pcb-green-dark);
+  padding: 2px 8px;
+}
+
+.theme-circuit-board .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Copper Trace Style */
+.theme-circuit-board .prose a {
+  color: var(--copper-light);
+  text-decoration: none;
+  border-bottom: 1px solid var(--copper-dark);
+  transition: all 0.2s ease;
+}
+
+.theme-circuit-board .prose a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Horizontal Rules - Via/Trace Pattern */
+.theme-circuit-board .prose hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, var(--copper-light), var(--copper), var(--copper-dark));
+  margin: 2.5rem 0;
+  position: relative;
+  box-shadow: var(--shadow-trace);
+}
+
+.theme-circuit-board .prose hr::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background:
+    radial-gradient(circle 5px at 30px 5px, var(--copper-bright) 2px, var(--copper) 3px, transparent 4px),
+    radial-gradient(circle 5px at 80px 5px, var(--copper-bright) 2px, var(--copper) 3px, transparent 4px),
+    radial-gradient(circle 5px at 130px 5px, var(--copper-bright) 2px, var(--copper) 3px, transparent 4px),
+    radial-gradient(circle 5px at 180px 5px, var(--copper-bright) 2px, var(--copper) 3px, transparent 4px);
+  background-repeat: repeat-x;
+  background-size: 200px 10px;
+}
+
+/* Code Blocks - Terminal on PCB */
+.theme-circuit-board .prose pre {
+  background: var(--pcb-green-dark);
+  border: 2px solid var(--tin);
+  box-shadow: var(--shadow-component);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.theme-circuit-board .prose pre::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle at 30% 30%, var(--solder-bright), var(--solder) 50%, var(--tin));
+  border-radius: 50%;
+  box-shadow:
+    12px 0 0 0 radial-gradient(circle at 30% 30%, var(--solder-bright), var(--solder)),
+    0 12px 0 0 radial-gradient(circle at 30% 30%, var(--solder-bright), var(--solder));
+}
+
+.theme-circuit-board .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--led-green);
+  background: transparent;
+  text-shadow: 0 0 4px rgba(51, 255, 51, 0.3);
+}
+
+/* Inline Code */
+.theme-circuit-board .prose :not(pre) > code {
+  background: var(--pcb-green);
+  border: 1px solid var(--copper-dark);
+  color: var(--copper-light);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Lists - Component Reference Style */
+.theme-circuit-board .prose ul,
+.theme-circuit-board .prose ol {
+  color: var(--text-secondary);
+}
+
+.theme-circuit-board .prose li::marker {
+  color: var(--copper);
+}
+
+.theme-circuit-board .prose ul > li::marker {
+  content: '\25CB  ';
+}
+
+.theme-circuit-board .prose li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+/* Tables - BOM/Specification Style */
+.theme-circuit-board .prose table {
+  background: var(--pcb-green);
+  border: 2px solid var(--copper);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.theme-circuit-board .prose th {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--silkscreen);
+  border-bottom: 2px solid var(--copper);
+  background: var(--pcb-green-dark);
+  padding: 0.75rem 1rem;
+}
+
+.theme-circuit-board .prose td {
+  border-bottom: 1px solid var(--copper-dark);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+}
+
+.theme-circuit-board .prose tr:hover {
+  background: rgba(184, 115, 51, 0.08);
+}
+
+/* Strong/Bold - Silkscreen Emphasis */
+.theme-circuit-board .prose strong {
+  color: var(--silkscreen);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.theme-circuit-board .prose em {
+  color: var(--copper-light);
+  font-style: italic;
+}
+
+/* Images - Component Frame */
+.theme-circuit-board .prose img {
+  border: 2px solid var(--copper-dark);
+  box-shadow: var(--shadow-component);
+}
+
+/* Shiki syntax highlighting */
+.theme-circuit-board .streamdown-content pre[data-streamdown] {
+  background: var(--pcb-green-dark) !important;
+  border: 2px solid var(--tin);
+  box-shadow: var(--shadow-component);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-circuit-board pre:not(.prose pre) {
+  background: #0F2D1A;  /* PCB dark green */
+  color: #33FF33;
+}
+
+.theme-circuit-board pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-circuit-board .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+.theme-circuit-board .streamdown-content [data-caret] {
+  background-color: var(--led-green);
+  box-shadow: 0 0 6px var(--led-green);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Circuit Board
+   ======================================== */
+
+.theme-circuit-board {
+  /* Shiki base colors */
+  --shiki-foreground: #33FF33;
+  --shiki-background: #0F2D1A;  /* PCB dark green */
+
+  /* Shiki token colors - PCB palette */
+  --shiki-token-constant: var(--led-amber);           /* Amber LED for constants */
+  --shiki-token-string: var(--copper-light);          /* Copper for strings */
+  --shiki-token-comment: var(--silkscreen-faint);     /* Faint silkscreen for comments */
+  --shiki-token-keyword: var(--gold);                 /* Gold for keywords */
+  --shiki-token-parameter: var(--silkscreen-dim);     /* Silkscreen for parameters */
+  --shiki-token-function: var(--copper-bright);       /* Bright copper for functions */
+  --shiki-token-string-expression: var(--copper-light);
+  --shiki-token-punctuation: var(--solder);           /* Solder gray for punctuation */
+  --shiki-token-link: var(--gold);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-circuit-board ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.theme-circuit-board ::-webkit-scrollbar-track {
+  background: var(--pcb-green-dark);
+  border-left: 1px solid var(--copper-dark);
+}
+
+.theme-circuit-board ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--copper-light) 0%, var(--copper) 50%, var(--copper-dark) 100%);
+  border: 1px solid var(--pcb-green-dark);
+}
+
+.theme-circuit-board ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--copper-bright) 0%, var(--copper-light) 50%, var(--copper) 100%);
+}
+
+/* ========================================
+   ADDITIONAL CIRCUIT BOARD ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Via/Pad Style */
+.theme-circuit-board .prose input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--pcb-green-dark);
+  border: 2px solid var(--copper);
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  position: relative;
+}
+
+.theme-circuit-board .prose input[type="checkbox"]:checked {
+  background: radial-gradient(circle at 35% 35%, var(--solder-bright), var(--solder) 50%, var(--tin));
+  border-color: var(--copper-light);
+}
+
+.theme-circuit-board .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 4px;
+  background: var(--pcb-green-dark);
+  border-radius: 50%;
+}
+
+/* Definition lists - Pin assignment style */
+.theme-circuit-board .prose dl {
+  border: 1px solid var(--copper-dark);
+  background: var(--pcb-green);
+  padding: 1rem;
+}
+
+.theme-circuit-board .prose dt {
+  font-family: var(--font-heading);
+  color: var(--silkscreen);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.theme-circuit-board .prose dt:first-child {
+  margin-top: 0;
+}
+
+.theme-circuit-board .prose dd {
+  color: var(--silkscreen-dim);
+  margin-left: 1rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--copper-dark);
+}

@@ -1,0 +1,504 @@
+/* Film Grain Theme
+ * Analog warmth inspired by Kodak Portra and Fujifilm stocks
+ * Warm sepia tones, film grain texture, nostalgic imperfection
+ */
+
+.theme-film-grain {
+  /* Film-Inspired Color Palette */
+  /* Warm Base Tones (Kodak Portra inspired) */
+  --cream: #f5f0e6;
+  --cream-dark: #ebe4d4;
+  --paper: #faf6ed;
+  --paper-aged: #f0e8d8;
+
+  /* Warm Accents */
+  --amber: #d4a066;
+  --amber-light: #e8c898;
+  --amber-dark: #b8864a;
+  --sepia: #8b7355;
+  --sepia-light: #a69076;
+  --sepia-dark: #6b5343;
+
+  /* Faded Film Colors */
+  --faded-red: #c47d6d;
+  --faded-orange: #d49a6a;
+  --faded-green: #8b9b7a;
+  --faded-teal: #7a9b9b;
+
+  /* Neutral Tones */
+  --charcoal: #3d3a35;
+  --charcoal-light: #5a5650;
+  --charcoal-dark: #2a2825;
+  --warm-gray: #9b958a;
+  --warm-gray-light: #b8b2a6;
+
+  /* Theme Variables */
+  --bg-primary: var(--paper);
+  --bg-secondary: var(--cream);
+  --text-primary: var(--charcoal);
+  --text-secondary: var(--sepia);
+  --accent: var(--amber);
+  --terminal-bg: linear-gradient(145deg, #1a1610 0%, #2a2418 40%, #141008 100%);
+  --accent-hover: var(--amber-dark);
+  --border: var(--warm-gray-light);
+
+  /* Typography */
+  --font-display: 'Special Elite', 'Courier New', monospace;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --radius: 2px;
+
+  /* Base styling */
+  background: var(--bg-primary);
+  position: relative;
+}
+
+/* Film Grain Overlay */
+.theme-film-grain::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+/* Vignette Effect */
+.theme-film-grain::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(30, 25, 20, 0.12) 80%,
+    rgba(30, 25, 20, 0.3) 100%
+  );
+}
+
+/* Ensure content is above pseudo-elements but below grain */
+.theme-film-grain > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header needs highest z-index for dropdowns */
+.theme-film-grain > header:first-of-type {
+  z-index: 100;
+}
+
+/* Toolbar header */
+.theme-film-grain > header:nth-of-type(2) {
+  z-index: 50;
+}
+
+/* Body Typography */
+.theme-film-grain .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Typewriter Style */
+.theme-film-grain .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--charcoal);
+  text-shadow: 1px 1px 0 var(--cream-dark);
+}
+
+.theme-film-grain .prose h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--charcoal);
+}
+
+.theme-film-grain .prose h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--sepia-dark);
+}
+
+.theme-film-grain .prose h4,
+.theme-film-grain .prose h5,
+.theme-film-grain .prose h6 {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  color: var(--amber);
+}
+
+/* Blockquotes - Vintage Card Style */
+.theme-film-grain .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-style: italic;
+  line-height: 1.7;
+  padding: 1.5rem 2rem;
+  margin: 1.5rem 0;
+  background: linear-gradient(135deg, var(--paper) 0%, var(--cream) 100%);
+  border: 1px solid var(--warm-gray-light);
+  border-left: 3px solid var(--amber);
+  color: var(--sepia);
+  box-shadow:
+    0 2px 8px rgba(60, 50, 40, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.theme-film-grain .prose blockquote p {
+  margin: 0;
+}
+
+/* Links */
+.theme-film-grain .prose a {
+  color: var(--amber-dark);
+  text-decoration: underline;
+  text-decoration-color: var(--amber-light);
+  text-underline-offset: 2px;
+  transition: all 0.15s ease;
+}
+
+.theme-film-grain .prose a:hover {
+  color: var(--sepia-dark);
+  text-decoration-color: var(--sepia);
+}
+
+/* Horizontal Rules - Film Frame Divider */
+.theme-film-grain .prose hr {
+  border: none;
+  height: 1px;
+  margin: 2.5rem 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--warm-gray-light) 20%,
+    var(--warm-gray-light) 80%,
+    transparent
+  );
+}
+
+/* Code Blocks */
+.theme-film-grain .prose pre {
+  background: var(--cream);
+  border: 1px solid var(--warm-gray-light);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.theme-film-grain .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--charcoal);
+  background: transparent;
+}
+
+/* Inline Code */
+.theme-film-grain .prose :not(pre) > code {
+  background: var(--cream-dark);
+  color: var(--sepia-dark);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  border: 1px solid var(--warm-gray-light);
+}
+
+/* Lists */
+.theme-film-grain .prose ul,
+.theme-film-grain .prose ol {
+  color: var(--text-primary);
+}
+
+.theme-film-grain .prose li::marker {
+  color: var(--amber);
+}
+
+/* Tables */
+.theme-film-grain .prose table {
+  background: var(--paper);
+  border: 1px solid var(--warm-gray-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(60, 50, 40, 0.1);
+}
+
+.theme-film-grain .prose th {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  color: var(--paper);
+  background: var(--sepia);
+  border-bottom: 2px solid var(--sepia-dark);
+  padding: 0.875rem 1rem;
+}
+
+.theme-film-grain .prose td {
+  border-bottom: 1px solid var(--warm-gray-light);
+  padding: 0.75rem 1rem;
+}
+
+.theme-film-grain .prose tr:hover {
+  background: var(--cream);
+}
+
+/* Strong/Bold */
+.theme-film-grain .prose strong {
+  color: var(--charcoal);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.theme-film-grain .prose em {
+  font-style: italic;
+  color: var(--sepia);
+}
+
+/* Images - Print Border Style */
+.theme-film-grain .prose img {
+  border: 6px solid var(--paper);
+  box-shadow:
+    0 0 0 1px var(--warm-gray-light),
+    0 4px 16px rgba(60, 50, 40, 0.15);
+  transition: all 0.25s ease;
+}
+
+.theme-film-grain .prose img:hover {
+  transform: translateY(-2px) rotate(-0.5deg);
+  box-shadow:
+    0 0 0 1px var(--amber),
+    0 8px 24px rgba(60, 50, 40, 0.2);
+}
+
+/* Shiki Syntax Highlighting */
+.theme-film-grain {
+  --shiki-foreground: var(--charcoal);
+  --shiki-background: transparent;
+  --shiki-token-constant: var(--amber-dark);
+  --shiki-token-string: var(--faded-green);
+  --shiki-token-comment: #6A6458;              /* Darker warm gray for readable comments */
+  --shiki-token-keyword: var(--sepia);
+  --shiki-token-parameter: var(--charcoal);
+  --shiki-token-function: var(--faded-red);
+  --shiki-token-string-expression: var(--faded-green);
+  --shiki-token-punctuation: #6A6458;          /* Match comment color for consistency */
+  --shiki-token-link: var(--amber);
+}
+
+.theme-film-grain .streamdown-content pre[data-streamdown] {
+  background: var(--cream) !important;
+  border: 1px solid var(--warm-gray-light);
+  border-radius: var(--radius);
+}
+
+/* Streamdown caret */
+.theme-film-grain .streamdown-content [data-caret] {
+  background-color: var(--amber);
+  box-shadow: 0 0 6px rgba(212, 160, 102, 0.5);
+}
+
+/* Buttons - Simple bordered style */
+.theme-film-grain button,
+.theme-film-grain .btn {
+  background: transparent;
+  color: var(--charcoal);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  transition: all 0.15s ease;
+}
+
+.theme-film-grain button:hover,
+.theme-film-grain .btn:hover {
+  background: var(--charcoal);
+  color: var(--paper);
+  box-shadow: 0 4px 12px rgba(60, 50, 40, 0.15);
+}
+
+/* Icon buttons - subtle hover without dark fill */
+.theme-film-grain [data-streamdown="code-block-copy-button"],
+.theme-film-grain [data-streamdown="code-block-download-button"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.theme-film-grain [data-streamdown="code-block-copy-button"]:hover,
+.theme-film-grain [data-streamdown="code-block-download-button"]:hover {
+  background: var(--cream-dark) !important;
+  color: var(--amber-dark) !important;
+  box-shadow: none !important;
+}
+
+/* Small icon buttons (dropdowns, toggles) - subtle hover */
+.theme-film-grain button:has(svg:only-child):hover,
+.theme-film-grain button[class*="chevron"]:hover,
+.theme-film-grain button[aria-expanded]:hover {
+  background: var(--cream-dark) !important;
+  color: var(--charcoal) !important;
+  box-shadow: none !important;
+}
+
+/* Accent buttons */
+.theme-film-grain .btn-accent {
+  background: var(--amber) !important;
+  border-color: var(--amber) !important;
+  color: var(--paper) !important;
+}
+
+.theme-film-grain .btn-accent:hover {
+  background: var(--amber-dark) !important;
+  border-color: var(--amber-dark) !important;
+}
+
+/* Header styling */
+.theme-film-grain header {
+  background: var(--cream);
+  border-bottom: 1px solid var(--warm-gray-light);
+}
+
+.theme-film-grain header button,
+.theme-film-grain header select {
+  background: var(--paper);
+  border: 1px solid var(--warm-gray-light);
+  color: var(--charcoal);
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+}
+
+.theme-film-grain header button:hover,
+.theme-film-grain header select:hover {
+  background: var(--cream-dark);
+  border-color: var(--amber);
+  color: var(--charcoal);
+}
+
+/* Preserve accent button in header */
+.theme-film-grain header button.btn-accent {
+  background: var(--amber) !important;
+  border-color: var(--amber) !important;
+  color: var(--paper) !important;
+}
+
+.theme-film-grain header button.btn-accent:hover {
+  background: var(--amber-dark) !important;
+  border-color: var(--amber-dark) !important;
+}
+
+/* Sidebar */
+.theme-film-grain aside {
+  background: var(--cream) !important;
+  border-right: 1px solid var(--warm-gray-light) !important;
+}
+
+.theme-film-grain aside button {
+  background: transparent !important;
+  border: none !important;
+  color: var(--charcoal) !important;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--font-body);
+}
+
+.theme-film-grain aside button:hover {
+  background: var(--cream-dark) !important;
+  color: var(--sepia-dark) !important;
+}
+
+/* Selected file */
+.theme-film-grain aside button[style*="color-mix"] {
+  background: rgba(212, 160, 102, 0.15) !important;
+  color: var(--amber-dark) !important;
+}
+
+/* Scrollbar */
+.theme-film-grain ::-webkit-scrollbar {
+  width: 10px;
+}
+
+.theme-film-grain ::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+.theme-film-grain ::-webkit-scrollbar-thumb {
+  background: var(--warm-gray-light);
+  border-radius: 5px;
+  border: 2px solid var(--cream);
+}
+
+.theme-film-grain ::-webkit-scrollbar-thumb:hover {
+  background: var(--warm-gray);
+}
+
+/* Metadata bar */
+.theme-film-grain .metadata-bar {
+  background: var(--cream);
+  border-bottom: 1px solid var(--warm-gray-light);
+}
+
+.theme-film-grain .metadata-tag {
+  background: var(--amber);
+  color: var(--paper);
+  border: none;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.65rem;
+}
+
+/* Source Control - keep buttons readable */
+.theme-film-grain button[title*="Fetch"],
+.theme-film-grain button[title*="Pull"],
+.theme-film-grain button[title*="Push"],
+.theme-film-grain button[title*="push"] {
+  background: var(--paper) !important;
+  border: 1px solid var(--warm-gray-light) !important;
+  color: var(--charcoal) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-family: var(--font-body) !important;
+}
+
+.theme-film-grain button[title*="Fetch"]:hover,
+.theme-film-grain button[title*="Pull"]:hover,
+.theme-film-grain button[title*="Push"]:hover,
+.theme-film-grain button[title*="push"]:hover {
+  background: var(--cream-dark) !important;
+  border-color: var(--amber) !important;
+}
+
+/* Timestamp/caption style utility */
+.theme-film-grain .timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--faded-orange);
+  letter-spacing: 0.05em;
+}

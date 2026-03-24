@@ -10,6 +10,7 @@ mod mention;
 mod orchestrate;
 mod reconcile;
 mod routes;
+mod scaffold;
 mod state;
 mod templates;
 mod tmux;
@@ -25,7 +26,7 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_origin([
-            "http://localhost:5173".parse().unwrap(),
+            "http://localhost:7330".parse().unwrap(),
         ])
         .allow_methods(Any)
         .allow_headers(Any);
@@ -36,7 +37,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "7331".to_string());
     let addr = format!("0.0.0.0:{port}");
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     tracing::info!("listening on {}", listener.local_addr().unwrap());

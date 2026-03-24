@@ -253,6 +253,8 @@ mod tests {
             id: id.to_owned(),
             name: name.to_owned(),
             model: "test-model".to_owned(),
+            provider: String::new(),
+            agent_home: String::new(),
             color: "#000000".to_owned(),
             scope: "global".to_owned(),
             system_prompt: String::new(),

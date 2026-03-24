@@ -1,0 +1,529 @@
+/* ================================================================
+   PIXEL ART THEME
+   Retro 8-bit/16-bit aesthetic with CRT effects
+   NES-inspired color palette and chunky pixel borders
+================================================================ */
+
+/* --- DESIGN TOKENS / CSS VARIABLES --- */
+.theme-pixel-art {
+  /* NES-INSPIRED COLOR PALETTE */
+  --pixel-black: #0f0f0f;
+  --pixel-dark: #1a1a2e;
+  --pixel-navy: #16213e;
+  --pixel-blue: #0077c0;
+  --pixel-cyan: #00d4ff;
+  --pixel-green: #00a854;
+  --pixel-lime: #7cfc00;
+  --pixel-yellow: #fcbf00;
+  --pixel-orange: #ff7700;
+  --pixel-red: #e4002b;
+  --pixel-pink: #ff6b9d;
+  --pixel-magenta: #c800c8;
+  --pixel-purple: #6b2d9e;
+  --pixel-white: #fcfcfc;
+  --pixel-gray-light: #bcbcbc;
+  --pixel-gray: #7c7c7c;
+  --pixel-gray-dark: #3c3c3c;
+
+  /* SEMANTIC COLORS */
+  --bg-primary: var(--pixel-dark);
+  --bg-secondary: var(--pixel-navy);
+  --bg-surface: #0d0d1a;
+  --text-primary: var(--pixel-white);
+  --text-secondary: var(--pixel-gray-light);
+  --text-muted: var(--pixel-gray);
+  --accent: var(--pixel-cyan);
+  --terminal-bg: linear-gradient(145deg, #12122a 0%, #1a1a2e 40%, #0f0f24 100%);
+  --accent-hover: var(--pixel-yellow);
+  --border: var(--pixel-gray-dark);
+
+  /* TYPOGRAPHY */
+  --font-display: 'Press Start 2P', monospace;
+  --font-body: 'VT323', monospace;
+  --font-mono: 'VT323', monospace;
+  --font-heading: 'Press Start 2P', monospace;
+
+  /* PIXEL SPACING (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* NO BORDER RADIUS - KEEP IT BLOCKY */
+  --radius: 0px;
+
+  /* SCANLINE INTENSITY */
+  --scanline-opacity: 0.04;
+
+  /* PIXEL BORDER (stacked box-shadow for chunky 3D effect) */
+  --pixel-border:
+    0 4px 0 0 var(--pixel-gray-dark),
+    0 -4px 0 0 var(--pixel-white),
+    4px 0 0 0 var(--pixel-gray-dark),
+    -4px 0 0 0 var(--pixel-white),
+    4px 4px 0 0 var(--pixel-black),
+    -4px -4px 0 0 var(--pixel-gray-light),
+    4px -4px 0 0 var(--pixel-gray),
+    -4px 4px 0 0 var(--pixel-gray);
+
+  --pixel-border-inset:
+    inset 0 4px 0 0 var(--pixel-gray-dark),
+    inset 0 -4px 0 0 var(--pixel-white),
+    inset 4px 0 0 0 var(--pixel-gray-dark),
+    inset -4px 0 0 0 var(--pixel-white);
+}
+
+/* --- KEYFRAME ANIMATIONS --- */
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* --- BASE STYLES --- */
+.theme-pixel-art {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  line-height: 1.4;
+  position: relative;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+}
+
+/* CRT SCANLINE OVERLAY */
+.theme-pixel-art::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+    rgba(0, 0, 0, var(--scanline-opacity)) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Subtle CRT vignette effect */
+.theme-pixel-art::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* --- PROSE / MARKDOWN CONTENT --- */
+.theme-pixel-art .prose {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Headings - Press Start 2P with pixelated text shadow */
+.theme-pixel-art .prose h1,
+.theme-pixel-art .prose h2,
+.theme-pixel-art .prose h3,
+.theme-pixel-art .prose h4,
+.theme-pixel-art .prose h5,
+.theme-pixel-art .prose h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.theme-pixel-art .prose h1 {
+  font-size: 1.5rem;
+  color: var(--pixel-cyan);
+  text-shadow:
+    4px 4px 0 var(--pixel-blue),
+    8px 8px 0 var(--pixel-navy);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 4px solid var(--pixel-gray-dark);
+}
+
+.theme-pixel-art .prose h2 {
+  font-size: 1rem;
+  color: var(--pixel-yellow);
+  text-shadow: 2px 2px 0 var(--pixel-orange);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-3);
+  border-left: 4px solid var(--pixel-yellow);
+}
+
+.theme-pixel-art .prose h2::before {
+  content: '> ';
+  color: var(--pixel-cyan);
+  animation: pixel-blink 1s steps(1) infinite;
+}
+
+.theme-pixel-art .prose h3 {
+  font-size: 0.75rem;
+  color: var(--pixel-lime);
+  text-shadow: 2px 2px 0 var(--pixel-green);
+  margin-top: var(--space-5);
+  margin-bottom: var(--space-3);
+}
+
+.theme-pixel-art .prose h4 {
+  font-size: 0.625rem;
+  color: var(--pixel-pink);
+  text-shadow: 1px 1px 0 var(--pixel-magenta);
+}
+
+.theme-pixel-art .prose h5,
+.theme-pixel-art .prose h6 {
+  font-size: 0.5rem;
+  color: var(--pixel-purple);
+}
+
+/* Paragraphs */
+.theme-pixel-art .prose p {
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+/* Links - Cyan with yellow hover */
+.theme-pixel-art .prose a {
+  color: var(--pixel-cyan);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: none;
+}
+
+.theme-pixel-art .prose a:hover {
+  color: var(--pixel-yellow);
+  border-bottom-color: var(--pixel-yellow);
+}
+
+/* Strong / Bold */
+.theme-pixel-art .prose strong {
+  color: var(--pixel-cyan);
+  font-weight: 700;
+}
+
+/* Emphasis / Italic */
+.theme-pixel-art .prose em {
+  color: var(--pixel-pink);
+  font-style: italic;
+}
+
+/* Inline code - pixel box style */
+.theme-pixel-art .prose :not(pre) > code {
+  font-family: var(--font-mono);
+  background: var(--pixel-black);
+  color: var(--pixel-lime);
+  padding: 2px 8px;
+  border: 2px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 2px 2px 0 0 #000,
+    inset -2px -2px 0 0 var(--pixel-gray);
+  font-size: 1.1rem;
+}
+
+/* Code blocks - Pixel bordered terminal style */
+.theme-pixel-art .prose pre {
+  background: var(--pixel-black) !important;
+  border: 4px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 4px 4px 0 0 #000,
+    inset -4px -4px 0 0 var(--pixel-gray),
+    8px 8px 0 0 var(--pixel-black);
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+/* Terminal header decoration */
+.theme-pixel-art .prose pre::before {
+  content: '// CODE';
+  position: absolute;
+  top: -16px;
+  left: var(--space-3);
+  background: var(--pixel-black);
+  padding: 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: 8px;
+  color: var(--pixel-gray);
+  letter-spacing: 1px;
+}
+
+.theme-pixel-art .prose pre code {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  color: var(--pixel-lime);
+}
+
+/* Blockquotes - Message box style */
+.theme-pixel-art .prose blockquote {
+  background: var(--pixel-white);
+  color: var(--pixel-black);
+  border: 4px solid var(--pixel-black);
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+  position: relative;
+  box-shadow:
+    inset -4px -4px 0 0 var(--pixel-gray-light),
+    inset 4px 4px 0 0 var(--pixel-white),
+    8px 8px 0 0 var(--pixel-black);
+}
+
+/* Speech bubble triangle */
+.theme-pixel-art .prose blockquote::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 24px;
+  width: 0;
+  height: 0;
+  border: 12px solid transparent;
+  border-top-color: var(--pixel-black);
+  border-bottom: 0;
+}
+
+.theme-pixel-art .prose blockquote p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+/* Lists */
+.theme-pixel-art .prose ul,
+.theme-pixel-art .prose ol {
+  padding-left: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.theme-pixel-art .prose li {
+  margin-bottom: var(--space-2);
+}
+
+.theme-pixel-art .prose ul > li::marker {
+  color: var(--pixel-cyan);
+  content: '\25A0  '; /* Square pixel bullet */
+}
+
+.theme-pixel-art .prose ol > li::marker {
+  color: var(--pixel-yellow);
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+}
+
+/* Horizontal rule - Pixel divider */
+.theme-pixel-art .prose hr {
+  border: none;
+  height: 8px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--pixel-cyan) 0px,
+    var(--pixel-cyan) 8px,
+    transparent 8px,
+    transparent 16px,
+    var(--pixel-yellow) 16px,
+    var(--pixel-yellow) 24px,
+    transparent 24px,
+    transparent 32px
+  );
+  margin: var(--space-6) 0;
+}
+
+/* Tables - Pixel grid style */
+.theme-pixel-art .prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--pixel-black);
+  border: 4px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 4px 4px 0 0 #000,
+    8px 8px 0 0 var(--pixel-black);
+  margin: var(--space-5) 0;
+}
+
+.theme-pixel-art .prose th {
+  font-family: var(--font-display);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--pixel-yellow);
+  background: var(--bg-secondary);
+  padding: var(--space-3);
+  text-align: left;
+  border-bottom: 4px solid var(--pixel-gray-dark);
+}
+
+.theme-pixel-art .prose td {
+  padding: var(--space-3);
+  border-bottom: 2px solid var(--pixel-gray-dark);
+  color: var(--text-secondary);
+}
+
+.theme-pixel-art .prose tr:hover td {
+  background: var(--bg-secondary);
+}
+
+/* Images */
+.theme-pixel-art .prose img {
+  border: 4px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 0 0 0 4px var(--pixel-gray),
+    8px 8px 0 0 var(--pixel-black);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* --- STREAMDOWN SPECIFIC --- */
+.theme-pixel-art .streamdown-content pre {
+  background: var(--pixel-black) !important;
+  border: 4px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 4px 4px 0 0 #000,
+    inset -4px -4px 0 0 var(--pixel-gray),
+    8px 8px 0 0 var(--pixel-black);
+}
+
+.theme-pixel-art .streamdown-content pre[data-streamdown] {
+  background: var(--pixel-black) !important;
+  border: 4px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset 4px 4px 0 0 #000,
+    inset -4px -4px 0 0 var(--pixel-gray),
+    8px 8px 0 0 var(--pixel-black);
+}
+
+.theme-pixel-art .streamdown-content [data-caret] {
+  background-color: var(--pixel-lime);
+  animation: pixel-blink 0.5s steps(1) infinite;
+}
+
+.theme-pixel-art .streamdown-content [data-streamdown="code-block"] {
+  background: var(--pixel-black) !important;
+  border: 4px solid var(--pixel-gray-dark) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    inset 4px 4px 0 0 #000,
+    8px 8px 0 0 var(--pixel-black);
+}
+
+.theme-pixel-art .streamdown-content [data-streamdown="code-block-header"] {
+  background: var(--bg-secondary) !important;
+  border-bottom: 4px solid var(--pixel-gray-dark) !important;
+  border-radius: 0 !important;
+  font-family: var(--font-display) !important;
+  font-size: 8px !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.theme-pixel-art .streamdown-content [data-streamdown="code-block-body"] {
+  background: var(--pixel-black) !important;
+  border-radius: 0 !important;
+}
+
+/* --- METADATA BAR --- */
+.theme-pixel-art .metadata-bar {
+  background: var(--bg-secondary);
+  border-bottom: 4px solid var(--pixel-gray-dark);
+  font-family: var(--font-body);
+}
+
+.theme-pixel-art .metadata-tag {
+  background: var(--pixel-blue);
+  color: var(--pixel-white);
+  border: 2px solid var(--pixel-black);
+  border-radius: 0;
+  font-family: var(--font-display);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.theme-pixel-art .metadata-tag:hover {
+  background: var(--pixel-cyan);
+  color: var(--pixel-black);
+}
+
+/* --- SCROLLBAR --- */
+.theme-pixel-art ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-pixel-art ::-webkit-scrollbar-track {
+  background: var(--pixel-black);
+  border: 2px solid var(--pixel-gray-dark);
+}
+
+.theme-pixel-art ::-webkit-scrollbar-thumb {
+  background: var(--pixel-gray);
+  border: 2px solid var(--pixel-gray-dark);
+  box-shadow:
+    inset -2px -2px 0 0 var(--pixel-gray-dark),
+    inset 2px 2px 0 0 var(--pixel-gray-light);
+}
+
+.theme-pixel-art ::-webkit-scrollbar-thumb:hover {
+  background: var(--pixel-cyan);
+}
+
+/* --- SELECTION --- */
+.theme-pixel-art ::selection {
+  background: var(--pixel-cyan);
+  color: var(--pixel-black);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors using NES palette
+   ======================================== */
+
+.theme-pixel-art {
+  /* Shiki base colors */
+  --shiki-foreground: var(--pixel-lime);
+  --shiki-background: var(--pixel-black);
+
+  /* Shiki token colors - NES palette */
+  --shiki-token-constant: var(--pixel-yellow);     /* Yellow for constants/numbers */
+  --shiki-token-string: var(--pixel-green);        /* Green for strings */
+  --shiki-token-comment: var(--pixel-gray);        /* Gray for comments */
+  --shiki-token-keyword: var(--pixel-cyan);        /* Cyan for keywords */
+  --shiki-token-parameter: var(--pixel-orange);    /* Orange for parameters */
+  --shiki-token-function: var(--pixel-pink);       /* Pink for functions */
+  --shiki-token-string-expression: var(--pixel-lime); /* Lime for template literals */
+  --shiki-token-punctuation: var(--pixel-gray-light); /* Light gray for punctuation */
+  --shiki-token-link: var(--pixel-cyan);
+}

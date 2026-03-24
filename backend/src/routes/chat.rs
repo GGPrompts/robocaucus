@@ -18,6 +18,8 @@ use tokio_stream::wrappers::ReceiverStream;
 
 use crate::adapter::claude::ClaudeAdapter;
 use crate::adapter::codex::CodexAdapter;
+use crate::adapter::copilot::CopilotAdapter;
+use crate::adapter::gemini::GeminiAdapter;
 use crate::adapter::{ChunkType, CliAdapter};
 use crate::context::{self, ContextMessage};
 use crate::mention;
@@ -132,14 +134,6 @@ fn chunk_type_to_event_name(ct: &ChunkType) -> &'static str {
         ChunkType::Error => "error",
         ChunkType::Done => "done",
     }
-}
-
-/// Extract the system prompt from context messages (first message if role == "system").
-fn extract_system_prompt(messages: &[ContextMessage]) -> Option<String> {
-    messages
-        .first()
-        .filter(|m| m.role == "system")
-        .map(|m| m.content.clone())
 }
 
 /// Join non-system context messages into a conversation prompt for the CLI adapter.
@@ -352,17 +346,25 @@ async fn chat_send(
     );
 
     // ------------------------------------------------------------------
-    // 6. Select CLI adapter based on agent model
+    // 6. Select CLI adapter based on agent provider
     // ------------------------------------------------------------------
-    let adapter: Box<dyn CliAdapter> = match target_agent.model.as_str() {
+    let provider = if target_agent.provider.is_empty() {
+        // Backwards compat: fall back to model field for legacy agents
+        target_agent.model.as_str()
+    } else {
+        target_agent.provider.as_str()
+    };
+    let adapter: Box<dyn CliAdapter> = match provider {
         "claude" => Box::new(ClaudeAdapter::new(120)),
         "codex" => Box::new(CodexAdapter::new(120)),
+        "copilot" => Box::new(CopilotAdapter::new(120)),
+        "gemini" => Box::new(GeminiAdapter::new(120)),
         other => {
             return (
                 StatusCode::NOT_IMPLEMENTED,
                 Json(ErrorBody {
                     error: format!(
-                        "Unsupported model '{}': only 'claude' and 'codex' are supported",
+                        "Unsupported provider '{}': only 'claude', 'codex', 'copilot', and 'gemini' are supported",
                         other
                     ),
                 }),
@@ -374,14 +376,18 @@ async fn chat_send(
     // ------------------------------------------------------------------
     // 7. Spawn the adapter
     // ------------------------------------------------------------------
-    let system_prompt = extract_system_prompt(&context_messages);
     let prompt = context_to_conversation_prompt(&context_messages);
-    let cwd = conversation
+    let agent_home = if target_agent.agent_home.is_empty() {
+        None
+    } else {
+        Some(target_agent.agent_home.as_str())
+    };
+    let workspace = conversation
         .workspace_path
         .as_deref()
         .or(target_agent.workspace_path.as_deref());
 
-    let mut rx = match adapter.spawn(&prompt, system_prompt.as_deref(), cwd).await {
+    let mut rx = match adapter.spawn(&prompt, agent_home, workspace).await {
         Ok(rx) => rx,
         Err(e) => {
             return (

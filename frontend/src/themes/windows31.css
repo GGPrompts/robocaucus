@@ -1,0 +1,531 @@
+/* Windows 3.1 Theme
+ * Early 90s Program Manager aesthetic with beveled 3D buttons,
+ * grey backgrounds, chunky UI, and the classic 16-color VGA palette.
+ */
+
+.theme-windows31 {
+  /* CLASSIC 16-COLOR VGA PALETTE */
+  --vga-black: #000000;
+  --vga-dark-blue: #000080;
+  --vga-dark-green: #008000;
+  --vga-dark-cyan: #008080;
+  --vga-dark-red: #800000;
+  --vga-dark-magenta: #800080;
+  --vga-brown: #808000;
+  --vga-light-gray: #C0C0C0;
+  --vga-dark-gray: #808080;
+  --vga-blue: #0000FF;
+  --vga-green: #00FF00;
+  --vga-cyan: #00FFFF;
+  --vga-red: #FF0000;
+  --vga-magenta: #FF00FF;
+  --vga-yellow: #FFFF00;
+  --vga-white: #FFFFFF;
+
+  /* 3D BEVEL COLORS */
+  --bevel-light: var(--vga-white);
+  --bevel-medium: var(--vga-light-gray);
+  --bevel-dark: var(--vga-dark-gray);
+  --bevel-shadow: var(--vga-black);
+
+  /* Theme Variables */
+  --bg-primary: var(--vga-light-gray);
+  --bg-secondary: var(--vga-white);
+  --text-primary: var(--vga-black);
+  --text-secondary: var(--vga-dark-gray);
+  --text-muted: var(--vga-dark-gray);
+  --accent: var(--vga-dark-blue);
+  --terminal-bg: linear-gradient(145deg, #000040 0%, #000080 40%, #000020 100%);
+  --accent-hover: var(--vga-blue);
+  --accent-secondary: var(--vga-dark-cyan);
+  --border: var(--vga-dark-gray);
+  --code-bg: var(--vga-white);
+
+  /* Typography - System font aesthetic */
+  --font-display: 'VT323', 'Fixedsys', 'Consolas', monospace;
+  --font-heading: 'Segoe UI', 'Tahoma', 'MS Sans Serif', sans-serif;
+  --font-body: 'Segoe UI', 'Tahoma', 'MS Sans Serif', sans-serif;
+  --font-mono: 'Consolas', 'Fixedsys', 'Courier New', monospace;
+
+  /* No border radius - Windows 3.1 has sharp corners */
+  --radius: 0;
+
+  /* Shadows for 3D beveled effect */
+  --shadow-raised: inset 1px 1px 0 var(--bevel-light), inset -1px -1px 0 var(--bevel-dark);
+  --shadow-sunken: inset 1px 1px 0 var(--bevel-dark), inset -1px -1px 0 var(--bevel-light);
+  --shadow-window: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Teal Desktop Background */
+.theme-windows31::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: var(--vga-dark-cyan);
+}
+
+/* Blue Title Bar Strip at Top */
+.theme-windows31::after {
+  content: 'Program Manager';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  pointer-events: none;
+  z-index: 100;
+  background: var(--vga-dark-blue);
+  color: var(--vga-white);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Content container positioning */
+.theme-windows31 > * {
+  position: relative;
+}
+
+/* Landing page styles */
+.theme-windows31 .landing-title,
+.theme-windows31 .landing-card-title {
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+/* Main content areas get gray window background (authentic Win 3.1 look) */
+.theme-windows31 > main,
+.theme-windows31 > div:not(:empty) {
+  background: var(--vga-light-gray);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  padding: 8px;
+  margin: 24px 8px 8px 8px;
+  box-shadow: var(--shadow-window);
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-windows31 > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-windows31 > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-windows31 .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: auto;
+  background: var(--vga-light-gray);
+  padding: 16px;
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  box-shadow: var(--shadow-raised), var(--shadow-window);
+}
+
+/* Headings - Title bar style for h1, system font for others */
+.theme-windows31 .prose h1 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  color: var(--vga-white);
+  background: var(--vga-dark-blue);
+  padding: 2px 8px;
+  margin: 0 0 1rem 0;
+  margin-left: -16px;
+  margin-right: -16px;
+  margin-top: -16px;
+  line-height: 1.4;
+}
+
+.theme-windows31 .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  color: var(--vga-black);
+  border-bottom: 2px solid var(--vga-dark-gray);
+  padding-bottom: 4px;
+  margin-top: 1.5rem;
+}
+
+.theme-windows31 .prose h3,
+.theme-windows31 .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  color: var(--vga-black);
+}
+
+.theme-windows31 .prose h5,
+.theme-windows31 .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: bold;
+  color: var(--vga-dark-gray);
+}
+
+/* Blockquotes - Dialog/Window box style */
+.theme-windows31 .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 12px;
+  margin: 1rem 0;
+  border-left: none;
+  background: var(--vga-light-gray);
+  color: var(--vga-black);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  box-shadow: var(--shadow-raised);
+}
+
+.theme-windows31 .prose blockquote::before {
+  content: 'Note';
+  display: block;
+  background: var(--vga-dark-gray);
+  color: var(--vga-white);
+  font-weight: bold;
+  font-size: 12px;
+  padding: 2px 8px;
+  margin: -12px -12px 8px -12px;
+}
+
+.theme-windows31 .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Classic blue underlined style */
+.theme-windows31 .prose a {
+  color: var(--vga-dark-blue);
+  text-decoration: underline;
+  transition: none;
+}
+
+.theme-windows31 .prose a:hover {
+  color: var(--vga-blue);
+}
+
+.theme-windows31 .prose a:visited {
+  color: var(--vga-dark-magenta);
+}
+
+/* Horizontal Rules - 3D beveled groove */
+.theme-windows31 .prose hr {
+  border: none;
+  height: 4px;
+  background: var(--vga-light-gray);
+  margin: 1.5rem 0;
+  border-top: 2px solid var(--vga-dark-gray);
+  border-bottom: 2px solid var(--vga-white);
+}
+
+/* Code Blocks - Sunken/inset 3D border, white background */
+.theme-windows31 .prose pre {
+  background: var(--vga-white);
+  border: 2px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  box-shadow: var(--shadow-sunken);
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.theme-windows31 .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--vga-black);
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+/* Inline Code - Inset style */
+.theme-windows31 .prose :not(pre) > code {
+  background: var(--vga-white);
+  border: 1px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  color: var(--vga-black);
+  padding: 0.1em 0.3em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Lists */
+.theme-windows31 .prose ul,
+.theme-windows31 .prose ol {
+  color: var(--text-primary);
+  padding-left: 1.5rem;
+}
+
+.theme-windows31 .prose li::marker {
+  color: var(--vga-dark-blue);
+}
+
+.theme-windows31 .prose li {
+  margin-bottom: 0.25rem;
+}
+
+/* Tables - 3D beveled cells like File Manager */
+.theme-windows31 .prose table {
+  background: var(--vga-white);
+  border: 2px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.theme-windows31 .prose th {
+  font-family: var(--font-heading);
+  font-weight: normal;
+  color: var(--vga-black);
+  background: var(--vga-light-gray);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.theme-windows31 .prose td {
+  border-bottom: 1px solid var(--vga-light-gray);
+  padding: 4px 8px;
+}
+
+.theme-windows31 .prose tr:hover {
+  background: var(--vga-dark-blue);
+  color: var(--vga-white);
+}
+
+/* Strong/Bold */
+.theme-windows31 .prose strong {
+  color: var(--vga-black);
+  font-weight: bold;
+}
+
+/* Emphasis/Italic */
+.theme-windows31 .prose em {
+  color: var(--vga-dark-gray);
+  font-style: italic;
+}
+
+/* Images - 3D beveled frame */
+.theme-windows31 .prose img {
+  border: 2px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  box-shadow: var(--shadow-sunken);
+  background: var(--vga-white);
+  padding: 2px;
+}
+
+/* Shiki syntax highlighting */
+.theme-windows31 .streamdown-content pre[data-streamdown] {
+  background: var(--vga-white) !important;
+  border: 2px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  box-shadow: var(--shadow-sunken);
+}
+
+/* Streamdown specific overrides */
+.theme-windows31 .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+.theme-windows31 .streamdown-content [data-caret] {
+  background-color: var(--vga-black);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Windows 3.1
+   Using VGA-era colors for readability
+   ======================================== */
+
+.theme-windows31 {
+  /* Shiki base colors */
+  --shiki-foreground: var(--vga-black);
+  --shiki-background: transparent;
+
+  /* Shiki token colors - VGA palette for code highlighting */
+  --shiki-token-constant: var(--vga-dark-red);        /* Dark red for constants */
+  --shiki-token-string: var(--vga-dark-green);        /* Dark green for strings */
+  --shiki-token-comment: #505050;                      /* Darker gray for readable comments on light-gray bg */
+  --shiki-token-keyword: var(--vga-dark-blue);        /* Navy blue for keywords */
+  --shiki-token-parameter: var(--vga-brown);          /* Brown for parameters */
+  --shiki-token-function: var(--vga-dark-magenta);    /* Purple for functions */
+  --shiki-token-string-expression: var(--vga-dark-green);
+  --shiki-token-punctuation: var(--vga-black);        /* Black for punctuation */
+  --shiki-token-link: var(--vga-dark-blue);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   Chunky Windows 3.1 style scrollbars
+   ======================================== */
+
+.theme-windows31 ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-windows31 ::-webkit-scrollbar-track {
+  background: repeating-linear-gradient(
+    0deg,
+    var(--vga-white) 0px,
+    var(--vga-white) 2px,
+    var(--vga-light-gray) 2px,
+    var(--vga-light-gray) 4px
+  );
+}
+
+.theme-windows31 ::-webkit-scrollbar-thumb {
+  background: var(--vga-light-gray);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+}
+
+.theme-windows31 ::-webkit-scrollbar-thumb:hover {
+  background: #D4D4D4;
+}
+
+.theme-windows31 ::-webkit-scrollbar-button {
+  background: var(--vga-light-gray);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  height: 16px;
+  width: 16px;
+}
+
+.theme-windows31 ::-webkit-scrollbar-button:hover {
+  background: #D4D4D4;
+}
+
+.theme-windows31 ::-webkit-scrollbar-corner {
+  background: var(--vga-light-gray);
+}
+
+/* ========================================
+   ADDITIONAL WINDOWS 3.1 ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Classic 3D checkbox style */
+.theme-windows31 .prose input[type="checkbox"] {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  background: var(--vga-white);
+  border: 2px solid;
+  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
+  box-shadow: inset 1px 1px 0 var(--bevel-dark);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.theme-windows31 .prose input[type="checkbox"]:checked {
+  background: var(--vga-white);
+  position: relative;
+}
+
+.theme-windows31 .prose input[type="checkbox"]:checked::after {
+  content: 'X';
+  position: absolute;
+  left: 1px;
+  top: -2px;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--vga-black);
+  font-family: var(--font-heading);
+}
+
+/* Definition lists */
+.theme-windows31 .prose dt {
+  font-weight: bold;
+  color: var(--vga-black);
+}
+
+.theme-windows31 .prose dd {
+  margin-left: 1rem;
+  color: var(--vga-dark-gray);
+}
+
+/* Keyboard keys */
+.theme-windows31 .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 2px 6px;
+  background: var(--vga-light-gray);
+  border: 2px solid;
+  border-color: var(--bevel-light) var(--bevel-shadow) var(--bevel-shadow) var(--bevel-light);
+  box-shadow: var(--shadow-raised);
+  color: var(--vga-black);
+}
+
+/* Mark/highlight */
+.theme-windows31 .prose mark {
+  background: var(--vga-yellow);
+  color: var(--vga-black);
+  padding: 0 2px;
+}
+
+/* Abbreviations */
+.theme-windows31 .prose abbr {
+  text-decoration: underline dotted var(--vga-dark-gray);
+  cursor: help;
+}
+
+/* Superscript/Subscript */
+.theme-windows31 .prose sup,
+.theme-windows31 .prose sub {
+  font-size: 0.75em;
+  color: var(--vga-dark-gray);
+}
+
+/* Details/Summary - Group box style */
+.theme-windows31 .prose details {
+  background: var(--vga-light-gray);
+  border: 1px solid var(--bevel-dark);
+  border-top-color: var(--bevel-light);
+  border-left-color: var(--bevel-light);
+  margin: 1rem 0;
+  padding: 8px;
+}
+
+.theme-windows31 .prose details::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  border: 1px solid;
+  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+  pointer-events: none;
+}
+
+.theme-windows31 .prose summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--vga-black);
+  padding: 2px 4px;
+  background: var(--vga-light-gray);
+}
+
+.theme-windows31 .prose summary:hover {
+  background: var(--vga-dark-blue);
+  color: var(--vga-white);
+}
+
+/* Footnotes */
+.theme-windows31 .prose .footnotes {
+  border-top: 2px solid var(--vga-dark-gray);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  font-size: 0.9em;
+  color: var(--vga-dark-gray);
+}

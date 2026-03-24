@@ -1,0 +1,205 @@
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { themes, type ThemeId } from '../themes';
+
+interface ThemeSelectorProps {
+  currentTheme: ThemeId;
+  onThemeChange: (theme: ThemeId) => void;
+}
+
+export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const currentThemeData = themes.find((t) => t.id === currentTheme) ?? themes[0];
+
+  // Update dropdown position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: Math.max(rect.width, 220),
+      });
+    }
+  }, [isOpen]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
+      const dropdownEl = document.getElementById('theme-dropdown-portal');
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        (!dropdownEl || !dropdownEl.contains(target))
+      ) {
+        setIsOpen(false);
+        setFocusedIndex(-1);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  // Handle keyboard navigation
+  function handleKeyDown(event: React.KeyboardEvent) {
+    if (!isOpen) {
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        setIsOpen(true);
+        setFocusedIndex(themes.findIndex((t) => t.id === currentTheme));
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'Escape':
+        event.preventDefault();
+        setIsOpen(false);
+        setFocusedIndex(-1);
+        buttonRef.current?.focus();
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        setFocusedIndex((prev) => (prev + 1) % themes.length);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        setFocusedIndex((prev) => (prev - 1 + themes.length) % themes.length);
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        if (focusedIndex >= 0) {
+          onThemeChange(themes[focusedIndex].id);
+          setIsOpen(false);
+          setFocusedIndex(-1);
+          buttonRef.current?.focus();
+        }
+        break;
+      case 'Home':
+        event.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        setFocusedIndex(themes.length - 1);
+        break;
+    }
+  }
+
+  function handleThemeSelect(themeId: ThemeId) {
+    onThemeChange(themeId);
+    setIsOpen(false);
+    setFocusedIndex(-1);
+  }
+
+  const dropdownMenu = isOpen && (
+    <ul
+      id="theme-dropdown-portal"
+      role="listbox"
+      aria-activedescendant={focusedIndex >= 0 ? `theme-option-${themes[focusedIndex].id}` : undefined}
+      className="fixed max-h-[320px] overflow-y-auto overflow-x-hidden rounded-lg border border-gray-700 shadow-xl"
+      style={{
+        top: dropdownPosition.top,
+        left: dropdownPosition.left,
+        width: dropdownPosition.width,
+        zIndex: 9999,
+        backgroundColor: '#1f2937',
+      }}
+    >
+      {themes.map((theme, index) => {
+        const isSelected = theme.id === currentTheme;
+        const isFocused = index === focusedIndex;
+
+        return (
+          <li
+            key={theme.id}
+            id={`theme-option-${theme.id}`}
+            role="option"
+            aria-selected={isSelected}
+            onClick={() => handleThemeSelect(theme.id)}
+            onMouseEnter={() => setFocusedIndex(index)}
+            className="px-3 py-2 cursor-pointer flex items-center justify-between transition-all"
+            style={{
+              backgroundColor: theme.bg,
+              opacity: isFocused ? 1 : 0.85,
+              transform: isFocused ? 'scale(1.02)' : 'scale(1)',
+            }}
+          >
+            <span
+              style={{
+                color: theme.accent,
+                fontFamily: theme.font,
+                fontWeight: 500,
+                fontSize: theme.id === 'pixel-art' ? '0.875rem' : '1.125rem',
+              }}
+            >
+              {theme.name}
+            </span>
+            {isSelected && (
+              <svg
+                className="w-4 h-4"
+                style={{ color: theme.accent }}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  return (
+    <div className="flex items-center gap-2" ref={containerRef}>
+      <div className="relative">
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          onKeyDown={handleKeyDown}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-label={`Theme: ${currentThemeData.name}`}
+          className="px-3 py-1 cursor-pointer focus:outline-none flex items-center gap-2 min-w-[160px] justify-between rounded-lg border border-gray-700 bg-gray-800 text-sm text-gray-200 hover:bg-gray-700"
+        >
+          <span
+            style={{
+              color: currentThemeData.accent,
+              fontWeight: 500,
+            }}
+          >
+            {currentThemeData.name}
+          </span>
+          <svg
+            className="w-3.5 h-3.5 transition-transform text-gray-400"
+            style={{
+              transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            }}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {isOpen && createPortal(dropdownMenu, document.body)}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,331 @@
+/* Dark Academia Theme
+ * A candlelit library aesthetic with warm sepia tones,
+ * parchment textures, and elegant serif typography
+ */
+
+.theme-dark-academia {
+  /* Color Palette - Hues of candlelit libraries and aged manuscripts */
+  --parchment: #f4f1e8;
+  --parchment-dark: #e8e4d9;
+  --sepia: #704214;
+  --sepia-light: #8b5a2b;
+  --brown-deep: #3d2914;
+  --brown-dark: #2a1a0a;
+  --burgundy: #722f37;
+  --burgundy-dark: #4a1c23;
+  --forest: #2d4a3e;
+  --forest-dark: #1a2f26;
+  --gold-antique: #b8860b;
+  --gold-muted: #9a7b4f;
+  --cream: #faf7f0;
+  --ink: #1c1612;
+  --ink-faded: #3d352e;
+
+  /* Theme Variables */
+  --bg-primary: var(--brown-dark);
+  --bg-secondary: var(--brown-deep);
+  --text-primary: var(--parchment);
+  --text-secondary: rgba(244, 241, 232, 0.75);
+  --text-muted: rgba(244, 241, 232, 0.5);
+  --accent: var(--gold-antique);
+  --terminal-bg: linear-gradient(145deg, #1a0f05 0%, #2a1a0a 40%, #1f150a 100%);
+  --accent-hover: var(--gold-muted);
+  --border: var(--gold-muted);
+
+  /* Typography - Letters worthy of illuminated manuscripts */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-heading: 'EB Garamond', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'Courier Prime', 'Courier New', monospace;
+
+  /* No border-radius for sharp, manuscript aesthetic */
+  --radius: 0;
+
+  /* Shadows */
+  --shadow-warm: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(184, 134, 11, 0.15);
+}
+
+/* Parchment Texture Background */
+.theme-dark-academia::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Vignette Effect */
+.theme-dark-academia::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(26, 16, 10, 0.4) 100%);
+}
+
+/* Content container positioning - lift above texture/vignette pseudo-elements */
+.theme-dark-academia > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-dark-academia > header {
+  z-index: 50;
+}
+
+/* Main content area above pseudo-elements */
+.theme-dark-academia > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-dark-academia .prose {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Display and Heading fonts */
+.theme-dark-academia .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: var(--parchment);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark-academia .prose h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  color: var(--parchment);
+}
+
+.theme-dark-academia .prose h3,
+.theme-dark-academia .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.theme-dark-academia .prose h5,
+.theme-dark-academia .prose h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+/* Blockquotes - Scholarly citations */
+.theme-dark-academia .prose blockquote {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-style: italic;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 3px solid var(--burgundy);
+  background: rgba(114, 47, 55, 0.08);
+  color: var(--text-secondary);
+}
+
+.theme-dark-academia .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Gold accent */
+.theme-dark-academia .prose a {
+  color: var(--gold-antique);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(184, 134, 11, 0.4);
+  transition: all 0.3s ease;
+}
+
+.theme-dark-academia .prose a:hover {
+  color: var(--cream);
+  text-decoration-color: var(--gold-antique);
+  text-shadow: var(--shadow-glow);
+}
+
+/* Horizontal Rules - Ornate dividers */
+.theme-dark-academia .prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-muted), transparent);
+  margin: 3rem 0;
+  opacity: 0.8;
+}
+
+/* Code Blocks - Manuscript styling */
+.theme-dark-academia .prose pre {
+  background: linear-gradient(135deg, rgba(61, 41, 20, 0.6) 0%, rgba(42, 26, 10, 0.8) 100%);
+  border: 1px solid var(--gold-muted);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.3), var(--shadow-warm);
+  padding: 1.5rem;
+}
+
+.theme-dark-academia .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--parchment);
+  background: transparent;
+}
+
+/* Inline Code */
+.theme-dark-academia .prose :not(pre) > code {
+  background: rgba(42, 26, 10, 0.6);
+  border: 1px solid rgba(154, 123, 79, 0.4);
+  color: var(--parchment);
+  padding: 0.2em 0.4em;
+  font-family: var(--font-mono);
+}
+
+/* Lists */
+.theme-dark-academia .prose ul,
+.theme-dark-academia .prose ol {
+  color: var(--text-secondary);
+}
+
+.theme-dark-academia .prose li::marker {
+  color: var(--gold-muted);
+}
+
+/* Tables - Card-like styling */
+.theme-dark-academia .prose table {
+  background: linear-gradient(145deg, rgba(61, 41, 20, 0.5) 0%, rgba(42, 26, 10, 0.7) 100%);
+  border: 1px solid rgba(154, 123, 79, 0.3);
+}
+
+.theme-dark-academia .prose th {
+  font-family: var(--font-display);
+  font-style: italic;
+  letter-spacing: 0.05em;
+  color: var(--parchment);
+  border-bottom: 1px solid var(--gold-muted);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.theme-dark-academia .prose td {
+  border-bottom: 1px solid rgba(154, 123, 79, 0.2);
+}
+
+.theme-dark-academia .prose tr:hover {
+  background: rgba(154, 123, 79, 0.1);
+}
+
+/* Strong/Bold - Emphasized text */
+.theme-dark-academia .prose strong {
+  color: var(--parchment);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.theme-dark-academia .prose em {
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+/* Images - Framed like old photographs */
+.theme-dark-academia .prose img {
+  border: 1px solid var(--gold-muted);
+  box-shadow: var(--shadow-warm);
+}
+
+/* Drop Cap for first paragraph (optional enhancement) */
+.theme-dark-academia .prose > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  line-height: 0.8;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  color: var(--burgundy);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Shiki syntax highlighting - warm sepia tones */
+.theme-dark-academia .streamdown-content pre[data-streamdown] {
+  background: linear-gradient(135deg, rgba(61, 41, 20, 0.6) 0%, rgba(42, 26, 10, 0.8) 100%) !important;
+  border: 1px solid var(--gold-muted);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.3), var(--shadow-warm);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-dark-academia pre:not(.prose pre) {
+  background: #2a1a0a;
+  color: #f4f1e8;
+}
+
+.theme-dark-academia pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-dark-academia .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.75;
+  letter-spacing: 0.05em;
+}
+
+.theme-dark-academia .streamdown-content [data-caret] {
+  background-color: var(--gold-antique);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Dark Academia
+   ======================================== */
+
+.theme-dark-academia {
+  /* Shiki base colors */
+  --shiki-foreground: #f4f1e8;
+  --shiki-background: #2a1a0a;
+
+  /* Shiki token colors - brighter scholarly palette for readability */
+  --shiki-token-constant: #8fc98f;                /* Bright sage green for constants */
+  --shiki-token-string: #d4a574;                  /* Warm tan for strings */
+  --shiki-token-comment: #a89880;                 /* Muted warm gray for comments */
+  --shiki-token-keyword: #d4878f;                 /* Soft rose for keywords */
+  --shiki-token-parameter: var(--cream);          /* Cream for parameters */
+  --shiki-token-function: #e8c36a;                /* Bright gold for functions */
+  --shiki-token-string-expression: #d4a574;
+  --shiki-token-punctuation: #c8c0b0;             /* Light warm gray for punctuation */
+  --shiki-token-link: var(--gold-antique);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-dark-academia ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-dark-academia ::-webkit-scrollbar-track {
+  background: var(--brown-deep);
+}
+
+.theme-dark-academia ::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 0;
+}
+
+.theme-dark-academia ::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-antique);
+}

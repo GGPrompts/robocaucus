@@ -47,8 +47,8 @@ impl CliAdapter for CodexAdapter {
     async fn spawn(
         &self,
         prompt: &str,
-        system_prompt: Option<&str>,
-        cwd: Option<&str>,
+        agent_home: Option<&str>,
+        workspace: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -61,18 +61,16 @@ impl CliAdapter for CodexAdapter {
             return Err(AdapterError::CliNotFound("codex".into()));
         }
 
-        // Codex has no system prompt flag — prepend it to the prompt instead.
-        let effective_prompt = match system_prompt {
-            Some(sp) => format!("[System: {sp}]\n\n{prompt}"),
-            None => prompt.to_owned(),
-        };
-
         // Build the command: codex exec "<prompt>" --json
         let mut cmd = Command::new("codex");
-        cmd.arg("exec").arg(&effective_prompt).arg("--json");
+        cmd.arg("exec").arg(prompt).arg("--json");
 
-        if let Some(dir) = cwd {
-            cmd.arg("-C").arg(dir);
+        if let Some(home) = agent_home {
+            cmd.current_dir(home);
+        }
+
+        if let Some(ws) = workspace {
+            cmd.arg("--add-dir").arg(ws);
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

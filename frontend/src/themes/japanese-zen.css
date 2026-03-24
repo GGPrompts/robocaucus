@@ -1,0 +1,579 @@
+/* Japanese Zen Theme
+ * Ma (negative space), wabi-sabi (beauty in imperfection).
+ * Minimalist, muted earth tones, clean lines, stillness.
+ * Stone, bamboo, rice paper, ink wash.
+ */
+
+.theme-japanese-zen {
+  /* STONE & EARTH */
+  --stone-dark: #3D3D3D;
+  --stone-mid: #5C5C5C;
+  --stone-light: #8A8A8A;
+  --wet-stone: #4A4A4A;
+  --dry-stone: #A8A8A8;
+
+  /* NATURAL TONES */
+  --bamboo: #8B9A6B;
+  --bamboo-dark: #6B7A4B;
+  --moss: #5D6B4A;
+  --clay: #9C8B7A;
+  --earth: #7A6B5A;
+  --sand: #D4C8B8;
+
+  /* RICE PAPER & WHITES */
+  --rice-paper: #F5F2EB;
+  --washi: #EDE8DE;
+  --cream: #F8F5EE;
+  --warm-white: #FAFAF7;
+  --off-white: #F0EDE6;
+
+  /* INK TONES (Sumi-e) */
+  --ink-black: #1A1A1A;
+  --ink-dark: #2D2D2D;
+  --ink-medium: #4D4D4D;
+  --ink-light: #7A7A7A;
+  --ink-wash: #B8B8B8;
+  --ink-mist: #D4D4D4;
+
+  /* ACCENT COLORS */
+  --vermillion: #C73E3A;
+  --vermillion-soft: #D4635F;
+  --indigo: #3D4F7C;
+  --indigo-soft: #5A6B8F;
+  --gold-leaf: #B8860B;
+  --patina: #6B8B7A;
+
+  /* WOOD TONES */
+  --hinoki: #D4BA98;
+  --cedar: #A08060;
+  --aged-wood: #8B7355;
+
+  /* Theme Variables */
+  --bg-primary: var(--rice-paper);
+  --bg-secondary: var(--warm-white);
+  --text-primary: var(--ink-dark);
+  --text-secondary: var(--ink-medium);
+  --text-muted: var(--ink-light);
+  --accent: var(--bamboo);
+  --terminal-bg: linear-gradient(145deg, #1a1f18 0%, #2a2e25 40%, #141810 100%);
+  --accent-hover: var(--bamboo-dark);
+  --accent-secondary: var(--vermillion);
+  --border: var(--ink-mist);
+  --code-bg: var(--washi);
+
+  /* Typography */
+  --font-display: 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif;
+  --font-heading: 'Noto Serif JP', 'Hiragino Mincho ProN', Georgia, serif;
+  --font-body: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+  --font-mono: 'Noto Sans Mono', 'SF Mono', 'Consolas', monospace;
+
+  /* Soft, organic radius */
+  --radius: 2px;
+
+  /* Ma - generous spacing */
+  --ma-sm: 16px;
+  --ma-md: 32px;
+  --ma-lg: 48px;
+  --ma-xl: 72px;
+
+  /* Subtle shadows */
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* Subtle washi paper texture */
+.theme-japanese-zen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.015;
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Enso-inspired decorative line at top */
+.theme-japanese-zen::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  pointer-events: none;
+  z-index: 100;
+  background: var(--ink-wash);
+  border-radius: 2px;
+}
+
+/* Content container positioning */
+.theme-japanese-zen > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-japanese-zen > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-japanese-zen > div {
+  z-index: 1;
+}
+
+/* Landing page typography */
+.theme-japanese-zen .landing-title,
+.theme-japanese-zen .landing-card-title {
+  font-weight: 300;
+  letter-spacing: 0.15em;
+}
+
+/* Body Typography */
+.theme-japanese-zen .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  color: var(--ink-medium);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Elegant serif with generous spacing */
+.theme-japanese-zen .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 200;
+  letter-spacing: 0.2em;
+  color: var(--ink-dark);
+  margin-bottom: var(--ma-md);
+  margin-top: var(--ma-lg);
+  line-height: 1.4;
+  padding-bottom: var(--ma-sm);
+  border-bottom: 1px solid var(--ink-mist);
+}
+
+.theme-japanese-zen .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--ink-dark);
+  margin-top: var(--ma-lg);
+  margin-bottom: var(--ma-md);
+  line-height: 1.4;
+  position: relative;
+  padding-left: var(--ma-sm);
+}
+
+.theme-japanese-zen .prose h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.3em;
+  bottom: 0.3em;
+  width: 2px;
+  background: var(--bamboo);
+  border-radius: 1px;
+}
+
+.theme-japanese-zen .prose h3 {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--ink-dark);
+  margin-top: var(--ma-md);
+  margin-bottom: var(--ma-sm);
+  line-height: 1.5;
+}
+
+.theme-japanese-zen .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--ink-medium);
+  margin-top: var(--ma-md);
+  margin-bottom: var(--ma-sm);
+  line-height: 1.5;
+}
+
+.theme-japanese-zen .prose h5,
+.theme-japanese-zen .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink-light);
+  margin-top: var(--ma-sm);
+  margin-bottom: var(--ma-sm);
+  line-height: 1.5;
+}
+
+.theme-japanese-zen .prose h6 {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+}
+
+/* Paragraphs - generous breathing room */
+.theme-japanese-zen .prose p {
+  margin-bottom: var(--ma-md);
+  color: var(--ink-medium);
+}
+
+/* Blockquotes - Subtle, contemplative */
+.theme-japanese-zen .prose blockquote {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.8;
+  padding: var(--ma-md) var(--ma-lg);
+  margin: var(--ma-lg) 0;
+  border-left: 2px solid var(--ink-mist);
+  background: var(--warm-white);
+  color: var(--ink-light);
+}
+
+.theme-japanese-zen .prose blockquote p {
+  margin: 0;
+  color: inherit;
+}
+
+.theme-japanese-zen .prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Links - Understated with bamboo accent */
+.theme-japanese-zen .prose a {
+  color: var(--bamboo-dark);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.theme-japanese-zen .prose a:hover {
+  color: var(--moss);
+  border-bottom-color: var(--bamboo);
+}
+
+/* Horizontal Rules - Brush stroke inspired */
+.theme-japanese-zen .prose hr {
+  border: none;
+  height: 2px;
+  margin: var(--ma-xl) auto;
+  max-width: 120px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ink-wash) 15%,
+    var(--ink-light) 50%,
+    var(--ink-wash) 85%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* Code Blocks - Clean, minimal */
+.theme-japanese-zen .prose pre {
+  background: var(--washi);
+  border: 1px solid var(--ink-mist);
+  border-radius: var(--radius);
+  padding: var(--ma-md);
+  margin: var(--ma-md) 0;
+  overflow-x: auto;
+}
+
+.theme-japanese-zen .prose pre code {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--ink-dark);
+  background: transparent;
+  padding: 0;
+}
+
+/* Inline Code */
+.theme-japanese-zen .prose :not(pre) > code {
+  background: var(--off-white);
+  border: 1px solid var(--ink-mist);
+  color: var(--ink-dark);
+  padding: 0.1em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  border-radius: var(--radius);
+}
+
+/* Lists - Clean with subtle markers */
+.theme-japanese-zen .prose ul,
+.theme-japanese-zen .prose ol {
+  color: var(--ink-medium);
+  margin-bottom: var(--ma-md);
+  padding-left: var(--ma-md);
+}
+
+.theme-japanese-zen .prose li {
+  margin-bottom: 0.75rem;
+  line-height: 1.8;
+}
+
+.theme-japanese-zen .prose li::marker {
+  color: var(--ink-wash);
+}
+
+.theme-japanese-zen .prose ul > li::marker {
+  content: '\2022  ';
+}
+
+/* Nested lists */
+.theme-japanese-zen .prose li > ul,
+.theme-japanese-zen .prose li > ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Minimal, grid-like */
+.theme-japanese-zen .prose table {
+  width: 100%;
+  background: var(--warm-white);
+  border-collapse: collapse;
+  margin: var(--ma-md) 0;
+  font-size: 0.9rem;
+}
+
+.theme-japanese-zen .prose th {
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--ink-medium);
+  border-bottom: 1px solid var(--ink-mist);
+  background: var(--cream);
+  padding: var(--ma-sm);
+  text-align: left;
+}
+
+.theme-japanese-zen .prose td {
+  border-bottom: 1px solid var(--off-white);
+  padding: var(--ma-sm);
+  color: var(--ink-medium);
+}
+
+.theme-japanese-zen .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-japanese-zen .prose tr:hover td {
+  background: var(--rice-paper);
+}
+
+/* Strong/Bold */
+.theme-japanese-zen .prose strong {
+  color: var(--ink-dark);
+  font-weight: 500;
+}
+
+/* Emphasis/Italic */
+.theme-japanese-zen .prose em {
+  color: var(--ink-medium);
+  font-style: italic;
+}
+
+/* Images - Subtle frame */
+.theme-japanese-zen .prose img {
+  border: 1px solid var(--ink-mist);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  max-width: 100%;
+  height: auto;
+  margin: var(--ma-md) 0;
+}
+
+/* Shiki syntax highlighting */
+.theme-japanese-zen .streamdown-content pre[data-streamdown] {
+  background: var(--washi) !important;
+  border: 1px solid var(--ink-mist);
+  border-radius: var(--radius);
+}
+
+/* Streamdown specific overrides */
+.theme-japanese-zen .streamdown-content {
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
+.theme-japanese-zen .streamdown-content [data-caret] {
+  background-color: var(--bamboo);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Japanese Zen
+   Muted, readable colors inspired by sumi-e ink
+   ======================================== */
+
+.theme-japanese-zen {
+  /* Shiki base colors */
+  --shiki-foreground: var(--ink-dark);
+  --shiki-background: transparent;
+
+  /* Shiki token colors - muted, natural palette with good contrast */
+  --shiki-token-constant: #8B6B4B;            /* Aged wood brown for constants */
+  --shiki-token-string: #5D6B4A;              /* Moss green for strings */
+  --shiki-token-comment: #6A6A6A;              /* Darker gray for readable comments */
+  --shiki-token-keyword: #6B7A4B;             /* Bamboo dark for keywords */
+  --shiki-token-parameter: #7A6B5A;           /* Earth tone for parameters */
+  --shiki-token-function: #4A5C4A;            /* Deep moss for functions */
+  --shiki-token-string-expression: #5D6B4A;   /* Moss for template strings */
+  --shiki-token-punctuation: var(--ink-light); /* Subtle punctuation */
+  --shiki-token-link: var(--indigo);          /* Indigo for links */
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   Minimal, unobtrusive scrollbars
+   ======================================== */
+
+.theme-japanese-zen ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-japanese-zen ::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+.theme-japanese-zen ::-webkit-scrollbar-thumb {
+  background: var(--ink-mist);
+  border-radius: 4px;
+}
+
+.theme-japanese-zen ::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-wash);
+}
+
+/* ========================================
+   ADDITIONAL ZEN ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Enso inspired */
+.theme-japanese-zen .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--warm-white);
+  border: 1px solid var(--ink-light);
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-japanese-zen .prose input[type="checkbox"]:checked {
+  background: var(--ink-dark);
+  border-color: var(--ink-dark);
+  position: relative;
+}
+
+.theme-japanese-zen .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: var(--warm-white);
+  border-radius: 50%;
+}
+
+/* Definition lists */
+.theme-japanese-zen .prose dt {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  color: var(--ink-dark);
+  letter-spacing: 0.05em;
+  margin-top: var(--ma-sm);
+}
+
+.theme-japanese-zen .prose dd {
+  color: var(--ink-medium);
+  margin-left: var(--ma-md);
+  margin-bottom: var(--ma-sm);
+}
+
+/* Abbreviations */
+.theme-japanese-zen .prose abbr[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--ink-wash);
+  cursor: help;
+}
+
+/* Mark/Highlight */
+.theme-japanese-zen .prose mark {
+  background: rgba(139, 154, 107, 0.2);
+  color: var(--ink-dark);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius);
+}
+
+/* Keyboard inputs */
+.theme-japanese-zen .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--cream);
+  border: 1px solid var(--ink-mist);
+  border-radius: var(--radius);
+  padding: 0.15em 0.4em;
+  box-shadow: 0 1px 0 var(--ink-mist);
+}
+
+/* Small text */
+.theme-japanese-zen .prose small {
+  font-size: 0.85em;
+  color: var(--ink-light);
+}
+
+/* Subscript and Superscript */
+.theme-japanese-zen .prose sub,
+.theme-japanese-zen .prose sup {
+  font-size: 0.75em;
+  color: var(--ink-light);
+}
+
+/* Footnotes */
+.theme-japanese-zen .prose .footnote-ref {
+  color: var(--bamboo-dark);
+  font-size: 0.8em;
+  vertical-align: super;
+}
+
+.theme-japanese-zen .prose .footnotes {
+  margin-top: var(--ma-xl);
+  padding-top: var(--ma-md);
+  border-top: 1px solid var(--ink-mist);
+  font-size: 0.9rem;
+  color: var(--ink-light);
+}
+
+/* Figure captions */
+.theme-japanese-zen .prose figcaption {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-light);
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+/* Selection */
+.theme-japanese-zen .prose ::selection {
+  background: rgba(139, 154, 107, 0.3);
+  color: var(--ink-dark);
+}

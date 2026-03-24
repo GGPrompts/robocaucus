@@ -1,0 +1,381 @@
+/* Knolling Theme
+ * A photography technique of arranging objects at 90-degree angles.
+ * Clean grids, precise shadows, minimal colors, flat-lay aesthetic.
+ */
+
+.theme-knolling {
+  /* Typography */
+  --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', Monaco, monospace;
+
+  /* Core Colors - Neutral surface palette */
+  --surface-white: #FFFFFF;
+  --surface-paper: #FAFAF8;
+  --surface-kraft: #F5F3EE;
+  --surface-linen: #EDEBE6;
+  --surface-concrete: #E5E3DE;
+
+  /* Object shadows and depth */
+  --shadow-light: #D8D6D1;
+  --shadow-medium: #C4C2BD;
+  --shadow-dark: #9E9C97;
+
+  /* Text colors */
+  --ink-black: #1A1918;
+  --ink-dark: #2D2C2A;
+  --ink-medium: #5C5A56;
+  --ink-light: #8A8884;
+  --ink-muted: #B5B3AE;
+
+  /* Accent - single pop of color */
+  --accent-rust: #C4572A;
+  --accent-rust-light: #D97B52;
+  --accent-rust-dark: #9E4520;
+
+  /* Secondary accents (muted) */
+  --accent-slate: #5B6B73;
+  --accent-olive: #6B7355;
+  --accent-clay: #8B7355;
+
+  /* Theme Variables - Semantic mapping */
+  --bg-primary: var(--surface-paper);
+  --bg-secondary: var(--surface-white);
+  --text-primary: var(--ink-black);
+  --text-secondary: var(--ink-medium);
+  --text-muted: var(--ink-light);
+  --accent: var(--accent-rust);
+  --terminal-bg: linear-gradient(145deg, #1a1410 0%, #2a2018 40%, #141008 100%);
+  --accent-hover: var(--accent-rust-dark);
+  --border: var(--shadow-light);
+
+  /* No border-radius - Sharp 90-degree corners */
+  --radius: 0;
+
+  /* Object shadows - key to the flat-lay look */
+  --shadow-object:
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-object-hover:
+    0 2px 2px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-object-lifted:
+    0 4px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.08);
+
+  /* ========================================
+     SHIKI CSS VARIABLES THEME
+     Syntax highlighting colors for Knolling
+     ======================================== */
+
+  /* Shiki base colors */
+  --shiki-foreground: var(--ink-black);
+  --shiki-background: var(--surface-white);
+
+  /* Shiki token colors - muted, organized palette */
+  --shiki-token-constant: #0550ae;          /* Blue for constants/numbers */
+  --shiki-token-string: #6B7355;            /* Olive green for strings */
+  --shiki-token-comment: #9E9C97;           /* Shadow gray for comments */
+  --shiki-token-keyword: #C4572A;           /* Rust accent for keywords */
+  --shiki-token-parameter: #5B6B73;         /* Slate for parameters */
+  --shiki-token-function: #9E4520;          /* Dark rust for functions */
+  --shiki-token-string-expression: #6B7355; /* Olive for template literals */
+  --shiki-token-punctuation: #8A8884;       /* Light ink for punctuation */
+  --shiki-token-link: var(--accent-rust);   /* Rust for URLs */
+}
+
+/* 8px Grid Background Pattern - subtle measurement grid */
+.theme-knolling::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Content container positioning - lift above grid pseudo-element */
+.theme-knolling > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-knolling > header {
+  z-index: 50;
+}
+
+/* Main content area above pseudo-elements */
+.theme-knolling > div {
+  z-index: 1;
+}
+
+/* Body Typography - Precise, measured */
+.theme-knolling .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings - Clean, aligned */
+.theme-knolling .prose h1,
+.theme-knolling .prose h2,
+.theme-knolling .prose h3,
+.theme-knolling .prose h4,
+.theme-knolling .prose h5,
+.theme-knolling .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.theme-knolling .prose h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.theme-knolling .prose h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--shadow-light);
+}
+
+.theme-knolling .prose h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.theme-knolling .prose h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs - Measured text blocks */
+.theme-knolling .prose p {
+  margin-bottom: 1rem;
+  max-width: 60ch;
+  color: var(--text-secondary);
+}
+
+/* Blockquotes - Like an index card */
+.theme-knolling .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: none;
+  background: var(--surface-white);
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+  color: var(--text-secondary);
+}
+
+.theme-knolling .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Rust accent */
+.theme-knolling .prose a {
+  color: var(--accent-rust);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(196, 87, 42, 0.4);
+  transition: all 0.2s ease;
+}
+
+.theme-knolling .prose a:hover {
+  color: var(--accent-rust-dark);
+  text-decoration-color: var(--accent-rust);
+}
+
+/* Horizontal Rules - Clean dividers */
+.theme-knolling .prose hr {
+  border: none;
+  height: 1px;
+  background: var(--shadow-light);
+  margin: 2rem 0;
+}
+
+/* Code Blocks - Objects on surface */
+.theme-knolling .prose pre {
+  background: var(--surface-white);
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.theme-knolling .prose pre code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+/* Inline Code - Small labels */
+.theme-knolling .prose :not(pre) > code {
+  background: var(--surface-kraft);
+  border: 1px solid var(--shadow-light);
+  color: var(--text-primary);
+  padding: 0.125rem 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Lists - Precise alignment */
+.theme-knolling .prose ul,
+.theme-knolling .prose ol {
+  color: var(--text-secondary);
+  padding-left: 1.5rem;
+}
+
+.theme-knolling .prose li {
+  margin-bottom: 0.5rem;
+}
+
+.theme-knolling .prose li::marker {
+  color: var(--ink-muted);
+}
+
+/* Tables - Card-like, organized */
+.theme-knolling .prose table {
+  background: var(--surface-white);
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+  width: 100%;
+}
+
+.theme-knolling .prose th {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--shadow-light);
+  background: var(--surface-kraft);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.theme-knolling .prose td {
+  border-bottom: 1px solid var(--shadow-light);
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+}
+
+.theme-knolling .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-knolling .prose tr:hover {
+  background: var(--surface-paper);
+}
+
+/* Strong/Bold - Emphasis */
+.theme-knolling .prose strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.theme-knolling .prose em {
+  font-style: italic;
+}
+
+/* Images - Objects with shadows */
+.theme-knolling .prose img {
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+}
+
+/* Shiki syntax highlighting - Objects on surface */
+.theme-knolling .streamdown-content pre[data-streamdown] {
+  background: var(--surface-white) !important;
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+}
+
+/* Streamdown specific overrides */
+.theme-knolling .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+.theme-knolling .streamdown-content [data-caret] {
+  background-color: var(--accent-rust);
+}
+
+/* Code block styling */
+.theme-knolling .streamdown-content [data-streamdown="code-block"] {
+  background: var(--surface-white);
+  border: 1px solid var(--shadow-light);
+  box-shadow: var(--shadow-object);
+}
+
+.theme-knolling .streamdown-content [data-streamdown="code-block-header"] {
+  background-color: var(--surface-kraft) !important;
+  color: var(--ink-muted) !important;
+  border-bottom: 1px solid var(--shadow-light) !important;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.theme-knolling .streamdown-content [data-streamdown="code-block-body"] {
+  background-color: var(--surface-white) !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLING - Minimal
+   ======================================== */
+
+.theme-knolling ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-knolling ::-webkit-scrollbar-track {
+  background: var(--surface-kraft);
+}
+
+.theme-knolling ::-webkit-scrollbar-thumb {
+  background: var(--shadow-medium);
+}
+
+.theme-knolling ::-webkit-scrollbar-thumb:hover {
+  background: var(--shadow-dark);
+}
+
+/* ========================================
+   SELECTION STYLING
+   ======================================== */
+
+.theme-knolling ::selection {
+  background: var(--accent-rust);
+  color: var(--surface-white);
+}

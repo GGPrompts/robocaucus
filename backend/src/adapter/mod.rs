@@ -1,5 +1,7 @@
 pub mod claude;
 pub mod codex;
+pub mod copilot;
+pub mod gemini;
 
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -63,14 +65,16 @@ pub trait CliAdapter: Send + Sync {
     /// Spawn the CLI with the given prompt and return a receiver that yields
     /// [`OutputChunk`]s as the process produces output.
     ///
-    /// * `prompt`        – the user/orchestrator prompt to send.
-    /// * `system_prompt` – optional system-level instruction.
-    /// * `cwd`           – optional working directory for the child process.
+    /// * `prompt`     – the user/orchestrator prompt to send.
+    /// * `agent_home` – optional agent home directory (contains CLAUDE.md /
+    ///                  .codex/instructions.md); used as the process cwd so the
+    ///                  CLI discovers its instructions natively.
+    /// * `workspace`  – optional workspace directory to expose via `--add-dir`.
     async fn spawn(
         &self,
         prompt: &str,
-        system_prompt: Option<&str>,
-        cwd: Option<&str>,
+        agent_home: Option<&str>,
+        workspace: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError>;
 
     /// Send SIGTERM to the process identified by `process_id`.

@@ -47,8 +47,8 @@ impl CliAdapter for ClaudeAdapter {
     async fn spawn(
         &self,
         prompt: &str,
-        system_prompt: Option<&str>,
-        cwd: Option<&str>,
+        agent_home: Option<&str>,
+        workspace: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -68,12 +68,12 @@ impl CliAdapter for ClaudeAdapter {
             .arg("stream-json")
             .arg(prompt);
 
-        if let Some(sp) = system_prompt {
-            cmd.arg("--append-system-prompt").arg(sp);
+        if let Some(home) = agent_home {
+            cmd.current_dir(home);
         }
 
-        if let Some(dir) = cwd {
-            cmd.current_dir(dir);
+        if let Some(ws) = workspace {
+            cmd.arg("--add-dir").arg(ws);
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

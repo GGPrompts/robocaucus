@@ -1,0 +1,391 @@
+/* Glassmorphism Theme */
+/* Frosted glass effects, aurora gradients, floating orbs, soft blur */
+
+.theme-glassmorphism {
+  /* Color palette from styleguide */
+  --bg-gradient-1: #0f0c29;
+  --bg-gradient-2: #302b63;
+  --bg-gradient-3: #24243e;
+
+  --bg-primary: #0f0c29;
+  --bg-secondary: rgba(255, 255, 255, 0.08);
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.4);
+
+  /* Accent colors */
+  --accent: #667eea;
+  --terminal-bg:
+    radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+    linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  --accent-2: #764ba2;
+  --accent-3: #f093fb;
+  --accent-hover: #764ba2;
+  --accent-gradient: linear-gradient(135deg, #667eea, #764ba2);
+
+  /* Glass properties */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(20px);
+
+  /* Orb colors */
+  --orb-1: rgba(102, 126, 234, 0.6);
+  --orb-2: rgba(240, 147, 251, 0.5);
+  --orb-3: rgba(118, 75, 162, 0.4);
+
+  --border: rgba(255, 255, 255, 0.18);
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', monospace;
+
+  /* Border radii */
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-lg: 24px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+}
+
+/* Dark gradient background - subtle depth without distraction */
+.theme-glassmorphism {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(118, 75, 162, 0.12) 0%, transparent 50%),
+    linear-gradient(160deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+  background-attachment: fixed;
+}
+
+/* Content container with glass effect */
+.theme-glassmorphism .streamdown-content {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  padding: 2rem;
+  margin: 1rem;
+}
+
+/* Heading styles with gradient text */
+.theme-glassmorphism .prose h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+
+.theme-glassmorphism .prose h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.theme-glassmorphism .prose h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.theme-glassmorphism .prose h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Body text */
+.theme-glassmorphism .prose p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Blockquotes with glass effect */
+.theme-glassmorphism .prose blockquote {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--glass-shadow);
+}
+
+.theme-glassmorphism .prose blockquote p {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Horizontal rules with gradient fade */
+.theme-glassmorphism .prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  margin: 2rem 0;
+}
+
+/* Inline code with accent tint */
+.theme-glassmorphism .prose code {
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.2em 0.4em;
+  font-size: 0.875em;
+  color: var(--accent-3);
+}
+
+/* Code blocks with darker background for bright syntax colors */
+.theme-glassmorphism .prose pre {
+  background: rgba(10, 8, 24, 0.85) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.theme-glassmorphism .prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+/* Shiki code block overrides */
+.theme-glassmorphism .streamdown-content pre[data-streamdown] {
+  background: rgba(10, 8, 24, 0.85) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Links with gradient text and glow on hover */
+.theme-glassmorphism .prose a {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.theme-glassmorphism .prose a:hover {
+  text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+/* Lists */
+.theme-glassmorphism .prose ul,
+.theme-glassmorphism .prose ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.theme-glassmorphism .prose li {
+  color: var(--text-primary);
+  margin: 0.5rem 0;
+}
+
+.theme-glassmorphism .prose li::marker {
+  color: var(--accent);
+}
+
+/* Tables with glass effect */
+.theme-glassmorphism .prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.theme-glassmorphism .prose th {
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.theme-glassmorphism .prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+.theme-glassmorphism .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-glassmorphism .prose tr:hover td {
+  background: var(--glass-bg-hover);
+}
+
+/* Strong and emphasis */
+.theme-glassmorphism .prose strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.theme-glassmorphism .prose em {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Images */
+.theme-glassmorphism .prose img {
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  margin: 1.5rem 0;
+}
+
+/* Selection highlight */
+.theme-glassmorphism ::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+}
+
+/* Form elements - need solid backgrounds for native dropdowns */
+.theme-glassmorphism select {
+  background-color: #1a1835 !important;
+  color: var(--text-primary);
+}
+
+.theme-glassmorphism select option {
+  background-color: #1a1835;
+  color: #f0f0f0;
+}
+
+/* Focus states with accent glow */
+.theme-glassmorphism *:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* Scrollbar styling */
+.theme-glassmorphism ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-glassmorphism ::-webkit-scrollbar-track {
+  background: var(--glass-bg);
+  border-radius: var(--radius-sm);
+}
+
+.theme-glassmorphism ::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: var(--radius-sm);
+}
+
+.theme-glassmorphism ::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-bg-hover);
+}
+
+/* Streamdown caret with accent color */
+.theme-glassmorphism .streamdown-content [data-caret] {
+  background-color: var(--accent);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+/* ========================================
+   SIDEBAR FILE TREE
+   Ensure readable text in sidebar
+   ======================================== */
+
+.theme-glassmorphism aside {
+  background: rgba(15, 12, 41, 0.95) !important;
+  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 50;
+}
+
+.theme-glassmorphism aside button,
+.theme-glassmorphism aside span {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.theme-glassmorphism aside button:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Sidebar filter dropdown - solid background, proper z-index */
+.theme-glassmorphism aside [class*="z-[100]"] {
+  background: #1a1835 !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  z-index: 1000 !important;
+}
+
+/* ========================================
+   TOOLBAR DROPDOWNS
+   Need solid background for readability
+   ======================================== */
+
+.theme-glassmorphism header [class*="absolute"] {
+  background: rgba(15, 12, 41, 0.95) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Glassmorphism
+   ======================================== */
+
+.theme-glassmorphism {
+  /* Shiki base colors - darker background for bright syntax */
+  --shiki-foreground: var(--text-primary);
+  --shiki-background: rgba(10, 8, 24, 0.85);
+
+  /* Shiki token colors - bright aurora palette for glass readability */
+  --shiki-token-constant: #fcd34d;                /* Warm gold for constants */
+  --shiki-token-string: #a5f3fc;                  /* Bright cyan for strings */
+  --shiki-token-comment: #c4b5fd;                 /* Brighter lavender for comments */
+  --shiki-token-keyword: #a5b4fc;                 /* Bright periwinkle for keywords */
+  --shiki-token-parameter: #e9d5ff;               /* Light orchid for parameters */
+  --shiki-token-function: #f5a9f2;                /* Bright pink for functions */
+  --shiki-token-string-expression: #a5f3fc;
+  --shiki-token-punctuation: #e0d4fc;             /* Bright lavender for punctuation */
+  --shiki-token-link: #a5b4fc;
+}

@@ -1,0 +1,531 @@
+/* Air Traffic Control Theme
+ * Dark background, phosphor green, radar sweep, aviation precision.
+ * Mission-critical clarity with CRT phosphor glow effects.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+
+.theme-air-traffic-control {
+  /* PHOSPHOR GREEN PALETTE */
+  --phosphor: #00ff66;
+  --phosphor-dim: #00cc52;
+  --phosphor-bright: #66ffaa;
+  --phosphor-glow: rgba(0, 255, 102, 0.6);
+  --phosphor-subtle: rgba(0, 255, 102, 0.15);
+
+  /* AMBER PALETTE (secondary) */
+  --amber: #ffaa00;
+  --amber-dim: #cc8800;
+  --amber-bright: #ffcc44;
+  --amber-glow: rgba(255, 170, 0, 0.6);
+
+  /* ALERT COLORS */
+  --alert-red: #ff3344;
+  --alert-red-glow: rgba(255, 51, 68, 0.6);
+  --alert-yellow: #ffcc00;
+  --alert-yellow-glow: rgba(255, 204, 0, 0.5);
+  --alert-blue: #00aaff;
+  --alert-blue-glow: rgba(0, 170, 255, 0.5);
+
+  /* BACKGROUND LAYERS */
+  --bg-void: #000000;
+  --bg-deep: #0a0f0a;
+  --bg-primary: #0d140d;
+  --bg-secondary: #111a11;
+  --bg-elevated: #152015;
+  --bg-panel: #0a100a;
+
+  /* BORDERS & LINES */
+  --border-dim: rgba(0, 255, 102, 0.2);
+  --border-active: rgba(0, 255, 102, 0.5);
+  --border-bright: var(--phosphor);
+  --grid-line: rgba(0, 255, 102, 0.08);
+
+  /* Theme Variables */
+  --bg-primary: var(--bg-deep);
+  --bg-secondary: var(--bg-panel);
+  --text-primary: var(--phosphor);
+  --text-secondary: var(--phosphor-dim);
+  --text-muted: rgba(0, 255, 102, 0.5);
+  --accent: var(--phosphor);
+  --terminal-bg: radial-gradient(ellipse at 50% 50%, #0a1a0a 0%, #050a05 70%, #000000 100%);
+  --accent-hover: var(--phosphor-bright);
+  --accent-secondary: var(--amber);
+  --border: var(--border-dim);
+  --code-bg: var(--bg-void);
+
+  /* Typography */
+  --font-display: 'Orbitron', 'Arial Black', sans-serif;
+  --font-heading: 'Orbitron', 'Arial Black', sans-serif;
+  --font-body: 'IBM Plex Mono', 'Consolas', monospace;
+  --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+
+  /* No border radius for precision display */
+  --radius: 0;
+
+  /* Glow Effects */
+  --glow-sm: 0 0 4px var(--phosphor-glow);
+  --glow-md: 0 0 8px var(--phosphor-glow), 0 0 16px var(--phosphor-glow);
+  --glow-lg: 0 0 12px var(--phosphor-glow), 0 0 24px var(--phosphor-glow), 0 0 48px var(--phosphor-glow);
+  --glow-text: 0 0 8px var(--phosphor-glow);
+
+  /* Shadows */
+  --shadow-inset: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Grid Overlay Background */
+.theme-air-traffic-control::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.8;
+}
+
+/* Scanline Effect */
+.theme-air-traffic-control::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.02) 2px,
+    rgba(0, 0, 0, 0.02) 4px
+  );
+}
+
+/* Content container positioning */
+.theme-air-traffic-control > * {
+  position: relative;
+}
+
+/* Landing page - Orbitron display font */
+.theme-air-traffic-control .landing-title,
+.theme-air-traffic-control .landing-card-title {
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: var(--glow-text);
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-air-traffic-control > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-air-traffic-control > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-air-traffic-control .prose {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  color: var(--phosphor-dim);
+}
+
+/* Headings - Aviation display style */
+.theme-air-traffic-control .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+  text-shadow: var(--glow-lg);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-active);
+  position: relative;
+}
+
+.theme-air-traffic-control .prose h1::before {
+  content: '//';
+  color: var(--phosphor-dim);
+  margin-right: 0.5em;
+  opacity: 0.6;
+}
+
+.theme-air-traffic-control .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+  text-shadow: var(--glow-md);
+  border-bottom: 1px solid var(--border-dim);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.theme-air-traffic-control .prose h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 60px;
+  height: 1px;
+  background: var(--phosphor);
+  box-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control .prose h3,
+.theme-air-traffic-control .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--phosphor);
+  text-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control .prose h5,
+.theme-air-traffic-control .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--phosphor-dim);
+}
+
+/* Blockquotes - Data readout panel style */
+.theme-air-traffic-control .prose blockquote {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: none;
+  background: var(--bg-panel);
+  color: var(--phosphor-dim);
+  position: relative;
+  border: 1px solid var(--border-dim);
+}
+
+.theme-air-traffic-control .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--phosphor);
+  box-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control .prose blockquote::after {
+  content: 'ADVISORY';
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translateY(-50%);
+  background: var(--bg-panel);
+  padding: 0 0.5rem;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.theme-air-traffic-control .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Radar tracked style */
+.theme-air-traffic-control .prose a {
+  color: var(--phosphor-bright);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--border-active);
+  transition: all 0.2s ease;
+  text-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control .prose a:hover {
+  color: var(--phosphor);
+  border-bottom-style: solid;
+  text-shadow: var(--glow-md);
+}
+
+/* Horizontal Rules - Sector divider */
+.theme-air-traffic-control .prose hr {
+  border: none;
+  height: 1px;
+  background: var(--border-dim);
+  margin: 2.5rem 0;
+  position: relative;
+  box-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control .prose hr::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: var(--phosphor);
+  border-radius: 50%;
+  box-shadow: var(--glow-md);
+}
+
+/* Code Blocks - Terminal display */
+.theme-air-traffic-control .prose pre {
+  background: var(--bg-void);
+  border: 1px solid var(--border-active);
+  box-shadow: var(--shadow-inset), var(--glow-sm);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.theme-air-traffic-control .prose pre::before {
+  content: 'DATA STREAM';
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  transform: translateY(-50%);
+  background: var(--bg-void);
+  padding: 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.theme-air-traffic-control .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--phosphor);
+  background: transparent;
+  text-shadow: var(--glow-sm);
+}
+
+/* Inline Code */
+.theme-air-traffic-control .prose :not(pre) > code {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  color: var(--phosphor-bright);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  text-shadow: var(--glow-sm);
+}
+
+/* Lists */
+.theme-air-traffic-control .prose ul,
+.theme-air-traffic-control .prose ol {
+  color: var(--phosphor-dim);
+}
+
+.theme-air-traffic-control .prose li::marker {
+  color: var(--phosphor);
+}
+
+.theme-air-traffic-control .prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Flight information display */
+.theme-air-traffic-control .prose table {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-active);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.theme-air-traffic-control .prose th {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-active);
+  background: var(--bg-secondary);
+  padding: 0.75rem 1rem;
+}
+
+.theme-air-traffic-control .prose td {
+  border-bottom: 1px solid var(--border-dim);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  color: var(--phosphor-dim);
+}
+
+.theme-air-traffic-control .prose tr:hover {
+  background: var(--phosphor-subtle);
+}
+
+/* Strong/Bold */
+.theme-air-traffic-control .prose strong {
+  color: var(--phosphor);
+  font-weight: 600;
+  text-shadow: var(--glow-sm);
+}
+
+/* Emphasis/Italic */
+.theme-air-traffic-control .prose em {
+  color: var(--amber);
+  font-style: italic;
+}
+
+/* Images - Radar display frame */
+.theme-air-traffic-control .prose img {
+  border: 2px solid var(--border-active);
+  box-shadow: var(--glow-sm);
+}
+
+/* Shiki syntax highlighting */
+.theme-air-traffic-control .streamdown-content pre[data-streamdown] {
+  background: var(--bg-void) !important;
+  border: 1px solid var(--border-active);
+  box-shadow: var(--shadow-inset), var(--glow-sm);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-air-traffic-control pre:not(.prose pre) {
+  background: #0a0f0a;
+  color: #00ff66;
+}
+
+.theme-air-traffic-control pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-air-traffic-control .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.theme-air-traffic-control .streamdown-content [data-caret] {
+  background-color: var(--phosphor);
+  box-shadow: var(--glow-md);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Air Traffic Control
+   High contrast phosphor colors for readability
+   ======================================== */
+
+.theme-air-traffic-control {
+  /* Shiki base colors */
+  --shiki-foreground: #00ff66;
+  --shiki-background: #0a0f0a;
+
+  /* Shiki token colors - high contrast radar display palette */
+  --shiki-token-constant: #00aaff;           /* Info blue for constants - high contrast */
+  --shiki-token-string: #66ffaa;             /* Bright phosphor green for strings */
+  --shiki-token-comment: rgba(0, 255, 102, 0.45);  /* Dimmed phosphor for comments */
+  --shiki-token-keyword: #ffcc00;            /* Alert yellow for keywords - high visibility */
+  --shiki-token-parameter: #00ff66;          /* Phosphor green for parameters */
+  --shiki-token-function: #ffaa00;           /* Amber for functions - distinct */
+  --shiki-token-string-expression: #66ffaa;  /* Bright phosphor for string expressions */
+  --shiki-token-punctuation: rgba(0, 255, 102, 0.7);  /* Muted phosphor for punctuation */
+  --shiki-token-link: #00aaff;               /* Info blue for links */
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-air-traffic-control ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-air-traffic-control ::-webkit-scrollbar-track {
+  background: var(--bg-void);
+  border-left: 1px solid var(--border-dim);
+}
+
+.theme-air-traffic-control ::-webkit-scrollbar-thumb {
+  background: var(--phosphor-dim);
+  border: 1px solid var(--bg-void);
+  box-shadow: var(--glow-sm);
+}
+
+.theme-air-traffic-control ::-webkit-scrollbar-thumb:hover {
+  background: var(--phosphor);
+  box-shadow: var(--glow-md);
+}
+
+/* ========================================
+   ADDITIONAL ATC ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Status indicator style */
+.theme-air-traffic-control .prose input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--bg-void);
+  border: 1px solid var(--border-active);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.theme-air-traffic-control .prose input[type="checkbox"]:checked {
+  background: var(--phosphor);
+  border-color: var(--phosphor);
+  box-shadow: var(--glow-md);
+  position: relative;
+}
+
+.theme-air-traffic-control .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  background: var(--bg-void);
+  border-radius: 50%;
+}
+
+/* Radar sweep animation for special elements */
+@keyframes radar-pulse {
+  0%, 100% {
+    box-shadow: var(--glow-sm);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: var(--glow-lg);
+    opacity: 0.8;
+  }
+}
+
+.theme-air-traffic-control .prose h1 {
+  animation: radar-pulse 3s ease-in-out infinite;
+}
+
+/* Selection styling */
+.theme-air-traffic-control ::selection {
+  background: var(--phosphor);
+  color: var(--bg-void);
+}

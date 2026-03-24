@@ -1,0 +1,609 @@
+/* Persian Miniature Theme
+ * Illuminated manuscript aesthetic with lapis lazuli, gold leaf, and arabesque patterns.
+ * Horror vacui ornamentation, jewel tones, and frames within frames.
+ */
+
+.theme-persian-miniature {
+  /* LAPIS LAZULI PALETTE */
+  --lapis-deep: #0f2442;
+  --lapis-lazuli: #1e3a5f;
+  --lapis-light: #2d5a8a;
+  --lapis-bright: #3d6fa3;
+
+  /* GOLD LEAF */
+  --gold-dark: #b8922f;
+  --gold-leaf: #d4a84b;
+  --gold-bright: #f0c75e;
+  --gold-pale: #f5d88a;
+
+  /* VERMILLION */
+  --vermillion-dark: #9a2b2b;
+  --vermillion: #c83e3e;
+  --vermillion-light: #e05555;
+
+  /* TURQUOISE */
+  --turquoise-dark: #2a7575;
+  --turquoise: #3a9d9d;
+  --turquoise-light: #5bc0c0;
+
+  /* SAFFRON */
+  --saffron: #e6a832;
+  --saffron-light: #f5c04a;
+
+  /* BURGUNDY */
+  --burgundy-deep: #4a1229;
+  --burgundy: #6b1c3f;
+  --burgundy-light: #8a2850;
+
+  /* PARCHMENT & CREAM */
+  --ivory: #faf6ed;
+  --cream: #f5ece0;
+  --parchment: #e8dcc8;
+  --parchment-dark: #d4c4a8;
+
+  /* Theme Variables */
+  --bg-primary: var(--cream);
+  --bg-secondary: var(--parchment);
+  --text-primary: var(--lapis-deep);
+  --text-secondary: rgba(15, 36, 66, 0.75);
+  --text-muted: rgba(15, 36, 66, 0.55);
+  --accent: var(--gold-leaf);
+  --terminal-bg: linear-gradient(145deg, #1a1408 0%, #0a1a30 40%, #12100a 100%);
+  --accent-hover: var(--gold-bright);
+  --accent-secondary: var(--lapis-lazuli);
+  --border: var(--gold-leaf);
+  --code-bg: var(--lapis-deep);
+
+  /* Typography - Elegant decorative fonts */
+  --font-display: 'Cinzel Decorative', 'Palatino Linotype', serif;
+  --font-heading: 'Cinzel', 'Palatino Linotype', serif;
+  --font-body: 'Cormorant Garamond', 'Georgia', serif;
+  --font-mono: 'Cousine', 'Courier New', monospace;
+
+  /* Small formal radius */
+  --radius: 0;
+
+  /* Shadows */
+  --shadow-gold: 0 0 30px rgba(212, 168, 75, 0.4);
+  --shadow-soft: 0 8px 32px rgba(15, 36, 66, 0.15);
+  --shadow-inset: inset 0 2px 8px rgba(15, 36, 66, 0.1);
+}
+
+/* Islimi Arabesque Pattern Background */
+.theme-persian-miniature::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M60 10 Q80 30 60 50 Q40 30 60 10 M60 70 Q80 90 60 110 Q40 90 60 70 M10 60 Q30 40 50 60 Q30 80 10 60 M70 60 Q90 40 110 60 Q90 80 70 60' fill='none' stroke='%231e3a5f' stroke-width='1'/%3E%3Ccircle cx='60' cy='60' r='8' fill='none' stroke='%23d4a84b' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* Illuminated border accent at top */
+.theme-persian-miniature::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--gold-leaf) 0px,
+    var(--gold-leaf) 8px,
+    var(--lapis-lazuli) 8px,
+    var(--lapis-lazuli) 16px,
+    var(--vermillion) 16px,
+    var(--vermillion) 24px,
+    var(--turquoise) 24px,
+    var(--turquoise) 32px
+  );
+}
+
+/* Content container positioning */
+.theme-persian-miniature > * {
+  position: relative;
+}
+
+/* Landing page - Cinzel Decorative styling */
+.theme-persian-miniature .landing-title,
+.theme-persian-miniature .landing-card-title {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-persian-miniature > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-persian-miniature > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-persian-miniature .prose {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Ornate with gold accents */
+.theme-persian-miniature .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--lapis-deep);
+  text-shadow:
+    2px 2px 0 var(--gold-leaf),
+    4px 4px 8px rgba(212, 168, 75, 0.3);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.theme-persian-miniature .prose h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--gold-leaf),
+    var(--lapis-lazuli),
+    var(--vermillion),
+    var(--lapis-lazuli),
+    var(--gold-leaf),
+    transparent
+  );
+}
+
+.theme-persian-miniature .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--lapis-lazuli);
+  border-bottom: 3px solid var(--gold-leaf);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.theme-persian-miniature .prose h2::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--vermillion);
+}
+
+.theme-persian-miniature .prose h3,
+.theme-persian-miniature .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--lapis-deep);
+}
+
+.theme-persian-miniature .prose h3::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 0.75rem;
+  background: var(--gold-leaf);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  vertical-align: middle;
+}
+
+.theme-persian-miniature .prose h5,
+.theme-persian-miniature .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--burgundy);
+  font-style: italic;
+}
+
+/* Blockquotes - Illuminated manuscript frame style */
+.theme-persian-miniature .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.8;
+  padding: 2rem 2.5rem;
+  margin: 2rem 0;
+  border-left: none;
+  background: linear-gradient(135deg, var(--ivory) 0%, var(--cream) 50%, var(--parchment) 100%);
+  color: var(--text-primary);
+  position: relative;
+  border: 3px solid var(--gold-leaf);
+}
+
+/* Outer decorative frame */
+.theme-persian-miniature .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 2px solid var(--lapis-lazuli);
+  pointer-events: none;
+}
+
+/* Inner decorative frame */
+.theme-persian-miniature .prose blockquote::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  border: 1px dashed var(--gold-dark);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.theme-persian-miniature .prose blockquote p {
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Links - Gold and lapis */
+.theme-persian-miniature .prose a {
+  color: var(--lapis-lazuli);
+  text-decoration: none;
+  border-bottom: 2px solid var(--gold-leaf);
+  transition: all 0.3s ease;
+}
+
+.theme-persian-miniature .prose a:hover {
+  color: var(--gold-dark);
+  border-bottom-color: var(--lapis-lazuli);
+  text-shadow: 0 0 8px rgba(212, 168, 75, 0.3);
+}
+
+/* Horizontal Rules - Ornate floral divider */
+.theme-persian-miniature .prose hr {
+  border: none;
+  height: 40px;
+  margin: 2.5rem 0;
+  position: relative;
+  background: transparent;
+}
+
+.theme-persian-miniature .prose hr::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--gold-leaf),
+    var(--lapis-lazuli),
+    var(--vermillion),
+    var(--turquoise),
+    var(--gold-leaf),
+    transparent
+  );
+  transform: translateY(-50%);
+}
+
+.theme-persian-miniature .prose hr::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  background: var(--cream);
+  border: 2px solid var(--gold-leaf);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 4px var(--cream),
+    inset 0 0 0 6px var(--lapis-lazuli),
+    inset 0 0 0 10px var(--cream),
+    inset 0 0 0 12px var(--vermillion);
+}
+
+/* Code Blocks - Parchment background with illuminated border */
+.theme-persian-miniature .prose pre {
+  background: var(--parchment);
+  border: 3px solid var(--gold-leaf);
+  box-shadow: var(--shadow-inset), var(--shadow-gold);
+  padding: 1.5rem;
+  position: relative;
+}
+
+.theme-persian-miniature .prose pre::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border: 1px solid var(--gold-dark);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.theme-persian-miniature .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--lapis-deep);
+  background: transparent;
+}
+
+/* Inline Code */
+.theme-persian-miniature .prose :not(pre) > code {
+  background: var(--parchment);
+  border: 1px solid var(--gold-leaf);
+  color: var(--lapis-deep);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Lists */
+.theme-persian-miniature .prose ul,
+.theme-persian-miniature .prose ol {
+  color: var(--text-primary);
+}
+
+.theme-persian-miniature .prose li::marker {
+  color: var(--gold-leaf);
+}
+
+.theme-persian-miniature .prose ul > li::marker {
+  content: '';
+}
+
+.theme-persian-miniature .prose ul > li {
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.theme-persian-miniature .prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 0.6em;
+  width: 10px;
+  height: 10px;
+  background: var(--gold-leaf);
+  clip-path: path('M5 0 C7.5 2.5 9 4.5 9 6 C9 8 7.5 9 5 9 C2.5 9 1 8 1 6 C1 4.5 2.5 2.5 5 0');
+}
+
+.theme-persian-miniature .prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Formal with gold headers */
+.theme-persian-miniature .prose table {
+  background: var(--ivory);
+  border: 3px solid var(--gold-leaf);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.theme-persian-miniature .prose th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  border-bottom: 3px solid var(--gold-leaf);
+  background: linear-gradient(135deg, var(--lapis-lazuli) 0%, var(--lapis-deep) 100%);
+  padding: 1rem;
+}
+
+.theme-persian-miniature .prose td {
+  border-bottom: 1px solid rgba(212, 168, 75, 0.4);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+}
+
+.theme-persian-miniature .prose tr:nth-child(even) {
+  background: var(--cream);
+}
+
+.theme-persian-miniature .prose tr:hover {
+  background: rgba(212, 168, 75, 0.15);
+}
+
+/* Strong/Bold */
+.theme-persian-miniature .prose strong {
+  color: var(--lapis-deep);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-persian-miniature .prose em {
+  color: var(--burgundy);
+  font-style: italic;
+}
+
+/* Images - Ornate multi-layer frames */
+.theme-persian-miniature .prose img {
+  border: 4px solid var(--gold-leaf);
+  box-shadow:
+    0 0 0 2px var(--cream),
+    0 0 0 4px var(--lapis-lazuli),
+    0 0 0 6px var(--cream),
+    0 0 0 8px var(--gold-dark),
+    var(--shadow-soft);
+}
+
+
+/* Streamdown specific overrides */
+.theme-persian-miniature .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+.theme-persian-miniature .streamdown-content [data-caret] {
+  background-color: var(--gold-leaf);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Persian Miniature
+   Using jewel-tone palette
+   ======================================== */
+
+.theme-persian-miniature {
+  /* Shiki base colors - for light parchment background */
+  --shiki-foreground: #0f2442;
+  --shiki-background: transparent;
+
+  /* Shiki token colors - dark jewel tones for light background readability */
+  --shiki-token-constant: #9a2b2b;                      /* Dark vermillion for constants */
+  --shiki-token-string: #1a6060;                        /* Dark turquoise for strings */
+  --shiki-token-comment: #7a6b5a;                       /* Muted brown for comments */
+  --shiki-token-keyword: #8a6d1a;                       /* Dark gold for keywords */
+  --shiki-token-parameter: #6b1c3f;                     /* Burgundy for parameters */
+  --shiki-token-function: #b8922f;                      /* Rich dark gold for functions */
+  --shiki-token-string-expression: #1a6060;
+  --shiki-token-punctuation: #4a4035;                   /* Dark warm brown for punctuation */
+  --shiki-token-link: #1e3a5f;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-persian-miniature ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.theme-persian-miniature ::-webkit-scrollbar-track {
+  background: var(--parchment);
+  border-left: 1px solid var(--gold-leaf);
+}
+
+.theme-persian-miniature ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-leaf) 0%, var(--gold-dark) 100%);
+  border: 2px solid var(--parchment);
+  border-radius: 0;
+}
+
+.theme-persian-miniature ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-leaf) 100%);
+}
+
+/* ========================================
+   ADDITIONAL PERSIAN MINIATURE ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Boteh (paisley) shape */
+.theme-persian-miniature .prose input[type="checkbox"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--ivory);
+  border: 2px solid var(--gold-leaf);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  clip-path: path('M10 2 C15 6 18 11 18 14 C18 19 15 20 10 20 C5 20 2 19 2 14 C2 11 5 6 10 2');
+  transition: all 0.3s ease;
+}
+
+.theme-persian-miniature .prose input[type="checkbox"]:checked {
+  background: var(--gold-leaf);
+  border-color: var(--gold-dark);
+}
+
+.theme-persian-miniature .prose input[type="checkbox"]:checked::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: 4px auto;
+  background: var(--lapis-deep);
+  border-radius: 50%;
+}
+
+/* Definition lists */
+.theme-persian-miniature .prose dt {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--lapis-lazuli);
+  letter-spacing: 0.05em;
+}
+
+.theme-persian-miniature .prose dd {
+  margin-left: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Mark/highlight */
+.theme-persian-miniature .prose mark {
+  background: linear-gradient(135deg, var(--gold-pale) 0%, var(--saffron-light) 100%);
+  color: var(--lapis-deep);
+  padding: 0.1em 0.3em;
+}
+
+/* Abbreviations */
+.theme-persian-miniature .prose abbr {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--gold-leaf);
+  cursor: help;
+}
+
+/* Keyboard input */
+.theme-persian-miniature .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--lapis-deep);
+  color: var(--cream);
+  padding: 0.15em 0.5em;
+  border: 1px solid var(--gold-leaf);
+  box-shadow: 0 2px 0 var(--gold-dark);
+}
+
+/* Subscript and superscript */
+.theme-persian-miniature .prose sub,
+.theme-persian-miniature .prose sup {
+  color: var(--burgundy);
+}
+
+/* Footnotes */
+.theme-persian-miniature .prose .footnote-ref {
+  color: var(--gold-leaf);
+  font-weight: 600;
+}
+
+.theme-persian-miniature .prose .footnotes {
+  border-top: 2px solid var(--gold-leaf);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Small text */
+.theme-persian-miniature .prose small {
+  color: var(--text-muted);
+  font-style: italic;
+}

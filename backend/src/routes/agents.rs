@@ -5,8 +5,10 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
+use crate::db::agent_home_dir;
+use crate::scaffold::scaffold_agent_folder;
 use crate::state::AppState;
 
 // ---------------------------------------------------------------------------
@@ -17,6 +19,7 @@ use crate::state::AppState;
 pub struct CreateAgentRequest {
     pub name: String,
     pub model: String,
+    pub provider: Option<String>,
     pub color: String,
     pub scope: Option<String>,
     pub system_prompt: Option<String>,
@@ -27,6 +30,8 @@ pub struct CreateAgentRequest {
 pub struct UpdateAgentRequest {
     pub name: String,
     pub model: String,
+    pub provider: Option<String>,
+    pub agent_home: Option<String>,
     pub color: String,
     pub scope: Option<String>,
     pub system_prompt: Option<String>,
@@ -36,6 +41,18 @@ pub struct UpdateAgentRequest {
 #[derive(Deserialize)]
 pub struct ListAgentsQuery {
     pub scope: Option<String>,
+}
+
+#[derive(Serialize)]
+pub struct AgentConfigResponse {
+    pub path: String,
+    pub content: String,
+    pub format: String,
+}
+
+#[derive(Deserialize)]
+pub struct UpdateConfigRequest {
+    pub content: String,
 }
 
 // ---------------------------------------------------------------------------
@@ -50,11 +67,26 @@ async fn create_agent(
         Ok(db) => db,
         Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
     };
+    let provider = body.provider.as_deref().unwrap_or("");
     let scope = body.scope.as_deref().unwrap_or("global");
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
 
-    match db.create_agent(&body.name, &body.model, &body.color, scope, system_prompt, workspace_path) {
+    // Compute agent home directory from the agent name.
+    let agent_home = agent_home_dir(&body.name);
+
+    // Scaffold the provider-specific instruction file if a provider is set.
+    if !provider.is_empty() {
+        if let Err(e) = scaffold_agent_folder(provider, &agent_home, system_prompt) {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({ "error": format!("scaffold failed: {e}") })),
+            )
+                .into_response();
+        }
+    }
+
+    match db.create_agent(&body.name, &body.model, provider, &agent_home, &body.color, scope, system_prompt, workspace_path) {
         Ok(agent) => (StatusCode::CREATED, Json(agent)).into_response(),
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -117,11 +149,13 @@ async fn update_agent(
         Ok(db) => db,
         Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
     };
+    let provider = body.provider.as_deref().unwrap_or("");
+    let agent_home = body.agent_home.as_deref().unwrap_or("");
     let scope = body.scope.as_deref().unwrap_or("global");
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
 
-    match db.update_agent(&id, &body.name, &body.model, &body.color, scope, system_prompt, workspace_path) {
+    match db.update_agent(&id, &body.name, &body.model, provider, agent_home, &body.color, scope, system_prompt, workspace_path) {
         Ok(Some(agent)) => (StatusCode::OK, Json(agent)).into_response(),
         Ok(None) => (
             StatusCode::NOT_FOUND,
@@ -160,6 +194,86 @@ async fn delete_agent(
     }
 }
 
+/// Return the config file path and format for a given provider and agent_home.
+fn config_path_and_format(provider: &str, agent_home: &str) -> Option<(std::path::PathBuf, &'static str)> {
+    let base = std::path::Path::new(agent_home);
+    match provider {
+        "claude" => Some((base.join(".claude/settings.json"), "json")),
+        "codex" => Some((base.join(".codex/config.toml"), "toml")),
+        "gemini" => Some((base.join(".gemini/settings.json"), "json")),
+        "copilot" => Some((base.join(".copilot/mcp-config.json"), "json")),
+        _ => None,
+    }
+}
+
+async fn get_agent_config(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> impl IntoResponse {
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
+
+    let agent = match db.get_agent(&id) {
+        Ok(Some(a)) => a,
+        Ok(None) => return (StatusCode::NOT_FOUND, Json(serde_json::json!({ "error": "Agent not found" }))).into_response(),
+        Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))).into_response(),
+    };
+
+    let (path, format) = match config_path_and_format(&agent.provider, &agent.agent_home) {
+        Some(v) => v,
+        None => return (StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Unknown provider" }))).into_response(),
+    };
+
+    let content = match std::fs::read_to_string(&path) {
+        Ok(c) => c,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
+        Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))).into_response(),
+    };
+
+    (StatusCode::OK, Json(AgentConfigResponse {
+        path: path.to_string_lossy().into_owned(),
+        content,
+        format: format.to_string(),
+    })).into_response()
+}
+
+async fn update_agent_config(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+    Json(body): Json<UpdateConfigRequest>,
+) -> impl IntoResponse {
+    let db = match state.db() {
+        Ok(db) => db,
+        Err((status, msg)) => return (status, Json(serde_json::json!({ "error": msg }))).into_response(),
+    };
+
+    let agent = match db.get_agent(&id) {
+        Ok(Some(a)) => a,
+        Ok(None) => return (StatusCode::NOT_FOUND, Json(serde_json::json!({ "error": "Agent not found" }))).into_response(),
+        Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))).into_response(),
+    };
+
+    let (path, _format) = match config_path_and_format(&agent.provider, &agent.agent_home) {
+        Some(v) => v,
+        None => return (StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": "Unknown provider" }))).into_response(),
+    };
+
+    // Create parent directories if needed
+    if let Some(parent) = path.parent() {
+        if let Err(e) = std::fs::create_dir_all(parent) {
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": format!("Failed to create directories: {e}") }))).into_response();
+        }
+    }
+
+    if let Err(e) = std::fs::write(&path, &body.content) {
+        return (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": format!("Failed to write config: {e}") }))).into_response();
+    }
+
+    (StatusCode::OK, Json(serde_json::json!({ "ok": true }))).into_response()
+}
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
@@ -168,4 +282,5 @@ pub fn agent_routes() -> Router<AppState> {
     Router::new()
         .route("/agents", post(create_agent).get(list_agents))
         .route("/agents/{id}", get(get_agent).put(update_agent).delete(delete_agent))
+        .route("/agents/{id}/config", get(get_agent_config).put(update_agent_config))
 }

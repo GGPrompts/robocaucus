@@ -1,0 +1,596 @@
+/* Risograph Theme
+ * Riso print aesthetic with grain, halftone, limited spot colors, slight misregistration.
+ * Beautiful accidents of duplicator machines and indie zine culture.
+ */
+
+.theme-risograph {
+  /* RISOGRAPH SOY-BASED INK COLORS */
+  --riso-coral: #FF6B6B;
+  --riso-coral-light: #FF8E8E;
+  --riso-teal: #2EC4B6;
+  --riso-teal-dark: #1A9E92;
+  --riso-yellow: #FFE66D;
+  --riso-yellow-dark: #E6CF5C;
+  --riso-blue: #4361EE;
+  --riso-blue-light: #6B83F2;
+  --riso-pink: #FF006E;
+  --riso-pink-light: #FF3D8E;
+  --riso-black: #1A1A2E;
+  --riso-cream: #FDF6E3;
+  --riso-paper: #F5F0E1;
+  --riso-paper-dark: #E8E0CC;
+
+  /* Typography */
+  --font-display: 'Space Mono', 'Courier New', monospace;
+  --font-heading: 'Space Mono', 'Courier New', monospace;
+  --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+
+  /* Theme Variables */
+  --bg-primary: var(--riso-paper);
+  --bg-secondary: var(--riso-cream);
+  --text-primary: var(--riso-black);
+  --text-secondary: #3D3D5C;
+  --text-muted: #6B6B8A;
+  --accent: var(--riso-pink);
+  --terminal-bg: linear-gradient(145deg, #1a1018 0%, #2a1828 40%, #140a12 100%);
+  --accent-hover: var(--riso-pink-light);
+  --accent-secondary: var(--riso-teal);
+  --border: var(--riso-black);
+  --code-bg: var(--riso-cream);
+
+  /* Misregistration offsets */
+  --offset-sm: 2px;
+  --offset-md: 3px;
+  --offset-lg: 4px;
+
+  /* No border radius for raw print aesthetic */
+  --radius: 0;
+
+  /* Shadows - offset layers like print misregistration */
+  --shadow-offset: var(--offset-md) var(--offset-md) 0 var(--riso-teal);
+  --shadow-hover: var(--offset-lg) var(--offset-lg) 0 var(--riso-coral);
+}
+
+/* Paper Grain Texture Overlay */
+.theme-risograph::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Secondary subtle line pattern for depth */
+.theme-risograph::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.06;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(26, 26, 46, 0.03) 2px,
+      rgba(26, 26, 46, 0.03) 4px
+    );
+}
+
+/* Content container positioning */
+.theme-risograph > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-risograph > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-risograph > div {
+  z-index: 1;
+}
+
+/* Landing page styles */
+.theme-risograph .landing-title,
+.theme-risograph .landing-card-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Body Typography */
+.theme-risograph .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--riso-black);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings with Misregistration Effect */
+.theme-risograph .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--riso-black);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  position: relative;
+}
+
+/* Misregistration shadow effect on h1 */
+.theme-risograph .prose h1::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--riso-coral);
+  transform: translate(calc(var(--offset-md) * -1), var(--offset-sm));
+  opacity: 0.6;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.theme-risograph .prose h1::after {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 80px;
+  background: var(--riso-pink);
+  margin-top: 0.75rem;
+  position: relative;
+}
+
+.theme-risograph .prose h1::after {
+  box-shadow: var(--offset-sm) var(--offset-sm) 0 var(--riso-teal);
+}
+
+.theme-risograph .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--riso-black);
+  border-bottom: 3px solid var(--riso-black);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.theme-risograph .prose h2::before {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: var(--offset-sm);
+  width: 100%;
+  height: 3px;
+  background: var(--riso-coral);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.theme-risograph .prose h3,
+.theme-risograph .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--riso-black);
+}
+
+.theme-risograph .prose h3 {
+  position: relative;
+  display: inline-block;
+}
+
+.theme-risograph .prose h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--riso-teal);
+}
+
+.theme-risograph .prose h5,
+.theme-risograph .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--riso-pink);
+}
+
+/* Blockquotes - Offset shadow zine style */
+.theme-risograph .prose blockquote {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--riso-teal);
+  background: var(--riso-cream);
+  color: var(--riso-black);
+  position: relative;
+  border: 3px solid var(--riso-black);
+}
+
+.theme-risograph .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: var(--offset-md);
+  left: var(--offset-md);
+  width: 100%;
+  height: 100%;
+  background: var(--riso-coral);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+.theme-risograph .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Pink accent with underline */
+.theme-risograph .prose a {
+  color: var(--riso-pink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--riso-pink);
+  transition: all 0.2s ease;
+}
+
+.theme-risograph .prose a:hover {
+  color: var(--riso-teal);
+  border-bottom-color: var(--riso-teal);
+  background: var(--riso-yellow);
+}
+
+/* Horizontal Rules - Dashed print separator */
+.theme-risograph .prose hr {
+  border: none;
+  height: 3px;
+  margin: 2.5rem 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--riso-black) 0px,
+    var(--riso-black) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.3;
+}
+
+/* Code Blocks - Paper with halftone effect */
+.theme-risograph .prose pre {
+  background: var(--riso-cream);
+  border: 3px solid var(--riso-black);
+  padding: 1.5rem;
+  position: relative;
+  overflow-x: auto;
+}
+
+.theme-risograph .prose pre::before {
+  content: '';
+  position: absolute;
+  top: var(--offset-md);
+  left: var(--offset-md);
+  width: 100%;
+  height: 100%;
+  background: var(--riso-blue);
+  opacity: 0.25;
+  z-index: -1;
+}
+
+/* Halftone dot pattern overlay on code blocks */
+.theme-risograph .prose pre::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle, rgba(26, 26, 46, 0.08) 1px, transparent 1px);
+  background-size: 4px 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.theme-risograph .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--riso-black);
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+/* Inline Code */
+.theme-risograph .prose :not(pre) > code {
+  background: var(--riso-cream);
+  border: 2px solid var(--riso-black);
+  color: var(--riso-pink);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  position: relative;
+}
+
+.theme-risograph .prose :not(pre) > code::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 100%;
+  height: 100%;
+  background: var(--riso-yellow);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+/* Lists */
+.theme-risograph .prose ul,
+.theme-risograph .prose ol {
+  color: var(--text-primary);
+}
+
+.theme-risograph .prose li::marker {
+  color: var(--riso-coral);
+  font-weight: 700;
+}
+
+.theme-risograph .prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Zine style with offset shadow */
+.theme-risograph .prose table {
+  background: var(--riso-cream);
+  border: 3px solid var(--riso-black);
+  border-collapse: separate;
+  border-spacing: 0;
+  position: relative;
+}
+
+.theme-risograph .prose table::before {
+  content: '';
+  position: absolute;
+  top: var(--offset-md);
+  left: var(--offset-md);
+  width: 100%;
+  height: 100%;
+  background: var(--riso-teal);
+  opacity: 0.35;
+  z-index: -1;
+}
+
+.theme-risograph .prose th {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: var(--riso-cream);
+  background: var(--riso-black);
+  padding: 1rem;
+}
+
+.theme-risograph .prose td {
+  border-bottom: 2px dashed var(--riso-paper-dark);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.theme-risograph .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-risograph .prose tr:hover {
+  background: var(--riso-yellow);
+  mix-blend-mode: multiply;
+}
+
+/* Strong/Bold */
+.theme-risograph .prose strong {
+  color: var(--riso-black);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-risograph .prose em {
+  color: var(--riso-pink);
+  font-style: italic;
+}
+
+/* Images - Offset shadow frame */
+.theme-risograph .prose img {
+  border: 3px solid var(--riso-black);
+  box-shadow: var(--offset-lg) var(--offset-lg) 0 var(--riso-coral);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Risograph
+   High contrast on cream paper background
+   ======================================== */
+
+.theme-risograph {
+  /* Shiki base colors */
+  --shiki-foreground: var(--riso-black);
+  --shiki-background: transparent;
+
+  /* Shiki token colors - bright riso inks for visibility on cream */
+  --shiki-token-constant: #B54A24;        /* Deep rust orange for constants */
+  --shiki-token-string: #1A9E92;          /* Dark teal for strings */
+  --shiki-token-comment: #5A5A6F;         /* Darker gray for readable comments */
+  --shiki-token-keyword: #CC0058;         /* Deep pink for keywords */
+  --shiki-token-parameter: #3D4DB7;       /* Deep blue for parameters */
+  --shiki-token-function: #D42C70;        /* Bright pink for functions */
+  --shiki-token-string-expression: #1A9E92;
+  --shiki-token-punctuation: #5A5A7A;     /* Muted dark for punctuation */
+  --shiki-token-link: var(--riso-pink);
+}
+
+/* Shiki pre styling */
+.theme-risograph .streamdown-content pre[data-streamdown] {
+  background: var(--riso-cream) !important;
+  border: 3px solid var(--riso-black);
+  position: relative;
+}
+
+.theme-risograph .streamdown-content pre[data-streamdown]::before {
+  content: '';
+  position: absolute;
+  top: var(--offset-md);
+  left: var(--offset-md);
+  width: 100%;
+  height: 100%;
+  background: var(--riso-blue);
+  opacity: 0.25;
+  z-index: -1;
+}
+
+/* Streamdown specific overrides */
+.theme-risograph .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.theme-risograph .streamdown-content [data-caret] {
+  background-color: var(--riso-pink);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-risograph ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.theme-risograph ::-webkit-scrollbar-track {
+  background: var(--riso-paper-dark);
+  border-left: 2px solid var(--riso-black);
+}
+
+.theme-risograph ::-webkit-scrollbar-thumb {
+  background: var(--riso-coral);
+  border: 2px solid var(--riso-black);
+}
+
+.theme-risograph ::-webkit-scrollbar-thumb:hover {
+  background: var(--riso-pink);
+}
+
+/* ========================================
+   ADDITIONAL RISOGRAPH ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes */
+.theme-risograph .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--riso-cream);
+  border: 3px solid var(--riso-black);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  position: relative;
+}
+
+.theme-risograph .prose input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 100%;
+  height: 100%;
+  background: var(--riso-yellow);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.theme-risograph .prose input[type="checkbox"]:checked {
+  background: var(--riso-pink);
+  border-color: var(--riso-black);
+}
+
+.theme-risograph .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 5px;
+  height: 10px;
+  border: solid var(--riso-cream);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* Definition lists */
+.theme-risograph .prose dt {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--riso-pink);
+  margin-top: 1rem;
+}
+
+.theme-risograph .prose dd {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--riso-teal);
+}
+
+/* Keyboard shortcuts */
+.theme-risograph .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.2em 0.5em;
+  background: var(--riso-cream);
+  border: 2px solid var(--riso-black);
+  box-shadow: 2px 2px 0 var(--riso-black);
+  color: var(--riso-black);
+}
+
+/* Marked/highlighted text */
+.theme-risograph .prose mark {
+  background: var(--riso-yellow);
+  color: var(--riso-black);
+  padding: 0.1em 0.2em;
+  mix-blend-mode: multiply;
+}
+
+/* Abbreviations */
+.theme-risograph .prose abbr {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--riso-coral);
+  cursor: help;
+}
+
+/* Selection styling */
+.theme-risograph ::selection {
+  background: var(--riso-pink);
+  color: var(--riso-cream);
+}
+
+.theme-risograph ::-moz-selection {
+  background: var(--riso-pink);
+  color: var(--riso-cream);
+}

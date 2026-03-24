@@ -1,0 +1,629 @@
+/* Letterpress Theme
+ * Debossed type, kraft paper, vintage printing press aesthetic.
+ * Warm browns, cream tones, and tactile ink shadows.
+ */
+
+.theme-letterpress {
+  /* PAPER TONES */
+  --kraft-dark: #8B7355;
+  --kraft-mid: #A68B5B;
+  --kraft-light: #C4A76C;
+  --cream: #F5ECD7;
+  --cream-dark: #E8DCC6;
+  --parchment: #F9F3E3;
+  --aged-paper: #EDE4D0;
+
+  /* INK COLORS */
+  --ink-black: #1C1814;
+  --ink-dark: #2A2520;
+  --ink-brown: #3D3229;
+  --ink-sepia: #5C4B3A;
+  --ink-warm: #6B5744;
+
+  /* WARM BROWNS */
+  --walnut: #5D4037;
+  --leather: #6D4C41;
+  --copper: #8B5A2B;
+  --terracotta: #A0522D;
+  --rust: #B7410E;
+
+  /* ACCENT COLORS */
+  --deep-red: #8B0000;
+  --burgundy: #722F37;
+  --forest: #2D4A3E;
+  --navy: #1C2841;
+  --gold: #B8860B;
+  --gold-light: #DAA520;
+
+  /* SHADOW TONES */
+  --deboss-shadow: rgba(0, 0, 0, 0.25);
+  --deboss-highlight: rgba(255, 255, 255, 0.5);
+  --ink-shadow: rgba(28, 24, 20, 0.15);
+
+  /* Theme Variables */
+  --bg-primary: var(--cream);
+  --bg-secondary: var(--cream-dark);
+  --text-primary: var(--ink-dark);
+  --text-secondary: var(--ink-brown);
+  --text-muted: var(--ink-sepia);
+  --accent: var(--deep-red);
+  --terminal-bg: linear-gradient(145deg, #1a150e 0%, #2a2218 40%, #14100a 100%);
+  --accent-hover: var(--burgundy);
+  --accent-secondary: var(--gold);
+  --border: var(--ink-brown);
+  --code-bg: var(--aged-paper);
+
+  /* Typography */
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-heading: 'Playfair Display', 'Georgia', serif;
+  --font-body: 'Lora', 'Georgia', serif;
+  --font-mono: 'EB Garamond', 'Times New Roman', serif;
+
+  /* Minimal radius for traditional feel */
+  --radius: 0;
+
+  /* Debossed shadows */
+  --shadow-deboss:
+    1px 1px 1px var(--deboss-highlight),
+    -1px -1px 1px var(--deboss-shadow);
+  --shadow-deboss-deep:
+    2px 2px 2px var(--deboss-highlight),
+    -1px -1px 2px var(--deboss-shadow),
+    0 0 1px var(--ink-shadow);
+  --shadow-card:
+    4px 4px 0 var(--deboss-shadow),
+    inset 0 0 30px rgba(139, 115, 85, 0.05);
+}
+
+/* Aged Paper Texture Background */
+.theme-letterpress::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--parchment) 0%, var(--cream) 2%, var(--cream) 98%, var(--cream-dark) 100%);
+}
+
+/* Decorative ink line at top */
+.theme-letterpress::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 100;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ink-brown) 10%,
+    var(--ink-brown) 90%,
+    transparent 100%
+  );
+}
+
+/* Content container positioning */
+.theme-letterpress > * {
+  position: relative;
+}
+
+/* Landing page - Playfair Display display weight */
+.theme-letterpress .landing-title,
+.theme-letterpress .landing-card-title {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: var(--shadow-deboss-deep);
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-letterpress > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-letterpress > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-letterpress .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink-dark);
+  text-align: justify;
+  hyphens: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Debossed letterpress effect */
+.theme-letterpress .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dark);
+  text-shadow:
+    3px 3px 0 var(--cream),
+    4px 4px 0 var(--deboss-shadow),
+    -1px -1px 0 var(--deboss-highlight);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.theme-letterpress .prose h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-dark);
+  border-bottom: 2px solid var(--ink-brown);
+  padding-bottom: 0.5rem;
+  text-shadow:
+    2px 2px 0 var(--cream),
+    3px 3px 0 var(--deboss-shadow);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.theme-letterpress .prose h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-brown);
+  text-shadow: var(--shadow-deboss);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.theme-letterpress .prose h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--ink-dark);
+  text-shadow: var(--shadow-deboss);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-letterpress .prose h5 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ink-sepia);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-letterpress .prose h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-warm);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs */
+.theme-letterpress .prose p {
+  margin-bottom: 1rem;
+  color: var(--ink-dark);
+}
+
+/* Lead paragraph / first paragraph styling */
+.theme-letterpress .prose > p:first-of-type {
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  font-size: 1.125rem;
+  font-style: italic;
+  color: var(--ink-sepia);
+  line-height: 1.8;
+}
+
+/* Blockquotes - Ornate letterpress style */
+.theme-letterpress .prose blockquote {
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--ink-sepia);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--ink-brown);
+  background: rgba(166, 139, 91, 0.1);
+  position: relative;
+}
+
+.theme-letterpress .prose blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: -0.5rem;
+  left: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-style: normal;
+  color: var(--kraft-mid);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.theme-letterpress .prose blockquote p {
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Links - Understated elegance */
+.theme-letterpress .prose a {
+  color: var(--deep-red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--kraft-mid);
+  transition: all 0.2s ease;
+}
+
+.theme-letterpress .prose a:hover {
+  color: var(--burgundy);
+  border-bottom-color: var(--deep-red);
+}
+
+/* Horizontal Rules - Ornamental flourish */
+.theme-letterpress .prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ink-sepia), transparent);
+  margin: 2.5rem 0;
+  position: relative;
+}
+
+.theme-letterpress .prose hr::before {
+  content: '\2767';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  color: var(--ink-sepia);
+  background: var(--cream);
+  padding: 0 1rem;
+}
+
+/* Code Blocks - Aged paper inset */
+.theme-letterpress .prose pre {
+  background: var(--aged-paper);
+  border: 2px solid var(--ink-brown);
+  box-shadow:
+    inset 2px 2px 4px var(--deboss-shadow),
+    inset -1px -1px 2px var(--deboss-highlight),
+    3px 3px 0 var(--deboss-shadow);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.theme-letterpress .prose pre code {
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  font-size: 0.95rem;
+  color: var(--ink-dark);
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* Inline Code */
+.theme-letterpress .prose :not(pre) > code {
+  background: var(--cream-dark);
+  border: 1px solid var(--kraft-mid);
+  color: var(--ink-brown);
+  padding: 0.15em 0.4em;
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  font-size: 0.95em;
+  box-shadow: inset 1px 1px 2px var(--deboss-shadow);
+}
+
+/* Lists */
+.theme-letterpress .prose ul,
+.theme-letterpress .prose ol {
+  color: var(--ink-dark);
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.theme-letterpress .prose li::marker {
+  color: var(--ink-sepia);
+}
+
+.theme-letterpress .prose ul li::marker {
+  content: '\2022  ';
+}
+
+.theme-letterpress .prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+}
+
+/* Nested lists */
+.theme-letterpress .prose li ul,
+.theme-letterpress .prose li ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Ledger book style */
+.theme-letterpress .prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  background: var(--cream);
+  border: 2px solid var(--ink-brown);
+  border-collapse: collapse;
+  box-shadow: 3px 3px 0 var(--deboss-shadow);
+}
+
+.theme-letterpress .prose th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  background: var(--ink-dark);
+  border-bottom: 2px solid var(--ink-black);
+  padding: 1rem;
+  text-align: left;
+}
+
+.theme-letterpress .prose td {
+  font-family: var(--font-body);
+  border-bottom: 1px solid var(--kraft-mid);
+  padding: 0.75rem 1rem;
+  color: var(--ink-dark);
+}
+
+.theme-letterpress .prose tr:nth-child(even) {
+  background: rgba(166, 139, 91, 0.08);
+}
+
+.theme-letterpress .prose tr:hover td {
+  background: rgba(166, 139, 91, 0.15);
+}
+
+/* Strong/Bold */
+.theme-letterpress .prose strong {
+  color: var(--ink-dark);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-letterpress .prose em {
+  color: var(--ink-sepia);
+  font-style: italic;
+}
+
+/* Images - Ornamental frame */
+.theme-letterpress .prose img {
+  border: 2px solid var(--ink-brown);
+  box-shadow: 4px 4px 0 var(--deboss-shadow);
+  margin: 1.5rem 0;
+}
+
+/* Shiki syntax highlighting */
+.theme-letterpress .streamdown-content pre[data-streamdown] {
+  background: var(--aged-paper) !important;
+  border: 2px solid var(--ink-brown);
+  box-shadow:
+    inset 2px 2px 4px var(--deboss-shadow),
+    inset -1px -1px 2px var(--deboss-highlight),
+    3px 3px 0 var(--deboss-shadow);
+}
+
+/* Streamdown specific overrides */
+.theme-letterpress .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.theme-letterpress .streamdown-content [data-caret] {
+  background-color: var(--deep-red);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Letterpress
+   Warm, sepia-toned colors with good contrast
+   ======================================== */
+
+.theme-letterpress {
+  /* Shiki base colors */
+  --shiki-foreground: var(--ink-dark);
+  --shiki-background: transparent;
+
+  /* Shiki token colors - vintage ink palette with good contrast */
+  --shiki-token-constant: #8B0000;              /* Deep red for constants */
+  --shiki-token-string: #2D4A3E;               /* Forest green for strings */
+  --shiki-token-comment: #8B7355;              /* Kraft brown for comments */
+  --shiki-token-keyword: #722F37;              /* Burgundy for keywords */
+  --shiki-token-parameter: #5D4037;            /* Walnut for parameters */
+  --shiki-token-function: #1C2841;             /* Navy for functions */
+  --shiki-token-string-expression: #2D4A3E;    /* Forest green for string expressions */
+  --shiki-token-punctuation: #5C4B3A;          /* Ink sepia for punctuation */
+  --shiki-token-link: #8B0000;                 /* Deep red for links */
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-letterpress ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.theme-letterpress ::-webkit-scrollbar-track {
+  background: var(--cream-dark);
+  border-left: 1px solid var(--kraft-mid);
+}
+
+.theme-letterpress ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--kraft-mid) 0%, var(--kraft-dark) 100%);
+  border: 1px solid var(--ink-brown);
+}
+
+.theme-letterpress ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--kraft-light) 0%, var(--kraft-mid) 100%);
+}
+
+/* ========================================
+   ADDITIONAL LETTERPRESS ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes */
+.theme-letterpress .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--parchment);
+  border: 2px solid var(--ink-brown);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 2px var(--deboss-shadow);
+}
+
+.theme-letterpress .prose input[type="checkbox"]:checked {
+  background: var(--ink-dark);
+  border-color: var(--ink-black);
+  position: relative;
+}
+
+.theme-letterpress .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--cream);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Definition lists */
+.theme-letterpress .prose dl {
+  margin: 1.5rem 0;
+}
+
+.theme-letterpress .prose dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink-dark);
+  margin-top: 1rem;
+  text-shadow: var(--shadow-deboss);
+}
+
+.theme-letterpress .prose dd {
+  margin-left: 1.5rem;
+  color: var(--ink-sepia);
+  font-style: italic;
+}
+
+/* Abbreviations */
+.theme-letterpress .prose abbr[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--ink-sepia);
+  cursor: help;
+}
+
+/* Mark/Highlight */
+.theme-letterpress .prose mark {
+  background: rgba(184, 134, 11, 0.3);
+  color: var(--ink-dark);
+  padding: 0.1em 0.3em;
+}
+
+/* Small text */
+.theme-letterpress .prose small {
+  font-size: 0.875rem;
+  color: var(--ink-sepia);
+}
+
+/* Subscript and Superscript */
+.theme-letterpress .prose sub,
+.theme-letterpress .prose sup {
+  font-size: 0.75em;
+  color: var(--ink-brown);
+}
+
+/* Keyboard input */
+.theme-letterpress .prose kbd {
+  font-family: var(--font-body);
+  font-size: 0.875em;
+  background: var(--cream-dark);
+  border: 1px solid var(--ink-brown);
+  border-bottom-width: 2px;
+  padding: 0.15em 0.4em;
+  color: var(--ink-dark);
+  box-shadow: inset 0 -1px 0 var(--deboss-shadow);
+}
+
+/* Figure captions */
+.theme-letterpress .prose figcaption {
+  font-family: 'EB Garamond', 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 0.875rem;
+  color: var(--ink-sepia);
+  text-align: center;
+  margin-top: 0.75rem;
+}
+
+/* Details/Summary */
+.theme-letterpress .prose details {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(166, 139, 91, 0.05);
+  border: 1px solid var(--kraft-mid);
+}
+
+.theme-letterpress .prose summary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink-dark);
+  cursor: pointer;
+}
+
+.theme-letterpress .prose details[open] summary {
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--kraft-mid);
+  padding-bottom: 0.5rem;
+}
+
+/* Footnotes */
+.theme-letterpress .prose .footnote-ref {
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--deep-red);
+}
+
+.theme-letterpress .prose .footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink-sepia);
+  font-size: 0.875rem;
+}
+
+/* Selection */
+.theme-letterpress .prose ::selection {
+  background: rgba(139, 0, 0, 0.2);
+  color: var(--ink-dark);
+}

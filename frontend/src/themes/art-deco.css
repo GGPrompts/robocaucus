@@ -1,0 +1,524 @@
+/* Art Deco Theme */
+/* 1920s glamour - gold on black, geometric patterns, luxury typography */
+
+.theme-art-deco {
+  /* Color Palette */
+  --gold: #d4af37;
+  --gold-light: #f4d03f;
+  --gold-dark: #a67c00;
+  --noir-black: #0d0d0d;
+  --charcoal: #1a1a1a;
+  --cream: #f5f0e1;
+  --ivory: #fffff0;
+  --teal: #008080;
+  --burgundy: #800020;
+
+  /* Theme Variables */
+  --bg-primary: var(--noir-black);
+  --bg-secondary: var(--charcoal);
+  --text-primary: var(--cream);
+  --text-secondary: rgba(245, 240, 225, 0.7);
+  --accent: var(--gold);
+  --terminal-bg: linear-gradient(145deg, #0d0d0d 0%, #141008 40%, #0a0a0a 100%);
+  --accent-hover: var(--gold-light);
+  --border: rgba(212, 175, 55, 0.3);
+
+  /* Typography */
+  --font-body: 'Josefin Sans', 'Helvetica Neue', sans-serif;
+  --font-display: 'Poiret One', 'Didot', cursive;
+  --font-heading: 'Poiret One', 'Didot', cursive;
+  --font-mono: 'Courier New', monospace;
+  --radius: 0;
+
+  /* Effects */
+  --shadow-gold: 0 0 20px rgba(212, 175, 55, 0.3);
+  --border-gold: 1px solid var(--gold);
+}
+
+/* Geometric Crosshatch Pattern Background */
+.theme-art-deco::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--gold) 0,
+      var(--gold) 1px,
+      transparent 0,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--gold) 0,
+      var(--gold) 1px,
+      transparent 0,
+      transparent 50%
+    );
+  background-size: 60px 60px;
+}
+
+/* Base body styling */
+.theme-art-deco {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  position: relative;
+  /* Note: Removed antialiased font smoothing - it can cause rough edges on thin fonts like Poiret One */
+}
+
+/* Ensure content stays above pattern */
+.theme-art-deco .prose {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   HEADINGS - Elegant display typography
+   ======================================== */
+
+.theme-art-deco .prose h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: 400 !important; /* Override Streamdown's font-semibold - Poiret One only has 400 */
+  font-synthesis: none; /* Prevent browser from synthesizing bold/italic */
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: var(--shadow-gold);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  position: relative;
+}
+
+/* Gradient divider under h1 */
+.theme-art-deco .prose h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.theme-art-deco .prose h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 400 !important; /* Override Streamdown's font-semibold */
+  font-synthesis: none;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: var(--shadow-gold);
+  text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  position: relative;
+}
+
+/* Gradient divider under h2 */
+.theme-art-deco .prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.theme-art-deco .prose h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 400 !important; /* Override Streamdown's font-semibold */
+  font-synthesis: none;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 2rem;
+}
+
+.theme-art-deco .prose h4 {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+/* ========================================
+   BODY TEXT - Elegant thin typography
+   ======================================== */
+
+.theme-art-deco .prose p {
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}
+
+.theme-art-deco .prose strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.theme-art-deco .prose em {
+  font-style: italic;
+  color: var(--cream);
+}
+
+/* ========================================
+   BLOCKQUOTES - Double frame with corners
+   ======================================== */
+
+.theme-art-deco .prose blockquote {
+  border: none;
+  background: transparent;
+  padding: 2rem;
+  margin: 2rem 0;
+  position: relative;
+  font-style: normal;
+  text-align: center;
+}
+
+/* Outer border */
+.theme-art-deco .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+}
+
+/* Inner border (8px offset) */
+.theme-art-deco .prose blockquote::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+}
+
+.theme-art-deco .prose blockquote p {
+  color: var(--cream);
+  font-size: 1.125rem;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   HORIZONTAL RULES - Gold gradient divider
+   ======================================== */
+
+.theme-art-deco .prose hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 3rem auto;
+  max-width: 300px;
+}
+
+/* ========================================
+   LINKS - Gold with hover glow
+   ======================================== */
+
+.theme-art-deco .prose a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold);
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.theme-art-deco .prose a:hover {
+  color: var(--gold-light);
+  border-bottom-color: var(--gold-light);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* ========================================
+   CODE - Gold accents, framed blocks
+   ======================================== */
+
+/* Inline code */
+.theme-art-deco .prose code {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  padding: 0.2em 0.4em;
+  font-size: 0.875em;
+  letter-spacing: 0.02em;
+}
+
+/* Code blocks with double frame */
+.theme-art-deco .prose pre {
+  background: var(--bg-secondary);
+  border: 1px solid var(--gold);
+  position: relative;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* Inner frame for code blocks */
+.theme-art-deco .prose pre::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  pointer-events: none;
+}
+
+.theme-art-deco .prose pre code {
+  background: transparent;
+  border: none;
+  color: var(--cream);
+  padding: 0;
+}
+
+/* Shiki code blocks */
+.theme-art-deco .streamdown-content pre[data-streamdown] {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--gold);
+}
+
+.theme-art-deco .streamdown-content pre[data-streamdown]::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  pointer-events: none;
+}
+
+/* ========================================
+   LISTS - Elegant markers
+   ======================================== */
+
+.theme-art-deco .prose ul {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+.theme-art-deco .prose ul > li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+/* Diamond bullet points */
+.theme-art-deco .prose ul > li::before {
+  content: '\25C7';
+  position: absolute;
+  left: -0.5rem;
+  color: var(--gold);
+  font-size: 0.75rem;
+}
+
+.theme-art-deco .prose ol {
+  padding-left: 1.5rem;
+}
+
+.theme-art-deco .prose ol > li::marker {
+  color: var(--gold);
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+/* ========================================
+   TABLES - Gold bordered elegance
+   ======================================== */
+
+.theme-art-deco .prose table {
+  border: 1px solid var(--gold);
+  border-collapse: collapse;
+  width: 100%;
+  margin: 2rem 0;
+}
+
+.theme-art-deco .prose th {
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1rem;
+  font-size: 0.75rem;
+}
+
+.theme-art-deco .prose td {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 0.75rem 1rem;
+  font-weight: 300;
+}
+
+.theme-art-deco .prose tr:hover {
+  background: rgba(212, 175, 55, 0.05);
+}
+
+/* ========================================
+   IMAGES - Framed with corners
+   ======================================== */
+
+.theme-art-deco .prose img {
+  border: 1px solid var(--gold);
+  padding: 8px;
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-gold);
+}
+
+/* ========================================
+   SPECIAL ELEMENTS
+   ======================================== */
+
+/* Task lists / checkboxes */
+.theme-art-deco .prose input[type="checkbox"] {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--gold);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.theme-art-deco .prose input[type="checkbox"]:checked {
+  background: var(--gold);
+}
+
+.theme-art-deco .prose input[type="checkbox"]:checked::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--noir-black);
+  font-size: 0.75rem;
+}
+
+/* Definition lists */
+.theme-art-deco .prose dt {
+  color: var(--gold);
+  font-family: var(--font-heading);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+
+.theme-art-deco .prose dd {
+  color: var(--text-secondary);
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border);
+}
+
+/* Footnotes */
+.theme-art-deco .prose .footnote-ref {
+  color: var(--gold);
+  font-size: 0.75em;
+  vertical-align: super;
+}
+
+.theme-art-deco .prose .footnotes {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid transparent;
+  background-image: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: top;
+}
+
+.theme-art-deco .prose .footnotes li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   STREAMDOWN CARET
+   ======================================== */
+
+.theme-art-deco .streamdown-content [data-caret] {
+  background-color: var(--gold);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-art-deco ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-art-deco ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.theme-art-deco ::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border: 1px solid var(--bg-secondary);
+}
+
+.theme-art-deco ::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-light);
+}
+
+/* ========================================
+   SELECTION
+   ======================================== */
+
+.theme-art-deco ::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--cream);
+}
+
+.theme-art-deco ::-moz-selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--cream);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Art Deco
+   ======================================== */
+
+.theme-art-deco {
+  /* Shiki base colors */
+  --shiki-foreground: var(--cream);
+  --shiki-background: var(--bg-secondary);
+
+  /* Shiki token colors - warm gold palette */
+  --shiki-token-constant: #d4a5a5;       /* Soft rose for constants */
+  --shiki-token-string: #e5a84b;         /* Warm amber for strings */
+  --shiki-token-comment: #8a8070;        /* Muted warm gray for comments */
+  --shiki-token-keyword: var(--gold);    /* Gold for keywords */
+  --shiki-token-parameter: #e8dcc4;      /* Light cream for parameters */
+  --shiki-token-function: #f0e6c8;       /* Bright cream for functions */
+  --shiki-token-string-expression: #e5a84b;
+  --shiki-token-punctuation: #b8a98c;    /* Visible warm gray */
+  --shiki-token-link: var(--gold);
+}

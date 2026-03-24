@@ -193,6 +193,8 @@ Push back on passive voice and jargon.
             id: "abc".into(),
             name: "Editor".into(),
             model: "claude".into(),
+            provider: "claude".into(),
+            agent_home: "".into(),
             color: "#b388ff".into(),
             scope: "global".into(),
             system_prompt: "Be helpful.".into(),

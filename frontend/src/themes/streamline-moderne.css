@@ -1,0 +1,495 @@
+/* Streamline Moderne Theme
+ * 1930s Art Deco movement emphasizing aerodynamic curves,
+ * chrome accents, and speed lines. Think luxury ocean liners
+ * and classic automobiles.
+ */
+
+.theme-streamline-moderne {
+  /* Color Palette - Chrome, cream, navy, mint, burgundy */
+  --cream: #F5F0E6;
+  --cream-light: #FAF8F3;
+  --cream-dark: #E8E0D0;
+  --silver: #C0C0C0;
+  --chrome: #E8E8E8;
+  --chrome-dark: #A8A8A8;
+  --navy: #1A2A4A;
+  --navy-deep: #0F1A2E;
+  --burgundy: #6B2D3D;
+  --burgundy-light: #8A3D4F;
+  --mint: #7EBDB4;
+  --mint-light: #A5D4CD;
+  --mint-dark: #5A9A91;
+
+  /* Theme Variables */
+  --bg-primary: var(--navy-deep);
+  --bg-secondary: var(--navy);
+  --text-primary: var(--cream);
+  --text-secondary: rgba(245, 240, 230, 0.75);
+  --text-muted: rgba(245, 240, 230, 0.5);
+  --accent: var(--mint);
+  --terminal-bg: linear-gradient(145deg, #0a1520 0%, #0f1a2e 40%, #0c1825 100%);
+  --accent-hover: var(--mint-light);
+  --accent-secondary: var(--burgundy);
+  --chrome-light: var(--chrome);
+  --chrome-accent: var(--silver);
+  --border: rgba(192, 192, 192, 0.2);
+
+  /* Typography - Rounded, streamlined fonts */
+  --font-display: 'Quicksand', 'Raleway', sans-serif;
+  --font-body: 'Raleway', 'Inter', sans-serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', monospace;
+
+  /* Streamlined curves - aerodynamic shapes */
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-lg: 24px;
+  --radius-xl: 40px;
+  --radius-pill: 100px;
+
+  /* Shadows - Chrome reflections */
+  --shadow-chrome: 0 2px 8px rgba(192, 192, 192, 0.15),
+                   0 4px 16px rgba(192, 192, 192, 0.1);
+  --shadow-glow: 0 0 20px rgba(192, 192, 192, 0.2);
+  --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  /* Smooth transitions */
+  --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-fast: 0.2s ease;
+}
+
+/* Speed Lines Background */
+.theme-streamline-moderne::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    /* Horizontal speed lines */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 80px,
+      rgba(192, 192, 192, 0.03) 80px,
+      rgba(192, 192, 192, 0.03) 81px
+    ),
+    /* Subtle mint accent lines */
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(126, 189, 180, 0.02) 30%,
+      transparent 50%,
+      rgba(126, 189, 180, 0.02) 70%,
+      transparent 100%
+    );
+}
+
+/* Chrome accent bar at top */
+.theme-streamline-moderne::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 100;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--chrome-dark) 20%,
+    var(--chrome) 50%,
+    var(--chrome-dark) 80%,
+    transparent
+  );
+}
+
+/* Content container positioning */
+.theme-streamline-moderne > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-streamline-moderne > header {
+  z-index: 50;
+}
+
+/* Main content area above pseudo-elements */
+.theme-streamline-moderne > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-streamline-moderne .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Display font with Art Deco feel */
+.theme-streamline-moderne .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chrome);
+  text-shadow: 0 0 40px rgba(192, 192, 192, 0.3);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+/* Chrome underline for h1 */
+.theme-streamline-moderne .prose h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    var(--chrome-dark),
+    var(--chrome),
+    transparent
+  );
+  border-radius: var(--radius-pill);
+}
+
+.theme-streamline-moderne .prose h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--chrome);
+}
+
+.theme-streamline-moderne .prose h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.theme-streamline-moderne .prose h4,
+.theme-streamline-moderne .prose h5,
+.theme-streamline-moderne .prose h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+}
+
+/* Blockquotes - Streamlined card style */
+.theme-streamline-moderne .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.6;
+  padding: 1.5rem 2rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--mint);
+  background: var(--bg-secondary);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  color: var(--text-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Speed line accent on blockquote */
+.theme-streamline-moderne .prose blockquote::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(270deg,
+    rgba(126, 189, 180, 0.3),
+    transparent
+  );
+  transform: translateY(-50%);
+}
+
+.theme-streamline-moderne .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Mint accent with smooth transition */
+.theme-streamline-moderne .prose a {
+  color: var(--mint);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(126, 189, 180, 0.4);
+  transition: all var(--transition-smooth);
+}
+
+.theme-streamline-moderne .prose a:hover {
+  color: var(--mint-light);
+  border-bottom-color: var(--mint-light);
+  text-shadow: 0 0 10px rgba(126, 189, 180, 0.3);
+}
+
+/* Horizontal Rules - Chrome divider with speed feel */
+.theme-streamline-moderne .prose hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--chrome-dark) 20%,
+    var(--chrome) 50%,
+    var(--chrome-dark) 80%,
+    transparent
+  );
+  margin: 3rem auto;
+  border-radius: var(--radius-pill);
+  max-width: 70%;
+}
+
+/* Code Blocks - Streamlined panels */
+.theme-streamline-moderne .prose pre {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(192, 192, 192, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-inset);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Chrome top accent on code blocks */
+.theme-streamline-moderne .prose pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--chrome-dark),
+    var(--chrome),
+    var(--chrome-dark)
+  );
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.theme-streamline-moderne .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--cream);
+  background: transparent;
+}
+
+/* Inline Code */
+.theme-streamline-moderne .prose :not(pre) > code {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(192, 192, 192, 0.15);
+  color: var(--mint);
+  padding: 0.2em 0.5em;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Lists */
+.theme-streamline-moderne .prose ul,
+.theme-streamline-moderne .prose ol {
+  color: var(--text-secondary);
+}
+
+.theme-streamline-moderne .prose li::marker {
+  color: var(--mint);
+}
+
+/* Tables - Chrome-accented cards */
+.theme-streamline-moderne .prose table {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(192, 192, 192, 0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.theme-streamline-moderne .prose th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--chrome);
+  background: linear-gradient(180deg,
+    rgba(192, 192, 192, 0.1),
+    rgba(192, 192, 192, 0.05)
+  );
+  border-bottom: 2px solid var(--chrome-dark);
+}
+
+.theme-streamline-moderne .prose td {
+  border-bottom: 1px solid rgba(192, 192, 192, 0.1);
+}
+
+.theme-streamline-moderne .prose tr {
+  transition: background-color var(--transition-fast);
+}
+
+.theme-streamline-moderne .prose tr:hover {
+  background: rgba(126, 189, 180, 0.05);
+}
+
+/* Strong/Bold */
+.theme-streamline-moderne .prose strong {
+  color: var(--cream);
+  font-weight: 600;
+}
+
+/* Emphasis/Italic */
+.theme-streamline-moderne .prose em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Images - Porthole-style framing */
+.theme-streamline-moderne .prose img {
+  border: 3px solid rgba(192, 192, 192, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-chrome);
+  transition: all var(--transition-smooth);
+}
+
+.theme-streamline-moderne .prose img:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(192, 192, 192, 0.15);
+}
+
+/* Streamdown specific overrides */
+.theme-streamline-moderne .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.theme-streamline-moderne .streamdown-content [data-caret] {
+  background-color: var(--mint);
+}
+
+/* Shiki syntax highlighting integration */
+.theme-streamline-moderne .streamdown-content pre[data-streamdown] {
+  background: var(--bg-secondary) !important;
+  border: 1px solid rgba(192, 192, 192, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-inset);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-streamline-moderne pre:not(.prose pre) {
+  background: #1A2A4A;
+  color: #F5F0E6;
+}
+
+.theme-streamline-moderne pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Chrome top accent on Shiki blocks */
+.theme-streamline-moderne .streamdown-content pre[data-streamdown]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--chrome-dark),
+    var(--chrome),
+    var(--chrome-dark)
+  );
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Streamline Moderne
+   Navy/mint/chrome palette with Art Deco elegance
+   ======================================== */
+
+.theme-streamline-moderne {
+  /* Shiki base colors */
+  --shiki-foreground: #F5F0E6;
+  --shiki-background: #1A2A4A;
+
+  /* Shiki token colors - chrome, mint, and burgundy accents */
+  --shiki-token-constant: #A5D4CD;             /* Mint light for constants/numbers */
+  --shiki-token-string: #E8D4A8;              /* Warm cream for strings */
+  --shiki-token-comment: #8A9AAA;             /* Soft steel gray for comments - readable! */
+  --shiki-token-keyword: #D4A8B8;             /* Soft rose-burgundy for keywords */
+  --shiki-token-parameter: var(--cream);       /* Cream for parameters */
+  --shiki-token-function: #E8E8E8;            /* Chrome/silver for functions */
+  --shiki-token-string-expression: #B8D4C8;   /* Mint tint for template literals */
+  --shiki-token-punctuation: #C0C0C0;         /* Silver for punctuation */
+  --shiki-token-link: var(--mint);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   Streamlined chrome aesthetic
+   ======================================== */
+
+.theme-streamline-moderne ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.theme-streamline-moderne ::-webkit-scrollbar-track {
+  background: var(--navy-deep);
+}
+
+.theme-streamline-moderne ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+    var(--chrome),
+    var(--silver),
+    var(--chrome-dark)
+  );
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--navy-deep);
+}
+
+.theme-streamline-moderne ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg,
+    var(--chrome),
+    var(--mint-light),
+    var(--chrome)
+  );
+}
+
+/* ========================================
+   INTERACTIVE ELEMENTS
+   Smooth hover transitions
+   ======================================== */
+
+/* Cards and interactive containers */
+.theme-streamline-moderne .card,
+.theme-streamline-moderne [class*="card"] {
+  transition: all var(--transition-smooth);
+}
+
+.theme-streamline-moderne .card:hover,
+.theme-streamline-moderne [class*="card"]:hover {
+  transform: translateY(-4px) translateX(2px);
+  box-shadow:
+    -4px 8px 24px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(192, 192, 192, 0.1);
+}
+
+/* Buttons get chrome treatment */
+.theme-streamline-moderne button,
+.theme-streamline-moderne [class*="btn"] {
+  transition: all var(--transition-smooth);
+}
+
+.theme-streamline-moderne button:hover,
+.theme-streamline-moderne [class*="btn"]:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}

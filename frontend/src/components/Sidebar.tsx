@@ -39,7 +39,8 @@ const MOCK_AGENTS: Agent[] = [
   {
     id: 'agent-1',
     name: 'Editor',
-    model: 'claude',
+    model: 'sonnet',
+    provider: 'claude',
     color: '#a855f7', // purple
     scope: 'global',
     systemPrompt: '',
@@ -47,7 +48,8 @@ const MOCK_AGENTS: Agent[] = [
   {
     id: 'agent-2',
     name: 'Researcher',
-    model: 'gemini',
+    model: 'gemini-2.5-pro',
+    provider: 'gemini',
     color: '#22c55e', // green
     scope: 'global',
     systemPrompt: '',
@@ -55,7 +57,8 @@ const MOCK_AGENTS: Agent[] = [
   {
     id: 'agent-3',
     name: 'Critic',
-    model: 'copilot',
+    model: 'gpt-4o',
+    provider: 'copilot',
     color: '#14b8a6', // teal
     scope: 'workspace',
     systemPrompt: '',
@@ -72,11 +75,11 @@ type ActivityMode = 'chat' | 'files' | 'git';
 // Model badge labels
 // ---------------------------------------------------------------------------
 
-const MODEL_LABELS: Record<Agent['model'], string> = {
+const PROVIDER_LABELS: Record<Agent['provider'], string> = {
   claude: 'Claude',
   codex: 'Codex',
   gemini: 'Gemini',
-  copilot: 'ChatGPT',
+  copilot: 'Copilot',
 };
 
 // ---------------------------------------------------------------------------
@@ -84,9 +87,14 @@ const MODEL_LABELS: Record<Agent['model'], string> = {
 // ---------------------------------------------------------------------------
 
 export interface SidebarProps {
+  rooms?: (Room & { lastMessage: string; unread: boolean })[];
+  agents?: Agent[];
+  selectedRoomId?: string;
   onSelectRoom?: (room: Room) => void;
   onSelectAgent?: (agent: Agent) => void;
   onCreateRoom?: () => void;
+  onCreateAgent?: () => void;
+  onOpenPlaybooks?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,12 +102,20 @@ export interface SidebarProps {
 // ---------------------------------------------------------------------------
 
 export default function Sidebar({
+  rooms: propRooms,
+  agents: propAgents,
+  selectedRoomId,
   onSelectRoom,
   onSelectAgent,
   onCreateRoom,
+  onCreateAgent,
+  onOpenPlaybooks,
 }: SidebarProps) {
+  const displayRooms = propRooms ?? MOCK_ROOMS;
+  const displayAgents = propAgents ?? MOCK_AGENTS;
   const [activeMode, setActiveMode] = useState<ActivityMode>('chat');
-  const [activeRoomId, setActiveRoomId] = useState<string>(MOCK_ROOMS[0].id);
+  const [activeRoomId, setActiveRoomId] = useState<string>('');
+  const effectiveActiveId = selectedRoomId !== undefined ? selectedRoomId : activeRoomId;
 
   // ---- handlers ----------------------------------------------------------
 
@@ -152,7 +168,11 @@ export default function Sidebar({
           </svg>
         </div>
 
-        {/* ---- Chats section ---- */}
+        {activeMode !== 'chat' ? (
+          <div className="flex flex-1 items-center justify-center p-4 text-xs text-gray-500">
+            Coming soon
+          </div>
+        ) : (<>{/* ---- Chats section ---- */}
         <div className="px-2 pt-4">
           <div className="flex items-center justify-between px-1 pb-1">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
@@ -176,8 +196,8 @@ export default function Sidebar({
           </div>
 
           <ul className="space-y-0.5">
-            {MOCK_ROOMS.map((room) => {
-              const isActive = room.id === activeRoomId;
+            {displayRooms.map((room) => {
+              const isActive = room.id === effectiveActiveId;
               return (
                 <li key={room.id}>
                   <button
@@ -207,6 +227,30 @@ export default function Sidebar({
         {/* ---- Divider ---- */}
         <div className="mx-3 my-3 border-t border-gray-800" />
 
+        {/* ---- Playbooks section ---- */}
+        <div className="px-2">
+          <button
+            onClick={onOpenPlaybooks}
+            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-gray-800/60 hover:text-white"
+          >
+            <svg
+              className="h-4 w-4 shrink-0 text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+              Playbooks
+            </span>
+          </button>
+        </div>
+
+        {/* ---- Divider ---- */}
+        <div className="mx-3 my-3 border-t border-gray-800" />
+
         {/* ---- Agents section ---- */}
         <div className="px-2">
           <div className="flex items-center justify-between px-1 pb-1">
@@ -214,6 +258,7 @@ export default function Sidebar({
               Agents
             </span>
             <button
+              onClick={onCreateAgent}
               className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-800 hover:text-gray-300"
               title="Add agent"
             >
@@ -230,7 +275,7 @@ export default function Sidebar({
           </div>
 
           <ul className="space-y-0.5">
-            {MOCK_AGENTS.map((agent) => (
+            {displayAgents.map((agent) => (
               <li key={agent.id}>
                 <button
                   onClick={() => onSelectAgent?.(agent)}
@@ -243,13 +288,14 @@ export default function Sidebar({
                   />
                   <span className="truncate font-medium">{agent.name}</span>
                   <span className="ml-auto shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
-                    {MODEL_LABELS[agent.model]}
+                    {PROVIDER_LABELS[agent.provider]}
                   </span>
                 </button>
               </li>
             ))}
           </ul>
         </div>
+        </>)}
       </div>
     </aside>
   );

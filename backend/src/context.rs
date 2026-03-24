@@ -115,6 +115,8 @@ mod tests {
             id: id.to_owned(),
             name: name.to_owned(),
             model: "claude".to_owned(),
+            provider: "claude".to_owned(),
+            agent_home: String::new(),
             color: "#000000".to_owned(),
             scope: "global".to_owned(),
             system_prompt: prompt.to_owned(),

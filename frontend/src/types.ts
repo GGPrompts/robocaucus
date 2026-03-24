@@ -10,11 +10,23 @@ export interface Room {
 export interface Agent {
   id: string;
   name: string;
-  model: 'claude' | 'codex' | 'gemini' | 'copilot';
+  model: string;
+  provider: 'claude' | 'codex' | 'gemini' | 'copilot';
+  agentHome?: string;
   color: string;
   scope: 'global' | 'workspace';
   systemPrompt: string;
   workspacePath?: string;
+}
+
+export interface Playbook {
+  id: string;
+  name: string;
+  flowType: string;
+  yamlContent: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Message {

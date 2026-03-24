@@ -1,0 +1,576 @@
+/* De Stijl Theme
+ * Mondrian-inspired neoplasticism with primary colors (red, blue, yellow),
+ * bold black grid lines, and white space. Strict perpendicular geometry.
+ */
+
+.theme-de-stijl {
+  /* DE STIJL PRIMARY COLORS */
+  --stijl-red: #D40920;
+  --stijl-blue: #1356A2;
+  --stijl-yellow: #F7D117;
+  --stijl-black: #000000;
+  --stijl-white: #FFFFFF;
+
+  /* SECONDARY TONES */
+  --off-white: #F8F8F8;
+  --warm-white: #FAFAFA;
+  --light-gray: #E5E5E5;
+  --medium-gray: #999999;
+  --dark-gray: #333333;
+
+  /* Theme Variables */
+  --bg-primary: var(--stijl-white);
+  --bg-secondary: var(--off-white);
+  --text-primary: var(--stijl-black);
+  --text-secondary: var(--dark-gray);
+  --text-muted: var(--medium-gray);
+  --accent: var(--stijl-red);
+  --terminal-bg: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 40%, #000000 100%);
+  --accent-hover: #B00718;
+  --accent-secondary: var(--stijl-blue);
+  --border: var(--stijl-black);
+  --code-bg: var(--off-white);
+
+  /* Typography - Geometric Sans-Serif */
+  --font-display: 'Archivo Black', 'Impact', sans-serif;
+  --font-heading: 'Work Sans', 'Helvetica Neue', sans-serif;
+  --font-body: 'Work Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  /* No border radius - strict rectangles */
+  --radius: 0;
+
+  /* Shadows - offset perpendicular */
+  --shadow-heavy: 4px 4px 0 var(--stijl-black);
+  --shadow-light: 2px 2px 0 var(--stijl-black);
+}
+
+/* Bold black border at top */
+.theme-de-stijl::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: none;
+  z-index: 100;
+  background: var(--stijl-black);
+}
+
+/* Color accent strip */
+.theme-de-stijl::after {
+  content: '';
+  position: fixed;
+  top: 8px;
+  left: 0;
+  width: 4px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 100;
+  background: linear-gradient(
+    180deg,
+    var(--stijl-red) 0%,
+    var(--stijl-red) 33.33%,
+    var(--stijl-blue) 33.33%,
+    var(--stijl-blue) 66.66%,
+    var(--stijl-yellow) 66.66%,
+    var(--stijl-yellow) 100%
+  );
+}
+
+/* Content container positioning */
+.theme-de-stijl > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-de-stijl > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-de-stijl > div {
+  z-index: 1;
+}
+
+/* Landing page - Archivo Black only has weight 400, don't synthesize bold */
+.theme-de-stijl .landing-title,
+.theme-de-stijl .landing-card-title {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Body Typography */
+.theme-de-stijl .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Bold geometric uppercase */
+.theme-de-stijl .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--stijl-black);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  padding-left: 1rem;
+  border-left: 8px solid var(--stijl-red);
+}
+
+.theme-de-stijl .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--stijl-black);
+  line-height: 1;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 4px solid var(--stijl-black);
+  position: relative;
+}
+
+.theme-de-stijl .prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: var(--stijl-blue);
+}
+
+.theme-de-stijl .prose h3 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--stijl-black);
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--stijl-yellow);
+}
+
+.theme-de-stijl .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--stijl-black);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.theme-de-stijl .prose h5,
+.theme-de-stijl .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dark-gray);
+  line-height: 1.2;
+}
+
+/* Paragraphs */
+.theme-de-stijl .prose p {
+  margin-bottom: 1rem;
+  max-width: 65ch;
+}
+
+/* Blockquotes - Color block accent */
+.theme-de-stijl .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.6;
+  padding: 1.5rem;
+  padding-left: 2rem;
+  margin: 1.5rem 0;
+  background: var(--off-white);
+  color: var(--text-primary);
+  border: 4px solid var(--stijl-black);
+  border-left: 12px solid var(--stijl-blue);
+  position: relative;
+}
+
+.theme-de-stijl .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--stijl-yellow);
+}
+
+.theme-de-stijl .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Primary color accent */
+.theme-de-stijl .prose a {
+  color: var(--stijl-blue);
+  text-decoration: none;
+  border-bottom: 2px solid var(--stijl-blue);
+  font-weight: 600;
+  transition: all 0.1s ease;
+}
+
+.theme-de-stijl .prose a:hover {
+  color: var(--stijl-white);
+  background: var(--stijl-blue);
+  padding: 0 0.15em;
+}
+
+/* Horizontal Rules - Bold black line with color accent */
+.theme-de-stijl .prose hr {
+  border: none;
+  height: 4px;
+  background: var(--stijl-black);
+  margin: 2.5rem 0;
+  position: relative;
+}
+
+.theme-de-stijl .prose hr::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--stijl-red);
+}
+
+.theme-de-stijl .prose hr::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 32px;
+  width: 24px;
+  height: 24px;
+  background: var(--stijl-yellow);
+}
+
+/* Code Blocks - Clean geometric */
+.theme-de-stijl .prose pre {
+  background: var(--stijl-black);
+  border: 4px solid var(--stijl-black);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.theme-de-stijl .prose pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    var(--stijl-red) 0%,
+    var(--stijl-red) 33.33%,
+    var(--stijl-blue) 33.33%,
+    var(--stijl-blue) 66.66%,
+    var(--stijl-yellow) 66.66%,
+    var(--stijl-yellow) 100%
+  );
+}
+
+.theme-de-stijl .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--stijl-white);
+  background: transparent;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Inline Code */
+.theme-de-stijl .prose :not(pre) > code {
+  background: var(--off-white);
+  border: 2px solid var(--stijl-black);
+  color: var(--stijl-black);
+  padding: 0.1em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+/* Lists */
+.theme-de-stijl .prose ul,
+.theme-de-stijl .prose ol {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.theme-de-stijl .prose ul {
+  list-style: none;
+}
+
+.theme-de-stijl .prose ul > li {
+  position: relative;
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-de-stijl .prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  background: var(--stijl-red);
+}
+
+.theme-de-stijl .prose ul > li:nth-child(3n+2)::before {
+  background: var(--stijl-blue);
+}
+
+.theme-de-stijl .prose ul > li:nth-child(3n)::before {
+  background: var(--stijl-yellow);
+}
+
+.theme-de-stijl .prose ol > li {
+  margin-bottom: 0.5rem;
+}
+
+.theme-de-stijl .prose ol > li::marker {
+  color: var(--stijl-black);
+  font-weight: 800;
+}
+
+/* Tables - Grid structure */
+.theme-de-stijl .prose table {
+  width: 100%;
+  background: var(--stijl-white);
+  border: 4px solid var(--stijl-black);
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.theme-de-stijl .prose th {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--stijl-white);
+  background: var(--stijl-black);
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 4px solid var(--stijl-black);
+}
+
+.theme-de-stijl .prose td {
+  border-bottom: 2px solid var(--stijl-black);
+  border-right: 2px solid var(--light-gray);
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+.theme-de-stijl .prose td:last-child {
+  border-right: none;
+}
+
+.theme-de-stijl .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-de-stijl .prose tr:hover td {
+  background: var(--off-white);
+}
+
+/* Strong/Bold */
+.theme-de-stijl .prose strong {
+  color: var(--stijl-black);
+  font-weight: 800;
+}
+
+/* Emphasis/Italic */
+.theme-de-stijl .prose em {
+  color: var(--stijl-blue);
+  font-style: italic;
+}
+
+/* Images - Bold black frame */
+.theme-de-stijl .prose img {
+  border: 4px solid var(--stijl-black);
+  display: block;
+}
+
+/* Shiki syntax highlighting */
+.theme-de-stijl .streamdown-content pre[data-streamdown] {
+  background: var(--stijl-black) !important;
+  border: 4px solid var(--stijl-black);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-de-stijl pre:not(.prose pre) {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.theme-de-stijl pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-de-stijl .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+.theme-de-stijl .streamdown-content [data-caret] {
+  background-color: var(--stijl-red);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for De Stijl
+   High contrast on black background
+   ======================================== */
+
+.theme-de-stijl {
+  /* Shiki base colors */
+  --shiki-foreground: #FFFFFF;
+  --shiki-background: #000000;
+
+  /* Shiki token colors - primary color palette with high contrast */
+  --shiki-token-constant: #FF6B6B;           /* Soft red for constants */
+  --shiki-token-string: #7ED97E;             /* Green for strings - good contrast */
+  --shiki-token-comment: #888888;            /* Gray for comments */
+  --shiki-token-keyword: #F7D117;            /* Yellow for keywords */
+  --shiki-token-parameter: #E5E5E5;          /* Light gray for parameters */
+  --shiki-token-function: #6BB3FF;           /* Light blue for functions */
+  --shiki-token-string-expression: #7ED97E;  /* Green for string expressions */
+  --shiki-token-punctuation: #CCCCCC;        /* Light gray for punctuation */
+  --shiki-token-link: #6BB3FF;               /* Light blue for links */
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-de-stijl ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.theme-de-stijl ::-webkit-scrollbar-track {
+  background: var(--off-white);
+  border-left: 2px solid var(--stijl-black);
+}
+
+.theme-de-stijl ::-webkit-scrollbar-thumb {
+  background: var(--stijl-black);
+  border: 2px solid var(--stijl-black);
+}
+
+.theme-de-stijl ::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-gray);
+}
+
+/* ========================================
+   ADDITIONAL DE STIJL ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Square indicators */
+.theme-de-stijl .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--stijl-white);
+  border: 3px solid var(--stijl-black);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.theme-de-stijl .prose input[type="checkbox"]:checked {
+  background: var(--stijl-blue);
+  border-color: var(--stijl-black);
+  position: relative;
+}
+
+.theme-de-stijl .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: var(--stijl-white);
+  transform: translate(-50%, -50%);
+}
+
+/* Definition lists */
+.theme-de-stijl .prose dt {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--stijl-black);
+  margin-top: 1rem;
+}
+
+.theme-de-stijl .prose dd {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 4px solid var(--stijl-red);
+  color: var(--text-secondary);
+}
+
+/* Footnotes */
+.theme-de-stijl .prose .footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 4px solid var(--stijl-black);
+}
+
+.theme-de-stijl .prose .footnotes li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Mark/Highlight */
+.theme-de-stijl .prose mark {
+  background: var(--stijl-yellow);
+  color: var(--stijl-black);
+  padding: 0.1em 0.3em;
+}
+
+/* Keyboard keys */
+.theme-de-stijl .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  background: var(--stijl-white);
+  border: 2px solid var(--stijl-black);
+  box-shadow: 2px 2px 0 var(--stijl-black);
+  font-weight: 600;
+}
+
+/* Abbreviations */
+.theme-de-stijl .prose abbr {
+  text-decoration: none;
+  border-bottom: 2px solid var(--stijl-blue);
+  cursor: help;
+}
+
+/* Selection */
+.theme-de-stijl .prose ::selection {
+  background: var(--stijl-blue);
+  color: var(--stijl-white);
+}

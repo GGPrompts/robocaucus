@@ -1,0 +1,455 @@
+/* Industrial Theme
+ * Factory floor aesthetic with steel, rust, rivets, and raw power.
+ * Warning signs and utilitarian beauty.
+ */
+
+.theme-industrial {
+  /* METAL PALETTE */
+  --steel-dark: #2C3033;
+  --steel-mid: #4A5459;
+  --steel-light: #7A8489;
+  --brushed-steel: #9BA3A9;
+  --bright-steel: #C5CED4;
+
+  /* RUST & OXIDATION */
+  --rust-deep: #8B3A1D;
+  --rust-mid: #B54A24;
+  --rust-light: #D4652F;
+  --rust-accent: #E8823A;
+  --oxidation: #6B4423;
+
+  /* WARNING COLORS */
+  --hazard-yellow: #FFB800;
+  --hazard-orange: #FF6B00;
+  --caution-red: #D42C2C;
+  --safety-green: #2D8B47;
+
+  /* INDUSTRIAL BLACKS */
+  --iron-black: #1A1D1F;
+  --oil-black: #0D0F10;
+  --carbon: #252829;
+
+  /* SURFACE TONES */
+  --concrete: #B5AFA7;
+  --dirty-white: #E8E4DC;
+  --grime: #3D3832;
+
+  /* Theme Variables */
+  --bg-primary: var(--iron-black);
+  --bg-secondary: var(--carbon);
+  --text-primary: var(--dirty-white);
+  --text-secondary: var(--brushed-steel);
+  --text-muted: var(--steel-light);
+  --accent: var(--hazard-yellow);
+  --terminal-bg: linear-gradient(145deg, #0d0f10 0%, #1a1d1f 40%, #111314 100%);
+  --accent-hover: #FFD333;
+  --accent-secondary: var(--rust-mid);
+  --border: var(--steel-mid);
+  --code-bg: var(--oil-black);
+
+  /* Typography */
+  --font-display: 'Stencil One', 'Impact', sans-serif;
+  --font-heading: 'Oswald', 'Impact', sans-serif;
+  --font-body: 'Rajdhani', 'Arial', sans-serif;
+  --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+
+  /* No border radius for industrial hard edges */
+  --radius: 0;
+
+  /* Shadows */
+  --shadow-heavy: 0 4px 0 var(--iron-black), 0 6px 12px rgba(0, 0, 0, 0.5);
+  --shadow-inset: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Brushed Steel Background Texture */
+.theme-industrial::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(255, 255, 255, 0.1) 3px
+    );
+}
+
+/* Rust strip at top */
+.theme-industrial::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--rust-mid),
+    var(--rust-mid) 3px,
+    var(--rust-deep) 3px,
+    var(--rust-deep) 6px
+  );
+}
+
+/* Content container positioning */
+.theme-industrial > * {
+  position: relative;
+}
+
+/* Landing page - Stencil One only has weight 400, don't synthesize bold */
+.theme-industrial .landing-title,
+.theme-industrial .landing-card-title {
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-industrial > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-industrial > div {
+  z-index: 1;
+}
+
+/* Body Typography */
+.theme-industrial .prose {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings - Industrial stencil and display fonts */
+.theme-industrial .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--hazard-yellow);
+  text-shadow:
+    3px 3px 0 var(--iron-black),
+    -1px -1px 0 var(--rust-mid);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.theme-industrial .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dirty-white);
+  border-bottom: 4px solid var(--rust-mid);
+  padding-bottom: 0.5rem;
+  position: relative;
+}
+
+.theme-industrial .prose h2::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: var(--hazard-yellow);
+}
+
+.theme-industrial .prose h3,
+.theme-industrial .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dirty-white);
+}
+
+.theme-industrial .prose h5,
+.theme-industrial .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-light);
+}
+
+/* Blockquotes - Warning/Caution tape style */
+.theme-industrial .prose blockquote {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: none;
+  background: var(--carbon);
+  color: var(--dirty-white);
+  position: relative;
+  border: 3px solid var(--steel-mid);
+}
+
+.theme-industrial .prose blockquote::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--hazard-yellow),
+    var(--hazard-yellow) 10px,
+    var(--iron-black) 10px,
+    var(--iron-black) 20px
+  );
+}
+
+.theme-industrial .prose blockquote p {
+  margin: 0;
+}
+
+/* Links - Hazard yellow accent */
+.theme-industrial .prose a {
+  color: var(--hazard-yellow);
+  text-decoration: none;
+  border-bottom: 2px dashed var(--steel-mid);
+  transition: all 0.2s ease;
+}
+
+.theme-industrial .prose a:hover {
+  color: var(--dirty-white);
+  border-bottom-color: var(--hazard-yellow);
+  border-bottom-style: solid;
+}
+
+/* Horizontal Rules - Riveted seam */
+.theme-industrial .prose hr {
+  border: none;
+  height: 6px;
+  background: var(--steel-dark);
+  margin: 2.5rem 0;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.theme-industrial .prose hr::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background:
+    radial-gradient(circle 6px at 20px 6px, var(--bright-steel) 3px, transparent 4px),
+    radial-gradient(circle 6px at 60px 6px, var(--bright-steel) 3px, transparent 4px),
+    radial-gradient(circle 6px at 100px 6px, var(--bright-steel) 3px, transparent 4px),
+    radial-gradient(circle 6px at 140px 6px, var(--bright-steel) 3px, transparent 4px);
+  background-repeat: repeat-x;
+  background-size: 160px 12px;
+}
+
+/* Code Blocks - Dark industrial terminal */
+.theme-industrial .prose pre {
+  background: var(--oil-black);
+  border: 3px solid var(--steel-mid);
+  box-shadow: var(--shadow-inset), 0 2px 0 rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+}
+
+.theme-industrial .prose pre code {
+  font-family: var(--font-mono);
+  color: var(--dirty-white);
+  background: transparent;
+}
+
+/* Inline Code */
+.theme-industrial .prose :not(pre) > code {
+  background: var(--oil-black);
+  border: 2px solid var(--steel-mid);
+  color: var(--hazard-yellow);
+  padding: 0.15em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Lists */
+.theme-industrial .prose ul,
+.theme-industrial .prose ol {
+  color: var(--text-secondary);
+}
+
+.theme-industrial .prose li::marker {
+  color: var(--rust-light);
+}
+
+.theme-industrial .prose li {
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Steel plate grid */
+.theme-industrial .prose table {
+  background: var(--carbon);
+  border: 3px solid var(--steel-mid);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.theme-industrial .prose th {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--hazard-yellow);
+  border-bottom: 3px solid var(--rust-mid);
+  background: var(--steel-dark);
+  padding: 1rem;
+}
+
+.theme-industrial .prose td {
+  border-bottom: 1px solid var(--steel-mid);
+  padding: 0.75rem 1rem;
+}
+
+.theme-industrial .prose tr:hover {
+  background: rgba(255, 184, 0, 0.05);
+}
+
+/* Strong/Bold */
+.theme-industrial .prose strong {
+  color: var(--dirty-white);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-industrial .prose em {
+  color: var(--rust-accent);
+  font-style: italic;
+}
+
+/* Images - Heavy metal frame */
+.theme-industrial .prose img {
+  border: 4px solid var(--steel-dark);
+  box-shadow:
+    inset 0 0 0 2px var(--steel-mid),
+    0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Shiki syntax highlighting */
+.theme-industrial .streamdown-content pre[data-streamdown] {
+  background: var(--oil-black) !important;
+  border: 3px solid var(--steel-mid);
+  box-shadow: var(--shadow-inset), 0 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-industrial pre:not(.prose pre) {
+  background: #0D0F10;
+  color: #E8E4DC;
+}
+
+.theme-industrial pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-industrial .streamdown-content {
+  font-family: var(--font-mono);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.theme-industrial .streamdown-content [data-caret] {
+  background-color: var(--hazard-yellow);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Industrial
+   ======================================== */
+
+.theme-industrial {
+  /* Shiki base colors */
+  --shiki-foreground: #E8E4DC;
+  --shiki-background: #0D0F10;
+
+  /* Shiki token colors - industrial palette for readability */
+  --shiki-token-constant: var(--rust-accent);           /* Rust orange for constants */
+  --shiki-token-string: var(--safety-green);            /* Safety green for strings */
+  --shiki-token-comment: var(--steel-light);            /* Steel gray for comments */
+  --shiki-token-keyword: var(--hazard-yellow);          /* Warning yellow for keywords */
+  --shiki-token-parameter: var(--bright-steel);         /* Bright steel for parameters */
+  --shiki-token-function: var(--rust-light);            /* Rust light for functions */
+  --shiki-token-string-expression: var(--safety-green);
+  --shiki-token-punctuation: var(--brushed-steel);      /* Brushed steel for punctuation */
+  --shiki-token-link: var(--hazard-yellow);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-industrial ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.theme-industrial ::-webkit-scrollbar-track {
+  background: var(--iron-black);
+  border-left: 1px solid var(--steel-mid);
+}
+
+.theme-industrial ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--steel-light) 0%, var(--steel-mid) 100%);
+  border: 1px solid var(--steel-dark);
+}
+
+.theme-industrial ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--brushed-steel) 0%, var(--steel-light) 100%);
+}
+
+/* ========================================
+   ADDITIONAL INDUSTRIAL ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes */
+.theme-industrial .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--iron-black);
+  border: 2px solid var(--steel-mid);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.theme-industrial .prose input[type="checkbox"]:checked {
+  background: var(--hazard-yellow);
+  border-color: var(--iron-black);
+  position: relative;
+}
+
+.theme-industrial .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--iron-black);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}

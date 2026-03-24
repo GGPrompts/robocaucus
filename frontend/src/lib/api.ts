@@ -1,4 +1,4 @@
-import type { Agent, Message, Room } from '../types.ts';
+import type { Agent, Message, Playbook, Room } from '../types.ts';
 
 const API_BASE = '/api';
 
@@ -32,6 +32,95 @@ export async function fetchAgents(base?: string): Promise<Agent[]> {
   return jsonOrThrow<Agent[]>(res);
 }
 
+export async function createAgent(
+  name: string,
+  model: string,
+  provider: string,
+  color: string,
+  scope: string,
+  systemPrompt: string,
+  base?: string,
+): Promise<Agent> {
+  const res = await fetch(apiUrl('/agents', base), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, model, provider, color, scope, system_prompt: systemPrompt }),
+  });
+  return jsonOrThrow<Agent>(res);
+}
+
+export async function fetchAgentConfig(
+  agentId: string,
+  base?: string,
+): Promise<{ path: string; content: string; format: string }> {
+  const res = await fetch(apiUrl(`/agents/${agentId}/config`, base));
+  return jsonOrThrow<{ path: string; content: string; format: string }>(res);
+}
+
+export async function saveAgentConfig(
+  agentId: string,
+  content: string,
+  base?: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/agents/${agentId}/config`, base), {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Playbooks
+// ---------------------------------------------------------------------------
+
+export async function fetchPlaybooks(base?: string): Promise<Playbook[]> {
+  const res = await fetch(apiUrl('/playbooks', base));
+  return jsonOrThrow<Playbook[]>(res);
+}
+
+export async function fetchPlaybook(id: string, base?: string): Promise<Playbook> {
+  const res = await fetch(apiUrl(`/playbooks/${id}`, base));
+  return jsonOrThrow<Playbook>(res);
+}
+
+export async function runPlaybook(
+  id: string,
+  base?: string,
+): Promise<{ conversation_id: string }> {
+  const res = await fetch(apiUrl(`/playbooks/${id}/run`, base), {
+    method: 'POST',
+  });
+  return jsonOrThrow<{ conversation_id: string }>(res);
+}
+
+export async function createPlaybook(
+  name: string,
+  flowType: string,
+  yamlContent: string,
+  description: string,
+  base?: string,
+): Promise<Playbook> {
+  const res = await fetch(apiUrl('/playbooks', base), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      flow_type: flowType,
+      yaml_content: yamlContent,
+      description,
+    }),
+  });
+  return jsonOrThrow<Playbook>(res);
+}
+
+// ---------------------------------------------------------------------------
+// Conversations
+// ---------------------------------------------------------------------------
+
 export async function createConversation(
   title: string,
   agentIds?: string[],
@@ -43,4 +132,122 @@ export async function createConversation(
     body: JSON.stringify({ title, agent_ids: agentIds }),
   });
   return jsonOrThrow<Room>(res);
+}
+
+// ── File API ──────────────────────────────────────────────────────────────
+
+export interface FileEntry {
+  name: string;
+  is_dir: boolean;
+  size: number;
+  modified: number;
+}
+
+export interface FileListResponse {
+  path: string;
+  entries: FileEntry[];
+}
+
+export interface FileContentResponse {
+  path: string;
+  size: number;
+  is_binary: boolean;
+  extension: string;
+  content: string;
+}
+
+export interface SearchResult {
+  file: string;
+  line: number;
+  text: string;
+  context_before: string[];
+  context_after: string[];
+}
+
+export interface SearchResponse {
+  results: SearchResult[];
+}
+
+export async function fetchFileList(
+  path: string,
+  dir?: string,
+  base?: string,
+): Promise<FileListResponse> {
+  const params = new URLSearchParams({ path });
+  if (dir) params.set('dir', dir);
+  const res = await fetch(apiUrl(`/files/list?${params}`, base));
+  return jsonOrThrow<FileListResponse>(res);
+}
+
+export async function fetchFileContent(
+  path: string,
+  file: string,
+  base?: string,
+): Promise<FileContentResponse> {
+  const params = new URLSearchParams({ path, file });
+  const res = await fetch(apiUrl(`/files/read?${params}`, base));
+  return jsonOrThrow<FileContentResponse>(res);
+}
+
+export async function searchFiles(
+  path: string,
+  query: string,
+  options?: { regex?: boolean; caseSensitive?: boolean; glob?: string },
+  base?: string,
+): Promise<SearchResponse> {
+  const params = new URLSearchParams({ path, q: query });
+  if (options?.regex) params.set('regex', 'true');
+  if (options?.caseSensitive) params.set('case', 'true');
+  if (options?.glob) params.set('glob', options.glob);
+  const res = await fetch(apiUrl(`/search?${params}`, base));
+  return jsonOrThrow<SearchResponse>(res);
+}
+
+// ---------------------------------------------------------------------------
+// Git API
+// ---------------------------------------------------------------------------
+
+export async function fetchGitGraph(
+  path: string,
+  limit?: number,
+  skip?: number,
+  base?: string,
+): Promise<{ data: { commits: any[]; hasMore: boolean } }> {
+  const params = new URLSearchParams({ path });
+  if (limit != null) params.set('limit', String(limit));
+  if (skip != null) params.set('skip', String(skip));
+  const res = await fetch(apiUrl(`/git/graph?${params}`, base));
+  return jsonOrThrow(res);
+}
+
+export async function fetchCommitDetails(
+  path: string,
+  hash: string,
+  base?: string,
+): Promise<{ data: any }> {
+  const params = new URLSearchParams({ path });
+  const res = await fetch(apiUrl(`/git/commit/${hash}?${params}`, base));
+  return jsonOrThrow(res);
+}
+
+export async function fetchGitDiff(
+  path: string,
+  diffBase?: string,
+  file?: string,
+  base?: string,
+): Promise<{ data: string }> {
+  const params = new URLSearchParams({ path });
+  if (diffBase != null) params.set('base', diffBase);
+  if (file != null) params.set('file', file);
+  const res = await fetch(apiUrl(`/git/diff?${params}`, base));
+  return jsonOrThrow(res);
+}
+
+export async function fetchGitStatus(
+  path: string,
+  base?: string,
+): Promise<{ data: any }> {
+  const params = new URLSearchParams({ path });
+  const res = await fetch(apiUrl(`/git/status?${params}`, base));
+  return jsonOrThrow(res);
 }

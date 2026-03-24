@@ -1,0 +1,536 @@
+/* ================================================================
+   COSMIC THEME
+   Deep space aesthetic - infinite, ethereal, awe-inspiring
+   Gaze into the void and find wonder
+================================================================ */
+
+/* --- DESIGN TOKENS / CSS VARIABLES --- */
+.theme-cosmic {
+  /* COSMIC PALETTE */
+  --void-black: #030108;
+  --deep-space: #0a0612;
+  --nebula-purple: #2d1b4e;
+  --nebula-blue: #1a0a3e;
+  --nebula-rose: #4a1942;
+  --cosmic-pink: #e056a0;
+  --cosmic-pink-glow: rgba(224, 86, 160, 0.6);
+  --aurora-teal: #40e0d0;
+  --aurora-teal-glow: rgba(64, 224, 208, 0.5);
+  --star-white: #f0f0ff;
+  --star-warm: #fff5e6;
+  --stellar-gold: #ffd700;
+  --stellar-gold-glow: rgba(255, 215, 0, 0.4);
+  --cosmic-violet: #7b2d8e;
+
+  /* THEME VARIABLE MAPPINGS */
+  --bg-primary: var(--void-black);
+  --bg-secondary: var(--deep-space);
+  --text-primary: rgba(240, 240, 255, 0.95);
+  --text-secondary: rgba(200, 195, 220, 0.8);
+  --accent: var(--cosmic-pink);
+  --terminal-bg:
+    radial-gradient(ellipse at 20% 80%, rgba(224, 86, 160, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(64, 224, 208, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #0a0612 0%, #030108 70%);
+  --accent-hover: var(--aurora-teal);
+  --border: rgba(224, 86, 160, 0.15);
+
+  /* TYPOGRAPHY */
+  --font-body: 'Lexend', sans-serif;
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 8px;
+
+  /* GLOWS */
+  --glow-pink: 0 0 20px var(--cosmic-pink-glow), 0 0 40px var(--cosmic-pink-glow);
+  --glow-teal: 0 0 20px var(--aurora-teal-glow), 0 0 40px var(--aurora-teal-glow);
+  --glow-gold: 0 0 15px var(--stellar-gold-glow), 0 0 30px var(--stellar-gold-glow);
+  --glow-star: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+
+  /* BASE STYLES */
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}
+
+/* --- KEYFRAME ANIMATIONS --- */
+
+/* Twinkling stars */
+@keyframes cosmic-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes cosmic-twinkle-slow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes cosmic-twinkle-fast {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  25% { opacity: 1; transform: scale(1.1); }
+  75% { opacity: 0.6; transform: scale(1); }
+}
+
+/* Nebula drift */
+@keyframes cosmic-nebula-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  33% { transform: translate(30px, -20px) scale(1.1); opacity: 0.6; }
+  66% { transform: translate(-20px, 30px) scale(0.95); opacity: 0.5; }
+}
+
+/* Aurora wave for gradient text */
+@keyframes cosmic-aurora-wave {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(30deg);
+  }
+}
+
+/* Shooting star */
+@keyframes cosmic-shooting-star {
+  0% {
+    transform: translateX(-100px) translateY(100px) rotate(-45deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  100% {
+    transform: translateX(calc(100vw + 100px)) translateY(-100vh) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+/* Cosmic dust rotation */
+@keyframes cosmic-dust-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Star shimmer */
+@keyframes cosmic-star-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* --- COSMIC BACKGROUND LAYERS --- */
+
+/* Deep space base with nebula gradients */
+.theme-cosmic {
+  position: relative;
+  background:
+    /* Nebula clouds */
+    radial-gradient(ellipse at 20% 0%, var(--nebula-purple) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, var(--nebula-rose) 0%, transparent 40%),
+    radial-gradient(ellipse at 40% 80%, var(--nebula-blue) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, var(--cosmic-violet) 0%, transparent 40%),
+    var(--void-black);
+}
+
+/* Star field layer - CSS-only stars */
+.theme-cosmic::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    /* Bright stars */
+    radial-gradient(2px 2px at 20% 15%, var(--star-white) 50%, transparent 50%),
+    radial-gradient(3px 3px at 45% 25%, var(--star-warm) 50%, transparent 50%),
+    radial-gradient(2px 2px at 70% 10%, var(--star-white) 50%, transparent 50%),
+    radial-gradient(2px 2px at 85% 35%, var(--star-white) 50%, transparent 50%),
+    radial-gradient(3px 3px at 15% 45%, var(--aurora-teal) 50%, transparent 50%),
+    radial-gradient(2px 2px at 55% 55%, var(--star-white) 50%, transparent 50%),
+    radial-gradient(2px 2px at 95% 60%, var(--star-warm) 50%, transparent 50%),
+    radial-gradient(3px 3px at 30% 70%, var(--cosmic-pink) 50%, transparent 50%),
+    radial-gradient(2px 2px at 60% 80%, var(--star-white) 50%, transparent 50%),
+    radial-gradient(2px 2px at 80% 75%, var(--star-white) 50%, transparent 50%),
+    /* Medium stars */
+    radial-gradient(1.5px 1.5px at 10% 20%, rgba(240, 240, 255, 0.8) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 35% 40%, rgba(240, 240, 255, 0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 50% 15%, rgba(240, 240, 255, 0.8) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 75% 50%, rgba(240, 240, 255, 0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 90% 25%, rgba(240, 240, 255, 0.8) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 25% 85%, rgba(240, 240, 255, 0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 65% 65%, rgba(240, 240, 255, 0.8) 50%, transparent 50%),
+    /* Tiny distant stars */
+    radial-gradient(1px 1px at 5% 30%, rgba(240, 240, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 60%, rgba(240, 240, 255, 0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 25% 10%, rgba(240, 240, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 90%, rgba(240, 240, 255, 0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 35%, rgba(240, 240, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 72% 85%, rgba(240, 240, 255, 0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 88% 45%, rgba(240, 240, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 98% 70%, rgba(240, 240, 255, 0.4) 50%, transparent 50%);
+  animation: cosmic-twinkle-slow 8s ease-in-out infinite;
+}
+
+/* Nebula cloud overlay with drift animation */
+.theme-cosmic::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    /* Pink nebula cloud */
+    radial-gradient(600px 600px at 80% 10%, rgba(224, 86, 160, 0.15) 0%, transparent 70%),
+    /* Teal nebula cloud */
+    radial-gradient(500px 500px at 10% 90%, rgba(64, 224, 208, 0.12) 0%, transparent 70%),
+    /* Purple central nebula */
+    radial-gradient(700px 700px at 50% 50%, rgba(123, 45, 142, 0.1) 0%, transparent 70%);
+  filter: blur(60px);
+  animation: cosmic-nebula-drift 30s ease-in-out infinite;
+}
+
+/* --- TYPOGRAPHY STYLES --- */
+
+/* Display / H1 - Gradient text with aurora animation */
+.theme-cosmic .prose h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--star-white) 0%, var(--cosmic-pink) 50%, var(--aurora-teal) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cosmic-aurora-wave 8s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+/* Heading / H2 */
+.theme-cosmic .prose h2 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+/* Subheading / H3 */
+.theme-cosmic .prose h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+/* H4 */
+.theme-cosmic .prose h4 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--cosmic-pink);
+  position: relative;
+  z-index: 1;
+}
+
+/* Body text */
+.theme-cosmic .prose p,
+.theme-cosmic .prose li {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+/* Lead paragraph */
+.theme-cosmic .prose > p:first-of-type {
+  font-size: 1.125rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* --- LINKS --- */
+.theme-cosmic .prose a {
+  background: linear-gradient(135deg, var(--cosmic-pink), var(--aurora-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  text-decoration: none;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.3s ease;
+}
+
+.theme-cosmic .prose a:hover {
+  filter: brightness(1.2);
+  text-shadow: var(--glow-pink);
+}
+
+/* --- CODE BLOCKS --- */
+
+/* Inline code */
+.theme-cosmic .prose code {
+  background: rgba(45, 27, 78, 0.6);
+  border: 1px solid rgba(224, 86, 160, 0.2);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  font-family: var(--font-mono);
+  color: var(--aurora-teal);
+  position: relative;
+  z-index: 1;
+}
+
+/* Pre blocks */
+.theme-cosmic .prose pre {
+  background: linear-gradient(135deg, var(--deep-space), rgba(45, 27, 78, 0.4));
+  border: 1px solid rgba(224, 86, 160, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(240, 240, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.theme-cosmic .prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+/* Shiki code blocks */
+.theme-cosmic .streamdown-content pre[data-streamdown] {
+  background: linear-gradient(135deg, var(--deep-space), rgba(45, 27, 78, 0.4)) !important;
+  border: 1px solid rgba(224, 86, 160, 0.2);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(240, 240, 255, 0.05);
+}
+
+/* --- BLOCKQUOTES --- */
+.theme-cosmic .prose blockquote {
+  background: rgba(20, 10, 40, 0.6);
+  border-left: 3px solid var(--cosmic-pink);
+  border-radius: 0 16px 16px 0;
+  padding: 1.5rem;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--glow-pink);
+  backdrop-filter: blur(10px);
+}
+
+.theme-cosmic .prose blockquote p {
+  margin: 0;
+}
+
+/* --- HORIZONTAL RULES --- */
+.theme-cosmic .prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cosmic-pink), var(--aurora-teal), transparent);
+  margin: 3rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Decorative star on hr */
+.theme-cosmic .prose hr::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: var(--star-white);
+  border-radius: 50%;
+  box-shadow: var(--glow-star);
+  animation: cosmic-twinkle 3s ease-in-out infinite;
+}
+
+/* --- LISTS --- */
+.theme-cosmic .prose ul {
+  list-style: none;
+  padding-left: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-cosmic .prose ul li {
+  position: relative;
+  padding-left: 0.5rem;
+}
+
+.theme-cosmic .prose ul li::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 0.7em;
+  width: 6px;
+  height: 6px;
+  background: var(--cosmic-pink);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cosmic-pink-glow);
+}
+
+.theme-cosmic .prose ol {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-cosmic .prose ol li::marker {
+  color: var(--aurora-teal);
+  font-weight: 500;
+}
+
+/* --- TABLES --- */
+.theme-cosmic .prose table {
+  background: rgba(20, 10, 40, 0.6);
+  border: 1px solid rgba(224, 86, 160, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.theme-cosmic .prose th {
+  background: rgba(10, 5, 20, 0.8);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+  padding: 1rem;
+  border-bottom: 1px solid rgba(224, 86, 160, 0.15);
+}
+
+.theme-cosmic .prose td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(224, 86, 160, 0.1);
+}
+
+.theme-cosmic .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-cosmic .prose tr:hover td {
+  background: rgba(30, 15, 60, 0.4);
+}
+
+/* --- IMAGES --- */
+.theme-cosmic .prose img {
+  border-radius: 16px;
+  border: 1px solid rgba(224, 86, 160, 0.2);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px var(--cosmic-pink-glow);
+  position: relative;
+  z-index: 1;
+}
+
+/* --- STRONG & EMPHASIS --- */
+.theme-cosmic .prose strong {
+  color: var(--star-white);
+  font-weight: 600;
+}
+
+.theme-cosmic .prose em {
+  color: var(--aurora-teal);
+  font-style: italic;
+}
+
+/* --- METADATA BAR --- */
+.theme-cosmic .metadata-bar {
+  background: rgba(10, 6, 18, 0.9);
+  border-bottom: 1px solid rgba(224, 86, 160, 0.15);
+  backdrop-filter: blur(20px);
+}
+
+.theme-cosmic .metadata-tag {
+  background: linear-gradient(135deg, rgba(224, 86, 160, 0.2), rgba(64, 224, 208, 0.1));
+  border: 1px solid rgba(224, 86, 160, 0.3);
+  color: var(--cosmic-pink);
+}
+
+.theme-cosmic .metadata-tag:hover {
+  background: linear-gradient(135deg, rgba(224, 86, 160, 0.3), rgba(64, 224, 208, 0.2));
+  box-shadow: var(--glow-pink);
+}
+
+/* --- SCROLLBAR --- */
+.theme-cosmic ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-cosmic ::-webkit-scrollbar-track {
+  background: var(--deep-space);
+}
+
+.theme-cosmic ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cosmic-pink), var(--aurora-teal));
+  border-radius: 4px;
+}
+
+.theme-cosmic ::-webkit-scrollbar-thumb:hover {
+  box-shadow: var(--glow-pink);
+}
+
+/* --- SELECTION --- */
+.theme-cosmic ::selection {
+  background: rgba(224, 86, 160, 0.4);
+  color: var(--star-white);
+}
+
+/* --- STREAMING CARET --- */
+.theme-cosmic .streamdown-content [data-caret] {
+  background: linear-gradient(135deg, var(--cosmic-pink), var(--aurora-teal));
+  box-shadow: var(--glow-pink);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Cosmic
+   ======================================== */
+
+.theme-cosmic {
+  /* Shiki base colors */
+  --shiki-foreground: var(--text-primary);
+  --shiki-background: var(--deep-space);
+
+  /* Shiki token colors - cosmic space palette */
+  --shiki-token-constant: var(--stellar-gold);    /* Gold for constants */
+  --shiki-token-string: var(--star-warm);         /* Warm white for strings */
+  --shiki-token-comment: #8b7cb8;                 /* Soft purple for comments */
+  --shiki-token-keyword: var(--cosmic-pink);      /* Pink for keywords */
+  --shiki-token-parameter: #d4c4f0;               /* Light lavender for parameters */
+  --shiki-token-function: var(--aurora-teal);     /* Teal for functions */
+  --shiki-token-string-expression: var(--star-warm);
+  --shiki-token-punctuation: #c8c8d8;             /* Soft white for punctuation */
+  --shiki-token-link: var(--cosmic-pink);
+}

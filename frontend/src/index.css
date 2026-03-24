@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Shiki CSS Variables - Default dark theme for RoboCaucus */
+:root {
+  --shiki-foreground: #e0e0e8;
+  --shiki-background: #1a1a2e;
+  --shiki-token-constant: #79c0ff;
+  --shiki-token-string: #a5d6ff;
+  --shiki-token-comment: #6e7781;
+  --shiki-token-keyword: #ff7b72;
+  --shiki-token-parameter: #e0e0e8;
+  --shiki-token-function: #d2a8ff;
+  --shiki-token-string-expression: #a5d6ff;
+  --shiki-token-punctuation: #8b949e;
+  --shiki-token-link: #6366f1;
+}

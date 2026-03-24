@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Agent } from '../types.ts';
+import { fetchAgentConfig, saveAgentConfig } from '../lib/api.ts';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -7,7 +8,6 @@ import type { Agent } from '../types.ts';
 
 interface AgentBuilderProps {
   agent?: Agent;
-  availableModels?: string[];
   onSave: (agent: Omit<Agent, 'id'>) => void;
   onClose: () => void;
 }
@@ -16,11 +16,17 @@ interface AgentBuilderProps {
 // Constants
 // ---------------------------------------------------------------------------
 
-const ALL_MODELS: { value: Agent['model']; label: string }[] = [
-  { value: 'claude', label: 'Claude' },
-  { value: 'codex', label: 'ChatGPT / Codex' },
-  { value: 'gemini', label: 'Gemini' },
-  { value: 'copilot', label: 'Copilot' },
+const PROVIDERS: {
+  value: Agent['provider'];
+  label: string;
+  description: string;
+  defaultModel: string;
+  variants: string;
+}[] = [
+  { value: 'claude', label: 'Claude', description: 'Anthropic Claude CLI', defaultModel: 'sonnet', variants: 'sonnet, opus, haiku' },
+  { value: 'codex', label: 'Codex', description: 'OpenAI Codex CLI', defaultModel: 'o3', variants: 'o3, o4-mini, gpt-5.4' },
+  { value: 'gemini', label: 'Gemini', description: 'Google Gemini CLI', defaultModel: 'gemini-2.5-pro', variants: 'gemini-2.5-pro' },
+  { value: 'copilot', label: 'Copilot', description: 'GitHub Copilot CLI', defaultModel: 'gpt-4o', variants: 'gpt-4o' },
 ];
 
 const PALETTE = [
@@ -40,31 +46,63 @@ const PALETTE = [
 
 export default function AgentBuilder({
   agent,
-  availableModels,
   onSave,
   onClose,
 }: AgentBuilderProps) {
   // Form state, pre-filled when editing
   const [name, setName] = useState(agent?.name ?? '');
-  const [model, setModel] = useState<Agent['model'] | ''>(agent?.model ?? '');
+  const [provider, setProvider] = useState<Agent['provider'] | ''>(agent?.provider ?? '');
+  const [model, setModel] = useState(agent?.model ?? '');
   const [color, setColor] = useState(agent?.color ?? PALETTE[0].hex);
   const [systemPrompt, setSystemPrompt] = useState(agent?.systemPrompt ?? '');
   const [scope, setScope] = useState<Agent['scope']>(agent?.scope ?? 'global');
 
-  // Validation
-  const [errors, setErrors] = useState<{ name?: string; model?: string }>({});
+  // Config editor state
+  const [configOpen, setConfigOpen] = useState(false);
+  const [configContent, setConfigContent] = useState('');
+  const [configPath, setConfigPath] = useState('');
+  const [configFormat, setConfigFormat] = useState('');
+  const [configLoading, setConfigLoading] = useState(false);
+  const [configMsg, setConfigMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Filter models if availableModels prop is provided
-  const models = availableModels
-    ? ALL_MODELS.filter((m) => availableModels.includes(m.value))
-    : ALL_MODELS;
+  // Load config when section is expanded
+  useEffect(() => {
+    if (!configOpen || !agent?.id) return;
+    setConfigLoading(true);
+    setConfigMsg(null);
+    fetchAgentConfig(agent.id)
+      .then((data) => {
+        setConfigContent(data.content);
+        setConfigPath(data.path);
+        setConfigFormat(data.format);
+      })
+      .catch((e) => setConfigMsg({ type: 'error', text: e.message }))
+      .finally(() => setConfigLoading(false));
+  }, [configOpen, agent?.id]);
+
+  async function handleSaveConfig() {
+    if (!agent?.id) return;
+    setConfigMsg(null);
+    try {
+      await saveAgentConfig(agent.id, configContent);
+      setConfigMsg({ type: 'success', text: 'Config saved successfully' });
+    } catch (e: unknown) {
+      setConfigMsg({ type: 'error', text: e instanceof Error ? e.message : 'Save failed' });
+    }
+  }
+
+  // Validation
+  const [errors, setErrors] = useState<{ name?: string; provider?: string }>({});
+
+  // Derive provider info for the selected provider
+  const selectedProviderInfo = PROVIDERS.find((p) => p.value === provider);
 
   // ---- Handlers -----------------------------------------------------------
 
   function handleSave() {
     const nextErrors: typeof errors = {};
     if (!name.trim()) nextErrors.name = 'Name is required';
-    if (!model) nextErrors.model = 'Model is required';
+    if (!provider) nextErrors.provider = 'Provider is required';
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -73,7 +111,8 @@ export default function AgentBuilder({
 
     onSave({
       name: name.trim(),
-      model: model as Agent['model'],
+      provider: provider as Agent['provider'],
+      model: model.trim() || (selectedProviderInfo?.defaultModel ?? ''),
       color,
       scope,
       systemPrompt,
@@ -143,35 +182,55 @@ export default function AgentBuilder({
             )}
           </div>
 
-          {/* Model */}
+          {/* Provider */}
           <div>
-            <label htmlFor="agent-model" className="mb-1.5 block text-sm font-medium text-gray-300">
-              Model
+            <label className="mb-1.5 block text-sm font-medium text-gray-300">
+              Provider
             </label>
-            <select
-              id="agent-model"
-              value={model}
-              onChange={(e) => {
-                setModel(e.target.value as Agent['model']);
-                if (errors.model) setErrors((prev) => ({ ...prev, model: undefined }));
-              }}
-              className={`w-full appearance-none rounded-lg border bg-gray-800 px-3 py-2 text-sm text-white outline-none transition-colors focus:ring-2 focus:ring-indigo-500/50 ${
-                errors.model ? 'border-red-500' : 'border-gray-700 focus:border-indigo-500'
-              } ${!model ? 'text-gray-500' : ''}`}
-            >
-              <option value="" disabled>
-                Select a model...
-              </option>
-              {models.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
+            <div className="grid grid-cols-2 gap-2">
+              {PROVIDERS.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => {
+                    setProvider(p.value);
+                    if (errors.provider) setErrors((prev) => ({ ...prev, provider: undefined }));
+                  }}
+                  className={`flex flex-col rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                    provider === p.value
+                      ? 'border-indigo-500 bg-indigo-500/10 text-white'
+                      : 'border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600 hover:text-white'
+                  }`}
+                >
+                  <span className="font-medium">{p.label}</span>
+                  <span className="text-[11px] text-gray-500">{p.description}</span>
+                </button>
               ))}
-            </select>
-            {errors.model && (
-              <p className="mt-1 text-xs text-red-400">{errors.model}</p>
+            </div>
+            {errors.provider && (
+              <p className="mt-1 text-xs text-red-400">{errors.provider}</p>
             )}
           </div>
+
+          {/* Model variant (shown after provider selection) */}
+          {provider && selectedProviderInfo && (
+            <div>
+              <label htmlFor="agent-model" className="mb-1.5 block text-sm font-medium text-gray-300">
+                Model
+              </label>
+              <input
+                id="agent-model"
+                type="text"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                placeholder={selectedProviderInfo.defaultModel}
+                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Variants: {selectedProviderInfo.variants}
+              </p>
+            </div>
+          )}
 
           {/* Color */}
           <div>
@@ -202,19 +261,22 @@ export default function AgentBuilder({
             </div>
           </div>
 
-          {/* Personality / System Prompt */}
+          {/* Instructions / System Prompt */}
           <div>
             <label htmlFor="agent-prompt" className="mb-1.5 block text-sm font-medium text-gray-300">
-              Personality
+              Instructions
             </label>
             <textarea
               id="agent-prompt"
               value={systemPrompt}
               onChange={(e) => setSystemPrompt(e.target.value)}
-              placeholder="Describe this agent's role and personality..."
+              placeholder="Describe this agent's role and behavior..."
               rows={4}
               className="w-full resize-none rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
             />
+            <p className="mt-1 text-xs text-gray-500">
+              Instructions that shape this agent's behavior. Saved to the agent's config folder and discovered natively by the CLI.
+            </p>
           </div>
 
           {/* Scope toggle */}
@@ -222,7 +284,9 @@ export default function AgentBuilder({
             <div>
               <span className="block text-sm font-medium text-gray-300">Scope</span>
               <span className="text-xs text-gray-500">
-                {scope === 'global' ? 'Available everywhere' : 'This workspace only'}
+                {scope === 'global'
+                  ? 'Global: available in all conversations across workspaces'
+                  : 'Workspace: only available when working in a specific project directory'}
               </span>
             </div>
             <button
@@ -241,6 +305,67 @@ export default function AgentBuilder({
               />
             </button>
           </div>
+
+          {/* MCP Servers & Tool Permissions — only for existing agents */}
+          {isEditing && agent?.id && (
+            <div className="rounded-lg border border-gray-700">
+              <button
+                type="button"
+                onClick={() => setConfigOpen((v) => !v)}
+                className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+              >
+                <span>MCP Servers &amp; Tool Permissions</span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${configOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {configOpen && (
+                <div className="border-t border-gray-700 px-3 py-3 space-y-2">
+                  {configPath && (
+                    <p className="text-xs text-gray-500 break-all">{configPath} ({configFormat})</p>
+                  )}
+
+                  {configLoading ? (
+                    <p className="text-xs text-gray-400">Loading config...</p>
+                  ) : (
+                    <>
+                      <textarea
+                        value={configContent}
+                        onChange={(e) => {
+                          setConfigContent(e.target.value);
+                          setConfigMsg(null);
+                        }}
+                        rows={10}
+                        className="w-full resize-y rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs font-mono text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+                        placeholder={`Paste or edit your ${configFormat === 'toml' ? 'TOML' : 'JSON'} config here...`}
+                      />
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleSaveConfig}
+                          className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-500"
+                        >
+                          Save Config
+                        </button>
+                        {configMsg && (
+                          <span className={`text-xs ${configMsg.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                            {configMsg.text}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer */}

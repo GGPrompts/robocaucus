@@ -37,6 +37,8 @@ async fn import_agent(
     match db.create_agent(
         &data.name,
         &data.model,
+        "",  // provider — not set via import
+        "",  // agent_home — not set via import
         &data.color,
         &data.scope,
         &data.system_prompt,

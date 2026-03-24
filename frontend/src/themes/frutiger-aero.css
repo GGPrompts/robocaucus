@@ -1,0 +1,602 @@
+/* Frutiger Aero Theme
+ * Early 2000s glossy aesthetic (2004-2013)
+ * Sky blue gradients, nature imagery, clean optimism.
+ * Windows Vista/7 era glass effects, corporate warmth.
+ */
+
+.theme-frutiger-aero {
+  /* SKY & NATURE PALETTE */
+  --sky-blue: #3a9fd5;
+  --sky-blue-light: #7ec8f0;
+  --sky-blue-dark: #1a6fa5;
+  --sky-blue-pale: #c5e8f7;
+
+  --grass-green: #7cb342;
+  --grass-green-light: #a5d66a;
+  --grass-green-dark: #558b2f;
+
+  --sunrise-orange: #f5a623;
+  --sunrise-orange-light: #ffc866;
+
+  /* GLASS & CLOUD */
+  --cloud-white: #ffffff;
+  --soft-gray: #e8eef3;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg-strong: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.9);
+
+  /* TEXT COLORS */
+  --text-dark: #1a3a4a;
+  --text-medium: #4a6a7a;
+  --text-light: #6a8a9a;
+
+  /* Theme Variables */
+  --bg-primary: linear-gradient(180deg, #1a6fa5 0%, #3a9fd5 30%, #7ec8f0 60%, #c5e8f7 100%);
+  --bg-secondary: var(--glass-bg);
+  --text-primary: var(--text-dark);
+  --text-secondary: var(--text-medium);
+  --text-muted: var(--text-light);
+  --accent: var(--sky-blue);
+  --terminal-bg: linear-gradient(145deg, #0a2a40 0%, #1a3a4a 40%, #082030 100%);
+  --accent-hover: var(--sky-blue-light);
+  --accent-secondary: var(--grass-green);
+  --border: var(--glass-border);
+  --code-bg: rgba(255, 255, 255, 0.85);
+
+  /* Typography - Clean humanist sans */
+  --font-display: 'Source Sans Pro', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Source Sans Pro', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Source Sans Pro', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Consolas', 'Monaco', 'SF Mono', monospace;
+
+  /* Soft rounded corners for bubbly feel */
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Glossy shadows */
+  --shadow-glass: 0 8px 32px rgba(0, 80, 140, 0.15);
+  --shadow-glass-hover: 0 12px 48px rgba(0, 80, 140, 0.2);
+  --shadow-inset-glow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Sky gradient background */
+.theme-frutiger-aero {
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* Subtle cloud texture overlay */
+.theme-frutiger-aero::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  background:
+    radial-gradient(ellipse 300px 100px at 20% 15%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(ellipse 250px 80px at 70% 25%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(ellipse 350px 120px at 40% 8%, rgba(255, 255, 255, 0.4), transparent);
+}
+
+/* Grass hills at bottom */
+.theme-frutiger-aero::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(124, 179, 66, 0.2) 30%,
+    rgba(124, 179, 66, 0.4) 60%,
+    var(--grass-green) 100%);
+}
+
+/* Content container positioning */
+.theme-frutiger-aero > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-frutiger-aero > header {
+  z-index: 200;
+}
+
+/* Body Typography */
+.theme-frutiger-aero .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glass panel for prose content */
+.theme-frutiger-aero .prose {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow:
+    var(--shadow-glass),
+    var(--shadow-inset-glow),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Glossy shine on prose panel */
+.theme-frutiger-aero .prose::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.1) 100%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  pointer-events: none;
+}
+
+/* Headings - Clean, gradient text for display */
+.theme-frutiger-aero .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  background: linear-gradient(180deg, var(--sky-blue-dark) 0%, var(--sky-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-frutiger-aero .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--sky-blue-light);
+}
+
+.theme-frutiger-aero .prose h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.375rem;
+  color: var(--sky-blue-dark);
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-frutiger-aero .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text-dark);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-frutiger-aero .prose h5,
+.theme-frutiger-aero .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs */
+.theme-frutiger-aero .prose p {
+  margin-bottom: 1.25rem;
+  color: var(--text-dark);
+}
+
+/* Blockquotes - Soft glass card */
+.theme-frutiger-aero .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: normal;
+  line-height: 1.65;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: rgba(126, 200, 240, 0.15);
+  border-left: 4px solid var(--sky-blue);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--text-dark);
+  box-shadow:
+    0 4px 12px rgba(58, 159, 213, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.theme-frutiger-aero .prose blockquote p {
+  margin: 0;
+  color: var(--text-dark);
+}
+
+/* Links - Sky blue accent with smooth hover */
+.theme-frutiger-aero .prose a {
+  color: var(--sky-blue);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.theme-frutiger-aero .prose a:hover {
+  color: var(--sky-blue-dark);
+  border-bottom-color: var(--sky-blue);
+}
+
+/* Horizontal Rules - Soft gradient line */
+.theme-frutiger-aero .prose hr {
+  border: none;
+  height: 2px;
+  margin: 2rem 0;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--sky-blue-light) 20%,
+    var(--sky-blue) 50%,
+    var(--sky-blue-light) 80%,
+    transparent 100%);
+  border-radius: 1px;
+}
+
+/* Code Blocks - Frosted glass terminal */
+.theme-frutiger-aero .prose pre {
+  background: rgba(26, 58, 74, 0.95);
+  border: 1px solid rgba(126, 200, 240, 0.3);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow:
+    0 4px 16px rgba(0, 80, 140, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
+}
+
+.theme-frutiger-aero .prose pre code {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--soft-gray);
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* Inline Code - Subtle pill */
+.theme-frutiger-aero .prose :not(pre) > code {
+  background: rgba(126, 200, 240, 0.15);
+  border: 1px solid rgba(126, 200, 240, 0.3);
+  color: var(--sky-blue-dark);
+  padding: 0.15em 0.45em;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Lists */
+.theme-frutiger-aero .prose ul,
+.theme-frutiger-aero .prose ol {
+  color: var(--text-dark);
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.theme-frutiger-aero .prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.65;
+}
+
+.theme-frutiger-aero .prose li::marker {
+  color: var(--sky-blue);
+}
+
+.theme-frutiger-aero .prose ol li::marker {
+  color: var(--grass-green);
+  font-weight: 600;
+}
+
+/* Nested lists */
+.theme-frutiger-aero .prose ul ul,
+.theme-frutiger-aero .prose ol ol,
+.theme-frutiger-aero .prose ul ol,
+.theme-frutiger-aero .prose ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Glass panel style */
+.theme-frutiger-aero .prose table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(126, 200, 240, 0.3);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 80, 140, 0.1);
+}
+
+.theme-frutiger-aero .prose th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cloud-white);
+  background: linear-gradient(180deg, var(--sky-blue-light) 0%, var(--sky-blue) 100%);
+  padding: 0.875rem 1rem;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.theme-frutiger-aero .prose th:first-child {
+  border-top-left-radius: var(--radius);
+}
+
+.theme-frutiger-aero .prose th:last-child {
+  border-top-right-radius: var(--radius);
+}
+
+.theme-frutiger-aero .prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(126, 200, 240, 0.2);
+  color: var(--text-dark);
+}
+
+.theme-frutiger-aero .prose tr:last-child td {
+  border-bottom: none;
+}
+
+.theme-frutiger-aero .prose tr:hover td {
+  background: rgba(126, 200, 240, 0.1);
+}
+
+/* Strong/Bold */
+.theme-frutiger-aero .prose strong {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-frutiger-aero .prose em {
+  color: var(--sky-blue-dark);
+  font-style: italic;
+}
+
+/* Images - Soft shadow frame */
+.theme-frutiger-aero .prose img {
+  border-radius: var(--radius);
+  box-shadow:
+    0 8px 24px rgba(0, 80, 140, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting - Optimistic, readable
+   ======================================== */
+
+.theme-frutiger-aero {
+  /* Shiki base colors - dark text for code files (light glass background) */
+  --shiki-foreground: #1a3a4a;
+  --shiki-background: rgba(255, 255, 255, 0.85);
+
+  /* Token colors - Dark for contrast on light code file backgrounds */
+  --shiki-token-constant: #0077a8;           /* Deep sky blue for constants */
+  --shiki-token-string: #4a8c2a;             /* Forest green for strings */
+  --shiki-token-comment: #7a94a4;            /* Muted blue-gray for comments */
+  --shiki-token-keyword: #c87800;            /* Deep orange for keywords */
+  --shiki-token-parameter: #2a6a8a;          /* Ocean blue for parameters */
+  --shiki-token-function: #0066aa;           /* Deep blue for functions */
+  --shiki-token-string-expression: #4a8c2a;  /* Forest green for string expressions */
+  --shiki-token-punctuation: #4a6a7a;        /* Dark blue-gray for punctuation */
+  --shiki-token-link: #0077a8;               /* Deep sky blue for links */
+}
+
+/* Override Shiki colors inside markdown prose (dark code block backgrounds) */
+.theme-frutiger-aero .prose,
+.theme-frutiger-aero .streamdown-content {
+  --shiki-foreground: #d8eaf3;
+  --shiki-background: rgba(26, 58, 74, 0.95);
+  --shiki-token-constant: #7ec8f0;           /* Sky blue */
+  --shiki-token-string: #a5d66a;             /* Bright grass green */
+  --shiki-token-comment: #6e99a8;            /* Muted blue-gray */
+  --shiki-token-keyword: #ffc866;            /* Sunrise orange */
+  --shiki-token-parameter: #8dd4f0;          /* Light sky blue */
+  --shiki-token-function: #5db8e8;           /* Bright blue */
+  --shiki-token-string-expression: #a5d66a;  /* Bright grass green */
+  --shiki-token-punctuation: #8aa8b8;        /* Light blue-gray */
+  --shiki-token-link: #7ec8f0;              /* Sky blue */
+}
+
+/* Shiki code blocks styling */
+.theme-frutiger-aero .streamdown-content pre[data-streamdown] {
+  background: rgba(26, 58, 74, 0.95) !important;
+  border: 1px solid rgba(126, 200, 240, 0.3);
+  border-radius: var(--radius);
+  box-shadow:
+    0 4px 16px rgba(0, 80, 140, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-frutiger-aero pre:not(.prose pre) {
+  background: rgba(26, 58, 74, 0.95);
+  color: #e8eef3;
+  border-radius: var(--radius);
+}
+
+.theme-frutiger-aero pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-frutiger-aero .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.65;
+}
+
+.theme-frutiger-aero .streamdown-content [data-caret] {
+  background-color: var(--sky-blue);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-frutiger-aero ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.theme-frutiger-aero ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+
+.theme-frutiger-aero ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--sky-blue-light) 0%, var(--sky-blue) 100%);
+  border-radius: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.theme-frutiger-aero ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8ed0f5 0%, #4aaee0 100%);
+}
+
+/* ========================================
+   ADDITIONAL ELEMENTS
+   ======================================== */
+
+/* Task list checkboxes - Glossy toggle style */
+.theme-frutiger-aero .prose input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(126, 200, 240, 0.5);
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.theme-frutiger-aero .prose input[type="checkbox"]:checked {
+  background: linear-gradient(180deg, var(--grass-green-light) 0%, var(--grass-green) 100%);
+  border-color: var(--grass-green-dark);
+  box-shadow:
+    0 2px 6px rgba(124, 179, 66, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.theme-frutiger-aero .prose input[type="checkbox"]:checked::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 9px;
+  margin: 2px auto 0;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Definition lists */
+.theme-frutiger-aero .prose dl {
+  margin: 1.5rem 0;
+}
+
+.theme-frutiger-aero .prose dt {
+  font-weight: 600;
+  color: var(--sky-blue-dark);
+  margin-top: 1rem;
+}
+
+.theme-frutiger-aero .prose dd {
+  margin-left: 1.5rem;
+  color: var(--text-dark);
+}
+
+/* Abbreviations */
+.theme-frutiger-aero .prose abbr {
+  border-bottom: 1px dotted var(--sky-blue);
+  cursor: help;
+}
+
+/* Mark/Highlight */
+.theme-frutiger-aero .prose mark {
+  background: linear-gradient(180deg, rgba(255, 200, 102, 0.4) 0%, rgba(245, 166, 35, 0.3) 100%);
+  color: var(--text-dark);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+/* Keyboard input */
+.theme-frutiger-aero .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: linear-gradient(180deg, #f0f4f8 0%, #dce4eb 100%);
+  border: 1px solid #b8c4ce;
+  border-radius: 4px;
+  padding: 0.15em 0.45em;
+  box-shadow:
+    0 2px 0 #b8c4ce,
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--text-dark);
+}
+
+/* Subscript and Superscript */
+.theme-frutiger-aero .prose sub,
+.theme-frutiger-aero .prose sup {
+  font-size: 0.75em;
+  color: var(--text-light);
+}
+
+/* Figures and Captions */
+.theme-frutiger-aero .prose figure {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.theme-frutiger-aero .prose figcaption {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
+/* Landing page compatibility */
+.theme-frutiger-aero .landing-title,
+.theme-frutiger-aero .landing-card-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}

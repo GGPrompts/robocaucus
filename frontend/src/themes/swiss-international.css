@@ -1,0 +1,560 @@
+/* Swiss International Theme
+ * Strict grid systems, Helvetica precision, red/black/white.
+ * Mathematical typography. Zero ornamentation.
+ * International Typographic Style.
+ */
+
+.theme-swiss-international {
+  /* PRIMARY PALETTE */
+  --swiss-red: #E30613;
+  --swiss-red-dark: #B80510;
+  --swiss-red-light: #FF1A29;
+  --swiss-black: #000000;
+  --swiss-white: #FFFFFF;
+
+  /* NEUTRAL GRAYS - Mathematical Progression */
+  --gray-100: #F5F5F5;
+  --gray-200: #E5E5E5;
+  --gray-300: #D4D4D4;
+  --gray-400: #A3A3A3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+
+  /* FUNCTIONAL COLORS */
+  --info-blue: #0066CC;
+  --success-green: #00994D;
+  --warning-yellow: #FFCC00;
+  --error-red: #CC0000;
+
+  /* Theme Variables */
+  --bg-primary: var(--swiss-white);
+  --bg-secondary: var(--gray-100);
+  --text-primary: var(--swiss-black);
+  --text-secondary: var(--gray-700);
+  --text-muted: var(--gray-500);
+  --accent: var(--swiss-red);
+  --terminal-bg: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 40%, #0f0f0f 100%);
+  --accent-hover: var(--swiss-red-dark);
+  --accent-secondary: var(--swiss-black);
+  --border: var(--gray-300);
+  --code-bg: var(--gray-100);
+
+  /* Typography - Inter as Helvetica substitute */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* No border radius - strict rectangular forms */
+  --radius: 0;
+
+  /* Minimal shadows */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Red accent bar at top */
+.theme-swiss-international::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--swiss-red);
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Content container positioning */
+.theme-swiss-international > * {
+  position: relative;
+}
+
+/* Header needs higher z-index for dropdowns */
+.theme-swiss-international > header {
+  z-index: 200;
+}
+
+/* Main content area above pseudo-elements */
+.theme-swiss-international > div {
+  z-index: 1;
+}
+
+/* Landing page typography adjustments */
+.theme-swiss-international .landing-title,
+.theme-swiss-international .landing-card-title {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+/* Body Typography */
+.theme-swiss-international .prose {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-primary);
+}
+
+/* Headings - Precise, uppercase, tight tracking */
+.theme-swiss-international .prose h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--swiss-black);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 4px solid var(--swiss-red);
+}
+
+.theme-swiss-international .prose h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--swiss-black);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.theme-swiss-international .prose h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: var(--swiss-black);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.theme-swiss-international .prose h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  color: var(--swiss-black);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-swiss-international .prose h5 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0;
+  line-height: 1.375;
+  text-transform: uppercase;
+  color: var(--gray-700);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.theme-swiss-international .prose h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  line-height: 1.375;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Paragraphs */
+.theme-swiss-international .prose p {
+  margin-bottom: 1.25rem;
+  max-width: 65ch;
+}
+
+/* Blockquotes - Strong left border, clean */
+.theme-swiss-international .prose blockquote {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.625;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--gray-100);
+  border-left: 4px solid var(--swiss-red);
+  color: var(--gray-800);
+}
+
+.theme-swiss-international .prose blockquote p {
+  margin: 0;
+}
+
+.theme-swiss-international .prose blockquote p + p {
+  margin-top: 1rem;
+}
+
+/* Links - Red accent, no decoration until hover */
+.theme-swiss-international .prose a {
+  color: var(--swiss-red);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.theme-swiss-international .prose a:hover {
+  border-bottom-color: var(--swiss-red);
+}
+
+/* Horizontal Rules - Bold black line */
+.theme-swiss-international .prose hr {
+  border: none;
+  height: 2px;
+  background: var(--swiss-black);
+  margin: 2.5rem 0;
+}
+
+/* Code Blocks - Clean, minimal */
+.theme-swiss-international .prose pre {
+  background: var(--gray-900);
+  border: none;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.theme-swiss-international .prose pre code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--gray-100);
+  background: transparent;
+  padding: 0;
+}
+
+/* Inline Code */
+.theme-swiss-international .prose :not(pre) > code {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  color: var(--swiss-black);
+  padding: 0.125em 0.375em;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+/* Lists */
+.theme-swiss-international .prose ul,
+.theme-swiss-international .prose ol {
+  margin: 1.25rem 0;
+  padding-left: 1.5rem;
+  color: var(--text-primary);
+}
+
+.theme-swiss-international .prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.625;
+}
+
+.theme-swiss-international .prose li::marker {
+  color: var(--swiss-red);
+  font-weight: 600;
+}
+
+.theme-swiss-international .prose ul ul,
+.theme-swiss-international .prose ol ol,
+.theme-swiss-international .prose ul ol,
+.theme-swiss-international .prose ol ul {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Tables - Clean grid structure */
+.theme-swiss-international .prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.theme-swiss-international .prose th {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  border-bottom: 2px solid var(--swiss-black);
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.theme-swiss-international .prose td {
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0.75rem 1rem;
+  color: var(--gray-800);
+}
+
+.theme-swiss-international .prose tr:hover {
+  background: var(--gray-100);
+}
+
+/* Strong/Bold */
+.theme-swiss-international .prose strong {
+  color: var(--swiss-black);
+  font-weight: 700;
+}
+
+/* Emphasis/Italic */
+.theme-swiss-international .prose em {
+  font-style: italic;
+  color: var(--gray-700);
+}
+
+/* Images - Clean border */
+.theme-swiss-international .prose img {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid var(--gray-200);
+  margin: 1.5rem 0;
+}
+
+/* Shiki syntax highlighting - must use !important to override Streamdown inline styles */
+.theme-swiss-international .streamdown-content pre[data-streamdown] {
+  background: var(--gray-900) !important;
+  border: none;
+}
+
+.theme-swiss-international .prose pre {
+  background: var(--gray-900) !important;
+}
+
+/* Catch-all for code blocks outside .prose (frontmatter, viewers, etc) */
+.theme-swiss-international pre:not(.prose pre) {
+  background: #171717;
+  color: #E5E5E5;
+}
+
+.theme-swiss-international pre:not(.prose pre) code {
+  background: transparent;
+  color: inherit;
+}
+
+/* Streamdown specific overrides */
+.theme-swiss-international .streamdown-content {
+  font-family: var(--font-body);
+  line-height: 1.625;
+}
+
+.theme-swiss-international .streamdown-content [data-caret] {
+  background-color: var(--swiss-red);
+}
+
+/* ========================================
+   SHIKI CSS VARIABLES THEME
+   Syntax highlighting colors for Swiss International
+   High contrast, readable, precise
+   ======================================== */
+
+.theme-swiss-international {
+  /* Shiki base colors - light text for dark code block backgrounds */
+  --shiki-foreground: #E5E5E5;
+  --shiki-background: #171717;
+
+  /* Shiki token colors - bright/light for contrast on dark backgrounds */
+  --shiki-token-constant: #EF5350;           /* Bright red for constants */
+  --shiki-token-string: #66BB6A;             /* Bright green for strings */
+  --shiki-token-comment: #9E9E9E;            /* Medium gray for comments - readable */
+  --shiki-token-keyword: #FF4444;            /* Swiss red for keywords */
+  --shiki-token-parameter: #42A5F5;          /* Bright blue for parameters */
+  --shiki-token-function: #FFD54F;           /* Bright gold for functions */
+  --shiki-token-string-expression: #81C784;  /* Light green for template strings */
+  --shiki-token-punctuation: #BDBDBD;        /* Light gray for punctuation */
+  --shiki-token-link: #FF5252;              /* Bright red for links */
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.theme-swiss-international ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-swiss-international ::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+.theme-swiss-international ::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+}
+
+.theme-swiss-international ::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+
+/* ========================================
+   TASK LIST CHECKBOXES
+   ======================================== */
+
+.theme-swiss-international .prose input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--swiss-white);
+  border: 2px solid var(--gray-400);
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-swiss-international .prose input[type="checkbox"]:hover {
+  border-color: var(--swiss-black);
+}
+
+.theme-swiss-international .prose input[type="checkbox"]:checked {
+  background: var(--swiss-black);
+  border-color: var(--swiss-black);
+  position: relative;
+}
+
+.theme-swiss-international .prose input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--swiss-white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ========================================
+   DEFINITION LISTS
+   ======================================== */
+
+.theme-swiss-international .prose dl {
+  margin: 1.5rem 0;
+}
+
+.theme-swiss-international .prose dt {
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--swiss-black);
+  margin-top: 1rem;
+}
+
+.theme-swiss-international .prose dt:first-child {
+  margin-top: 0;
+}
+
+.theme-swiss-international .prose dd {
+  margin-left: 0;
+  margin-top: 0.25rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--gray-200);
+  color: var(--gray-700);
+}
+
+/* ========================================
+   KEYBOARD INPUTS
+   ======================================== */
+
+.theme-swiss-international .prose kbd {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  border-bottom-width: 2px;
+  padding: 0.125rem 0.375rem;
+  color: var(--swiss-black);
+}
+
+/* ========================================
+   ABBREVIATIONS
+   ======================================== */
+
+.theme-swiss-international .prose abbr[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--gray-400);
+  cursor: help;
+}
+
+/* ========================================
+   MARK/HIGHLIGHT
+   ======================================== */
+
+.theme-swiss-international .prose mark {
+  background: rgba(227, 6, 19, 0.15);
+  color: var(--swiss-black);
+  padding: 0.125em 0.25em;
+}
+
+/* ========================================
+   SMALL TEXT
+   ======================================== */
+
+.theme-swiss-international .prose small {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+/* ========================================
+   SUBSCRIPT AND SUPERSCRIPT
+   ======================================== */
+
+.theme-swiss-international .prose sub,
+.theme-swiss-international .prose sup {
+  font-size: 0.75rem;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.theme-swiss-international .prose sup {
+  top: -0.5em;
+}
+
+.theme-swiss-international .prose sub {
+  bottom: -0.25em;
+}
+
+/* ========================================
+   FIGURE AND FIGCAPTION
+   ======================================== */
+
+.theme-swiss-international .prose figure {
+  margin: 2rem 0;
+}
+
+.theme-swiss-international .prose figure img {
+  margin: 0;
+}
+
+.theme-swiss-international .prose figcaption {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gray-500);
+  margin-top: 0.75rem;
+}

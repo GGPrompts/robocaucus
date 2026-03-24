@@ -18,4 +18,5 @@ thiserror = "2"
 libc = "0.2"
 futures = "0.3"
 tokio-stream = "0.1"
+serde_yaml = "0.9"
 common = { path = "../common" }
