@@ -7,6 +7,7 @@ mod agentmd;
 mod context;
 mod db;
 mod mention;
+mod orchestrate;
 mod reconcile;
 mod routes;
 mod state;
