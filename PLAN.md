@@ -3,7 +3,8 @@
 **One app for all your AI subscriptions — and they can collaborate.**
 
 Date: 2026-03-24
-Status: Planning
+Status: MVP Complete, Fast-Follow Complete, Iteration In Progress
+Last updated: 2026-03-26
 
 ---
 
@@ -572,35 +573,41 @@ No tool orchestrates subscription-based CLIs into a multi-agent group chat with 
 
 The minimum to be useful and demo-worthy. Focused on the chat experience — the thing that's new.
 
-### MVP (the core loop)
-1. Chat sidebar with room list + agent list
-2. Create/join rooms with multiple agents
-3. Agent creation via form UI (name, model, color, personality)
-4. @mention routing to specific agents
-5. Streaming responses with Streamdown rendering (markdown, code highlighting)
-6. Two CLI adapters working (claude + one other)
-7. One theme working (pick the best one)
-8. SQLite persistence (conversations, messages, agents)
-9. CLI detection (which subscriptions are available on this machine)
+### MVP (the core loop) -- COMPLETE
+1. [x] Chat sidebar with room list + agent list
+2. [x] Create/join rooms with multiple agents (rc-cw80: POST/DELETE/GET conversation agents)
+3. [x] Agent creation via form UI (name, model, color, personality) (rc-zrv3: provider-dependent model dropdown)
+4. [x] @mention routing to specific agents (scoped to conversation members)
+5. [x] Streaming responses with Streamdown rendering (markdown, code highlighting, mermaid, math)
+6. [x] Four CLI adapters working (claude, codex, gemini, copilot)
+7. [x] 31 CSS variable themes with full UI coverage (rc-xldd: replaced all hardcoded Tailwind)
+8. [x] SQLite persistence (conversations, messages, agents, playbooks)
+9. [x] CLI detection (rc-jj3f: grey out unavailable providers, show version for installed)
 
-### Fast-Follow (makes it sticky)
-- "Ask Everyone" panel mode
-- 3-5 starter agent templates (writer, developer, researcher presets)
-- Workspace selector
-- 5+ themes
-- Debate mode
-- 2-3 starter playbooks (Compare Approaches, Draft Workshop, Code Review)
+### Fast-Follow (makes it sticky) -- COMPLETE
+- [x] "Ask Everyone" panel mode (rc-3n7b: POST /api/chat/panel with multi-agent SSE)
+- [x] 9 starter agent templates (rc-nv3j: writer, developer, researcher presets seeded at startup)
+- [x] Workspace selector (rc-rn77: localStorage-backed project list with manual path entry)
+- [x] 31 themes (all ported from markdown-themes with CSS variable bridge)
+- [x] Debate mode (rc-3n7b: POST /api/chat/debate with structured multi-turn phases)
+- [x] 3 starter playbooks seeded at startup (Debate, Code Review Panel, Research & Synthesize)
 
-### Iteration (full vision)
-- Full playbook system with custom creation UI and all flow types
-- All starter playbooks (stress test, research brief, architecture decision, sprint planning)
-- All 30 themes + mermaid + math rendering
-- File tree + code viewer
-- Git graph (developer mode)
-- Onboarding wizard for CLI installation
-- Round-robin mode
-- Export conversations
-- Tauri desktop app wrapper
-- TTS mode
-- Beads integration
-- File attachments in chat
+### Iteration (full vision) -- IN PROGRESS
+- [x] Playbook input forms (rc-zjj7: parse {{PLACEHOLDER}} tokens, show modal form before running)
+- [ ] Full playbook custom creation UI and all flow types
+- [ ] All starter playbooks (stress test, research brief, architecture decision, sprint planning)
+- [x] All 30 themes + mermaid + math rendering (rc-xldd + rc-6i6m)
+- [x] File tree + code viewer in left sidebar and DevSidebar (rc-08o0)
+- [x] Git graph in left sidebar and DevSidebar (rc-08o0)
+- [x] Tabbed editor area (rc-ddhx: multiple chat/file tabs, state preserved on switch)
+- [x] Conversation delete (rc-wkgc: trash icon on hover, confirmation dialog)
+- [x] Default workspace path (rc-40kw: GET /api/config, backend cwd fallback)
+- [x] tmux persistence layer (rc-2ye6: TmuxManager in AppState, reconcile on startup)
+- [x] PR review tribunal (3-model parallel review with debate synthesis)
+- [ ] Onboarding wizard for CLI installation
+- [ ] Round-robin mode
+- [ ] Export conversations
+- [ ] Tauri desktop app wrapper
+- [ ] TTS mode
+- [ ] Beads integration
+- [ ] File attachments in chat
