@@ -2,7 +2,8 @@
 //   let seeded = templates::seed_starter_agents(&db).expect("failed to seed agents");
 //   if seeded > 0 { tracing::info!("seeded {} starter agents", seeded); }
 
-use crate::db::Database;
+use crate::db::{agent_home_dir, Database};
+use crate::scaffold::scaffold_agent_folder;
 
 /// A starter agent template definition.
 struct Template {
@@ -113,11 +114,17 @@ pub fn seed_starter_agents(db: &Database) -> Result<usize, rusqlite::Error> {
     }
 
     for tpl in STARTER_AGENTS {
+        // Scaffold per-agent home directory with provider-specific config file
+        let home = agent_home_dir(tpl.name);
+        if let Err(e) = scaffold_agent_folder(tpl.provider, &home, tpl.system_prompt) {
+            tracing::warn!("failed to scaffold starter agent '{}': {e}", tpl.name);
+        }
+
         db.create_agent(
             tpl.name,
             tpl.model,
             tpl.provider,
-            "",  // agent_home — empty for starter agents
+            &home,
             tpl.color,
             "global",
             tpl.system_prompt,

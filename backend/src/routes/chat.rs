@@ -22,9 +22,11 @@ use crate::adapter::copilot::CopilotAdapter;
 use crate::adapter::gemini::GeminiAdapter;
 use crate::adapter::{ChunkType, CliAdapter};
 use crate::context::{self, ContextMessage};
+use crate::db::agent_home_dir;
 use crate::mention;
 use crate::orchestrate::debate::{DebateConfig, DebateEngine};
 use crate::orchestrate::panel::{self, PanelConfig};
+use crate::scaffold::scaffold_agent_folder;
 use crate::state::AppState;
 
 // ---------------------------------------------------------------------------
@@ -151,14 +153,13 @@ fn chunk_type_to_event_name(ct: &ChunkType) -> &'static str {
     }
 }
 
-/// Join non-system context messages into a conversation prompt for the CLI adapter.
+/// Join context messages into a conversation prompt for the CLI adapter.
+/// System messages are prepended as identity/persona instructions.
 fn context_to_conversation_prompt(messages: &[ContextMessage]) -> String {
     let mut parts = Vec::new();
     for msg in messages {
-        if msg.role == "system" {
-            continue;
-        }
         match msg.role.as_str() {
+            "system" => parts.push(format!("[System Instructions]: {}", msg.content)),
             "assistant" => parts.push(format!("[Assistant]: {}", msg.content)),
             "user" => parts.push(format!("[User]: {}", msg.content)),
             other => parts.push(format!("[{}]: {}", other, msg.content)),
@@ -286,7 +287,7 @@ async fn chat_send(
     // ------------------------------------------------------------------
     // 4. Get target agent from DB
     // ------------------------------------------------------------------
-    let target_agent = {
+    let mut target_agent = {
         let db = match state.db() {
             Ok(db) => db,
             Err((_status, msg)) => {
@@ -361,7 +362,7 @@ async fn chat_send(
     );
 
     // ------------------------------------------------------------------
-    // 6. Select CLI adapter based on agent provider
+    // 6. Ensure agent has a home directory (scaffold on-the-fly if missing)
     // ------------------------------------------------------------------
     let provider = if target_agent.provider.is_empty() {
         // Backwards compat: fall back to model field for legacy agents
@@ -369,6 +370,21 @@ async fn chat_send(
     } else {
         target_agent.provider.as_str()
     };
+
+    if target_agent.agent_home.is_empty() && !provider.is_empty() {
+        let home = agent_home_dir(&target_agent.name);
+        let prompt = &target_agent.system_prompt;
+        if let Err(e) = scaffold_agent_folder(provider, &home, prompt) {
+            tracing::warn!("failed to scaffold agent '{}' on-the-fly: {e}", target_agent.name);
+        } else {
+            // Update the agent's agent_home in DB so we don't scaffold again
+            target_agent.agent_home = home;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 7. Select CLI adapter based on agent provider
+    // ------------------------------------------------------------------
     let adapter: Box<dyn CliAdapter> = match provider {
         "claude" => Box::new(ClaudeAdapter::new(120)),
         "codex" => Box::new(CodexAdapter::new(120)),
@@ -646,7 +662,7 @@ async fn chat_panel(
             .into_response();
     }
 
-    // 4. Build adapters for each agent
+    // 4. Build adapters for each agent (scaffold agent_home if missing)
     let mut agents_with_adapters: Vec<(crate::db::Agent, Box<dyn CliAdapter>)> = Vec::new();
     for agent in &room_agents {
         let provider = if agent.provider.is_empty() {
@@ -654,9 +670,21 @@ async fn chat_panel(
         } else {
             agent.provider.as_str()
         };
+
+        // Scaffold agent_home on-the-fly if missing
+        let mut agent_clone = agent.clone();
+        if agent_clone.agent_home.is_empty() && !provider.is_empty() {
+            let home = agent_home_dir(&agent_clone.name);
+            if let Err(e) = scaffold_agent_folder(provider, &home, &agent_clone.system_prompt) {
+                tracing::warn!("failed to scaffold panel agent '{}': {e}", agent_clone.name);
+            } else {
+                agent_clone.agent_home = home;
+            }
+        }
+
         match panel::select_adapter(provider) {
             Ok(adapter) => {
-                agents_with_adapters.push((agent.clone(), adapter));
+                agents_with_adapters.push((agent_clone, adapter));
             }
             Err(e) => {
                 tracing::warn!(
@@ -1033,17 +1061,24 @@ async fn chat_debate(
                 }
             };
 
-            let agent_home = if agent.agent_home.is_empty() {
+            // Scaffold agent_home on-the-fly if missing
+            let effective_home = if agent.agent_home.is_empty() && !provider.is_empty() {
+                let home = agent_home_dir(&agent.name);
+                if let Err(e) = scaffold_agent_folder(provider, &home, &agent.system_prompt) {
+                    tracing::warn!("failed to scaffold debate agent '{}': {e}", agent.name);
+                }
+                Some(home)
+            } else if agent.agent_home.is_empty() {
                 None
             } else {
-                Some(agent.agent_home.as_str())
+                Some(agent.agent_home.clone())
             };
             let workspace = conv_for_task
                 .workspace_path
                 .as_deref()
                 .or(agent.workspace_path.as_deref());
 
-            let mut chunk_rx = match adapter.spawn(&prompt, agent_home, workspace).await {
+            let mut chunk_rx = match adapter.spawn(&prompt, effective_home.as_deref(), workspace).await {
                 Ok(rx) => rx,
                 Err(e) => {
                     let err_data = serde_json::json!({

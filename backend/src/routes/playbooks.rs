@@ -7,6 +7,8 @@ use axum::{
 };
 use serde::Deserialize;
 
+use crate::db::agent_home_dir;
+use crate::scaffold::scaffold_agent_folder;
 use crate::state::AppState;
 
 // ---------------------------------------------------------------------------
@@ -242,12 +244,19 @@ async fn run_playbook(
         for (i, role) in roles.iter().enumerate() {
             let color = ROLE_COLORS[i % ROLE_COLORS.len()];
             let prompt = role.system_prompt.as_deref().unwrap_or("");
+            let provider = "claude";
+
+            // Scaffold the agent home directory so the CLI discovers the agent's persona
+            let home = agent_home_dir(&role.name);
+            if let Err(e) = scaffold_agent_folder(provider, &home, prompt) {
+                tracing::warn!("failed to scaffold agent '{}': {e}", role.name);
+            }
 
             let agent = match db.create_agent(
                 &role.name,
                 "sonnet",  // default model
-                "claude",  // default provider
-                "",        // agent_home
+                provider,
+                &home,
                 color,
                 "global",
                 prompt,
