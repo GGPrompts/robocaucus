@@ -91,6 +91,7 @@ export interface SidebarProps {
   agents?: Agent[];
   selectedRoomId?: string;
   onSelectRoom?: (room: Room) => void;
+  onDeleteRoom?: (roomId: string) => void;
   onSelectAgent?: (agent: Agent) => void;
   onCreateRoom?: () => void;
   onCreateAgent?: () => void;
@@ -106,6 +107,7 @@ export default function Sidebar({
   agents: propAgents,
   selectedRoomId,
   onSelectRoom,
+  onDeleteRoom,
   onSelectAgent,
   onCreateRoom,
   onCreateAgent,
@@ -199,10 +201,10 @@ export default function Sidebar({
             {displayRooms.map((room) => {
               const isActive = room.id === effectiveActiveId;
               return (
-                <li key={room.id}>
+                <li key={room.id} className="group/room relative">
                   <button
                     onClick={() => handleSelectRoom(room)}
-                    className={`group flex w-full flex-col rounded px-2 py-1.5 text-left transition-colors ${
+                    className={`flex w-full flex-col rounded px-2 py-1.5 text-left transition-colors ${
                       isActive
                         ? 'bg-gray-800 text-white'
                         : 'hover:bg-gray-800/60 hover:text-white'
@@ -214,10 +216,30 @@ export default function Sidebar({
                         <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
                       )}
                     </span>
-                    <span className="truncate text-xs text-gray-500 group-hover:text-gray-400">
+                    <span className="truncate text-xs text-gray-500 group-hover/room:text-gray-400">
                       {room.lastMessage}
                     </span>
                   </button>
+                  {onDeleteRoom && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteRoom(room.id);
+                      }}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 hidden rounded p-1 text-gray-500 hover:bg-gray-700 hover:text-red-400 group-hover/room:flex items-center justify-center"
+                      title="Delete conversation"
+                    >
+                      <svg
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
                 </li>
               );
             })}

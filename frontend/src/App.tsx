@@ -19,6 +19,7 @@ import {
   addAgentToConversation,
   removeAgentFromConversation,
   updateConversation,
+  deleteConversation,
 } from './lib/api';
 import { themes, type ThemeId } from './themes';
 import type { Room, Agent } from './types';
@@ -319,6 +320,22 @@ export default function App() {
     [selectedRoom],
   );
 
+  const handleDeleteRoom = useCallback(
+    async (roomId: string) => {
+      if (!window.confirm('Delete this conversation? This cannot be undone.')) return;
+      try {
+        await deleteConversation(roomId);
+        setRooms((prev) => prev.filter((r) => r.id !== roomId));
+        if (selectedRoom?.id === roomId) {
+          setSelectedRoom(null);
+        }
+      } catch (e) {
+        console.error('Failed to delete conversation', e);
+      }
+    },
+    [selectedRoom],
+  );
+
   return (
     <div className={`flex h-screen overflow-hidden ${themeClassName}`}>
       <Sidebar
@@ -326,6 +343,7 @@ export default function App() {
         agents={agents}
         selectedRoomId={selectedRoom?.id}
         onSelectRoom={handleSelectRoom}
+        onDeleteRoom={handleDeleteRoom}
         onCreateRoom={handleCreateRoom}
         onCreateAgent={() => setShowAgentBuilder(true)}
         onOpenPlaybooks={() => setShowPlaybooks(true)}

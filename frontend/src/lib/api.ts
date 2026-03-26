@@ -179,6 +179,19 @@ export async function updateConversation(
   return jsonOrThrow<Room>(res);
 }
 
+export async function deleteConversation(
+  id: string,
+  base?: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/conversations/${id}`, base), {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+}
+
 export async function fetchConversationAgents(
   conversationId: string,
   base?: string,
