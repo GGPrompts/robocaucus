@@ -8,13 +8,11 @@ mod context;
 mod db;
 mod mention;
 mod orchestrate;
-#[allow(dead_code)]
 mod reconcile;
 mod routes;
 mod scaffold;
 mod state;
 mod templates;
-#[allow(dead_code)]
 mod tmux;
 
 use state::AppState;
@@ -59,7 +57,35 @@ async fn main() {
         tracing::info!("seeded {} starter playbooks", seeded);
     }
 
-    let state = AppState::new(db);
+    // --- Tmux session management (graceful: no crash if tmux is missing) ---
+    let tmux_mgr = {
+        let mgr = tmux::TmuxManager::new();
+        // Probe whether tmux is actually available by trying to list sessions.
+        match mgr.list_sessions().await {
+            Ok(_) => {
+                tracing::info!("tmux detected — session management enabled");
+                // Run startup reconciliation (cleanup orphans, log status).
+                let result = reconcile::reconcile(&db, &mgr).await;
+                tracing::info!(
+                    "reconcile: {} active, {} orphans killed, {} without sessions",
+                    result.active_sessions.len(),
+                    result.orphaned_killed.len(),
+                    result.missing_sessions.len(),
+                );
+                Some(mgr)
+            }
+            Err(tmux::TmuxError::NotInstalled) => {
+                tracing::warn!("tmux not installed — running without session management");
+                None
+            }
+            Err(e) => {
+                tracing::warn!("tmux probe failed ({e}) — running without session management");
+                None
+            }
+        }
+    };
+
+    let state = AppState::new(db, tmux_mgr);
 
     let cors = CorsLayer::new()
         .allow_origin([

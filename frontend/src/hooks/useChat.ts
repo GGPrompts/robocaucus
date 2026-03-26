@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { Message } from '../types.ts';
-import { apiUrl, fetchMessages } from '../lib/api.ts';
+import { apiUrl, fetchMessages, startPanel, startDebate } from '../lib/api.ts';
 
 // ---------------------------------------------------------------------------
 // Public interface
@@ -19,6 +19,8 @@ export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   sendMessage: (content: string, agentId?: string) => Promise<void>;
+  startPanelStream: (content: string) => Promise<void>;
+  startDebateStream: (topic: string, numRounds?: number) => Promise<void>;
   isStreaming: boolean;
   error: string | null;
   clearError: () => void;
@@ -375,10 +377,268 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     [conversationId, apiBase, isStreaming, readSSEStream],
   );
 
+  // ------------------------------------------------------------------
+  // Multi-agent SSE stream reader (for panel & debate)
+  //
+  // Unlike the single-agent reader, this accumulates text per agent_id
+  // and renders them into a single streaming message with agent headers.
+  // Each agent's "done" event finalizes that agent's section, and the
+  // final "done" (with no agent_id) ends the stream.
+  // ------------------------------------------------------------------
+  const readMultiAgentSSEStream = useCallback(
+    async (response: Response, signal: AbortSignal) => {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let content = '';
+
+      const streamBase = {
+        id: `multi-stream-${Date.now()}`,
+        conversationId,
+        role: 'assistant' as const,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          if (signal.aborted) break;
+
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const { events, rest } = parseSSEBuffer(buffer);
+          buffer = rest;
+
+          for (const sse of events) {
+            if (signal.aborted || !mountedRef.current) break;
+
+            if (sse.id) {
+              lastEventIdRef.current = sse.id;
+            }
+
+            switch (sse.event) {
+              case 'text': {
+                const parsed = safeParse(sse.data);
+                const chunk =
+                  typeof parsed === 'string'
+                    ? parsed
+                    : (parsed as { content?: string })?.content ?? sse.data;
+                content += chunk;
+                setStreamingMessage({
+                  ...streamBase,
+                  content,
+                  streaming: true,
+                });
+                break;
+              }
+
+              case 'thinking': {
+                const parsed = safeParse(sse.data);
+                const thought =
+                  typeof parsed === 'string'
+                    ? parsed
+                    : (parsed as { content?: string })?.content ?? sse.data;
+                const agentName = (parsed as { agent_name?: string })?.agent_name ?? '';
+                content += `\n\n<details><summary>${agentName ? agentName + ' thinking...' : 'Thinking...'}</summary>\n\n${thought}\n\n</details>\n\n`;
+                setStreamingMessage({
+                  ...streamBase,
+                  content,
+                  streaming: true,
+                });
+                break;
+              }
+
+              case 'done': {
+                // The final done event (no agent_id or empty content) = stream complete
+                const parsed = safeParse(sse.data);
+                const agentId = (parsed as { agent_id?: string })?.agent_id;
+                if (!agentId) {
+                  // Stream is complete — finalize
+                  if (content) {
+                    const finalMessage: Message = {
+                      ...streamBase,
+                      content,
+                    };
+                    setMessages((prev) => [...prev, finalMessage]);
+                  }
+                  setStreamingMessage(null);
+                  setIsStreaming(false);
+                  return;
+                }
+                // Per-agent done — just a separator, stream continues
+                break;
+              }
+
+              case 'error': {
+                const parsed = safeParse(sse.data);
+                const errMsg =
+                  typeof parsed === 'string'
+                    ? parsed
+                    : (parsed as { content?: string })?.content ?? sse.data;
+                content += `\n\n**Error:** ${errMsg}\n\n`;
+                setStreamingMessage({
+                  ...streamBase,
+                  content,
+                  streaming: true,
+                });
+                break;
+              }
+
+              default:
+                break;
+            }
+          }
+        }
+
+        // Stream ended without final done — finalize
+        if (mountedRef.current && content) {
+          setMessages((prev) => [...prev, { ...streamBase, content }]);
+          setStreamingMessage(null);
+          setIsStreaming(false);
+        }
+      } catch (err) {
+        if (signal.aborted) return;
+        if (mountedRef.current) {
+          setError(err instanceof Error ? err.message : 'Multi-agent stream failed');
+          setStreamingMessage(null);
+          setIsStreaming(false);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    },
+    [conversationId],
+  );
+
+  // ------------------------------------------------------------------
+  // startPanelStream — "Ask Everyone"
+  // ------------------------------------------------------------------
+  const startPanelStream = useCallback(
+    async (content: string) => {
+      if (isStreaming) return;
+
+      setError(null);
+      setIsStreaming(true);
+
+      // Optimistic user message
+      const userMessage: Message = {
+        id: `temp-${Date.now()}`,
+        conversationId,
+        role: 'user',
+        content: `[Ask Everyone] ${content}`,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+
+      setStreamingMessage({
+        id: `multi-stream-${Date.now()}`,
+        conversationId,
+        role: 'assistant',
+        content: '',
+        streaming: true,
+        timestamp: new Date().toISOString(),
+      });
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const response = await startPanel(conversationId, content, apiBase);
+
+        if (!response.ok) {
+          const errText = await response.text().catch(() => response.statusText);
+          throw new Error(`Panel failed (${response.status}): ${errText}`);
+        }
+
+        if (!response.body) {
+          throw new Error('Response has no body');
+        }
+
+        await readMultiAgentSSEStream(response, controller.signal);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        if (mountedRef.current) {
+          setError(err instanceof Error ? err.message : 'Panel stream failed');
+          setStreamingMessage(null);
+          setIsStreaming(false);
+        }
+      }
+    },
+    [conversationId, apiBase, isStreaming, readMultiAgentSSEStream],
+  );
+
+  // ------------------------------------------------------------------
+  // startDebateStream — structured debate
+  // ------------------------------------------------------------------
+  const startDebateStream = useCallback(
+    async (topic: string, numRounds?: number) => {
+      if (isStreaming) return;
+
+      setError(null);
+      setIsStreaming(true);
+
+      // Optimistic user message
+      const userMessage: Message = {
+        id: `temp-${Date.now()}`,
+        conversationId,
+        role: 'user',
+        content: `[Debate Topic] ${topic}`,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+
+      setStreamingMessage({
+        id: `multi-stream-${Date.now()}`,
+        conversationId,
+        role: 'assistant',
+        content: '',
+        streaming: true,
+        timestamp: new Date().toISOString(),
+      });
+
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const response = await startDebate(
+          conversationId,
+          topic,
+          numRounds,
+          apiBase,
+        );
+
+        if (!response.ok) {
+          const errText = await response.text().catch(() => response.statusText);
+          throw new Error(`Debate failed (${response.status}): ${errText}`);
+        }
+
+        if (!response.body) {
+          throw new Error('Response has no body');
+        }
+
+        await readMultiAgentSSEStream(response, controller.signal);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        if (mountedRef.current) {
+          setError(err instanceof Error ? err.message : 'Debate stream failed');
+          setStreamingMessage(null);
+          setIsStreaming(false);
+        }
+      }
+    },
+    [conversationId, apiBase, isStreaming, readMultiAgentSSEStream],
+  );
+
   return {
     messages,
     streamingMessage,
     sendMessage,
+    startPanelStream,
+    startDebateStream,
     isStreaming,
     error,
     clearError,

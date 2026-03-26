@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Code2 } from 'lucide-react';
+import { Code2, Users, Swords } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
@@ -62,9 +62,21 @@ function ChatPanel({
   onRemoveAgent,
   onUpdateRoom,
 }: ChatPanelProps) {
-  const { messages, streamingMessage, sendMessage, isStreaming, error } = useChat({
+  const {
+    messages,
+    streamingMessage,
+    sendMessage,
+    startPanelStream,
+    startDebateStream,
+    isStreaming,
+    error,
+  } = useChat({
     conversationId: room.id,
   });
+
+  const [showDebateInput, setShowDebateInput] = useState(false);
+  const [debateTopic, setDebateTopic] = useState('');
+  const debateInputRef = useRef<HTMLInputElement>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +84,27 @@ function ChatPanel({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, streamingMessage]);
 
+  useEffect(() => {
+    if (showDebateInput) {
+      debateInputRef.current?.focus();
+    }
+  }, [showDebateInput]);
+
   const agentMap = Object.fromEntries(allAgents.map((a) => [a.id, a]));
+
+  const handleAskEveryone = useCallback(() => {
+    const question = window.prompt('Ask all agents:');
+    if (question?.trim()) {
+      startPanelStream(question.trim());
+    }
+  }, [startPanelStream]);
+
+  const handleStartDebate = useCallback(() => {
+    if (!debateTopic.trim()) return;
+    startDebateStream(debateTopic.trim());
+    setDebateTopic('');
+    setShowDebateInput(false);
+  }, [debateTopic, startDebateStream]);
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-[var(--bg-primary)]">
@@ -88,6 +120,34 @@ function ChatPanel({
 
       {/* Toolbar row */}
       <div className="flex h-10 shrink-0 items-center border-b border-[var(--border-primary)] px-4 gap-3">
+        {/* Orchestration buttons */}
+        {members.length >= 1 && (
+          <button
+            onClick={handleAskEveryone}
+            disabled={isStreaming || members.length < 1}
+            className="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors bg-[var(--bg-secondary)] text-[var(--text-secondary)] ring-1 ring-[var(--border-secondary)] hover:text-[var(--text-primary)] hover:ring-[var(--accent)] disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Send the same prompt to all agents in this conversation"
+          >
+            <Users size={14} />
+            Ask Everyone
+          </button>
+        )}
+        {members.length >= 2 && (
+          <button
+            onClick={() => setShowDebateInput((v) => !v)}
+            disabled={isStreaming}
+            className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors ring-1 disabled:opacity-40 disabled:cursor-not-allowed ${
+              showDebateInput
+                ? 'bg-[var(--accent)] text-[var(--text-primary)] ring-[var(--accent)]'
+                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] ring-[var(--border-secondary)] hover:text-[var(--text-primary)] hover:ring-[var(--accent)]'
+            }`}
+            title="Start a structured debate between agents (requires 2+ agents)"
+          >
+            <Swords size={14} />
+            Start Debate
+          </button>
+        )}
+
         <div className="flex-1" />
         <button
           onClick={onToggleDevSidebar}
@@ -102,6 +162,47 @@ function ChatPanel({
         </button>
         <ThemeSelector currentTheme={theme} onThemeChange={onThemeChange} />
       </div>
+
+      {/* Debate topic input row (shown when Start Debate is clicked) */}
+      {showDebateInput && (
+        <div className="flex shrink-0 items-center gap-2 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)] px-4 py-2">
+          <label className="text-xs font-medium text-[var(--text-muted)] whitespace-nowrap">
+            Debate topic:
+          </label>
+          <input
+            ref={debateInputRef}
+            value={debateTopic}
+            onChange={(e) => setDebateTopic(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleStartDebate();
+              } else if (e.key === 'Escape') {
+                setShowDebateInput(false);
+                setDebateTopic('');
+              }
+            }}
+            placeholder="e.g. Should we use microservices or a monolith?"
+            className="flex-1 rounded bg-[var(--bg-primary)] px-2.5 py-1 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none ring-1 ring-[var(--border-secondary)] focus:ring-[var(--accent)]"
+          />
+          <button
+            onClick={handleStartDebate}
+            disabled={!debateTopic.trim() || isStreaming}
+            className="rounded bg-[var(--accent)] px-3 py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Go
+          </button>
+          <button
+            onClick={() => {
+              setShowDebateInput(false);
+              setDebateTopic('');
+            }}
+            className="rounded px-2 py-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-4">

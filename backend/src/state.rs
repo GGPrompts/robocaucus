@@ -3,19 +3,23 @@ use axum::http::StatusCode;
 use tokio::sync::broadcast;
 
 use crate::db::Database;
+use crate::tmux::TmuxManager;
 
 #[derive(Clone)]
 pub struct AppState {
     pub tx: broadcast::Sender<String>, // For SSE broadcasting
     pub db: Arc<Mutex<Database>>,
+    /// Shared tmux manager. `None` when tmux is not available on the system.
+    pub tmux: Option<Arc<TmuxManager>>,
 }
 
 impl AppState {
-    pub fn new(db: Database) -> Self {
+    pub fn new(db: Database, tmux: Option<TmuxManager>) -> Self {
         let (tx, _) = broadcast::channel(256);
         Self {
             tx,
             db: Arc::new(Mutex::new(db)),
+            tmux: tmux.map(Arc::new),
         }
     }
 

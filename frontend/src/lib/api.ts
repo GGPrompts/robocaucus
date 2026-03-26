@@ -228,6 +228,39 @@ export async function removeAgentFromConversation(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Orchestration: Panel & Debate (SSE endpoints — return raw Response for streaming)
+// ---------------------------------------------------------------------------
+
+export function startPanel(
+  conversationId: string,
+  content: string,
+  base?: string,
+): Promise<Response> {
+  return fetch(apiUrl('/chat/panel', base), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ conversation_id: conversationId, content }),
+  });
+}
+
+export function startDebate(
+  conversationId: string,
+  topic: string,
+  numRounds?: number,
+  base?: string,
+): Promise<Response> {
+  return fetch(apiUrl('/chat/debate', base), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      conversation_id: conversationId,
+      topic,
+      num_rounds: numRounds,
+    }),
+  });
+}
+
 // ── File API ──────────────────────────────────────────────────────────────
 
 export interface FileEntry {
