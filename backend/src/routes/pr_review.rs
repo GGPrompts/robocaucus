@@ -18,11 +18,15 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
+use tokio::time::{timeout, Duration};
+
 use crate::adapter::{ChunkType, CliAdapter};
 use crate::db::Agent;
 use crate::orchestrate::debate::{DebateConfig, DebateEngine, DebatePhase};
 use crate::orchestrate::panel::{select_adapter, spawn_panel, PanelConfig};
 use crate::state::AppState;
+
+const DEBATE_TURN_TIMEOUT: Duration = Duration::from_secs(120);
 
 // ---------------------------------------------------------------------------
 // Request / response types
@@ -116,6 +120,14 @@ async fn pr_review_tribunal(
     State(state): State<AppState>,
     Json(req): Json<PrReviewRequest>,
 ) -> axum::response::Response {
+    if req.owner.is_empty() || req.repo.is_empty() || req.pr_number == 0 {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "owner, repo must be non-empty and pr_number must be > 0"})),
+        )
+            .into_response();
+    }
+
     let owner = req.owner;
     let repo = req.repo;
     let pr_number = req.pr_number;
@@ -265,13 +277,15 @@ async fn pr_review_tribunal(
         for agent in &agents {
             if let Some((_name, content)) = reviews.get(&agent.id) {
                 if !content.is_empty() {
-                    let _ = db.create_message(
+                    if let Err(e) = db.create_message(
                         &conversation_id,
                         Some(&agent.id),
                         "assistant",
                         content,
                         Some(&agent.model),
-                    );
+                    ) {
+                        tracing::warn!("Failed to save initial review message for agent {}: {e}", agent.id);
+                    }
                 }
             }
         }
@@ -397,7 +411,8 @@ async fn run_debate(
         // Spawn single adapter for this turn.
         let adapter = match select_adapter(&agent.provider) {
             Ok(a) => a,
-            Err(_) => {
+            Err(e) => {
+                tracing::warn!("Failed to create adapter for {} ({}): {e}", agent.name, agent.provider);
                 engine.advance();
                 continue;
             }
@@ -410,32 +425,46 @@ async fn run_debate(
         };
 
         let mut turn_content = String::new();
-        match adapter
-            .spawn(&prompt, agent_home.as_deref(), None)
-            .await
+        match timeout(
+            DEBATE_TURN_TIMEOUT,
+            adapter.spawn(&prompt, agent_home.as_deref(), None),
+        )
+        .await
         {
-            Ok(mut rx) => {
+            Ok(Ok(mut rx)) => {
                 while let Some(chunk) = rx.recv().await {
                     if matches!(chunk.chunk_type, ChunkType::Text) {
                         turn_content.push_str(&chunk.content);
                     }
                 }
             }
-            Err(e) => {
+            Ok(Err(e)) => {
+                tracing::warn!("Adapter spawn error for {} during {}: {e}", agent.name, phase_name);
                 turn_content = format!("[Adapter error: {e}]");
+            }
+            Err(_) => {
+                tracing::warn!("Debate turn timed out for {} during {} ({}s limit)", agent.name, phase_name, DEBATE_TURN_TIMEOUT.as_secs());
+                turn_content = format!("[Timeout after {}s]", DEBATE_TURN_TIMEOUT.as_secs());
             }
         }
 
         // Save debate turn as a message.
         {
-            if let Ok(db) = state.db() {
-                let _ = db.create_message(
-                    conversation_id,
-                    Some(&agent.id),
-                    "assistant",
-                    &turn_content,
-                    Some(&agent.model),
-                );
+            match state.db() {
+                Ok(db) => {
+                    if let Err(e) = db.create_message(
+                        conversation_id,
+                        Some(&agent.id),
+                        "assistant",
+                        &turn_content,
+                        Some(&agent.model),
+                    ) {
+                        tracing::warn!("Failed to save debate turn message for agent {}: {e}", agent.id);
+                    }
+                }
+                Err((_, msg)) => {
+                    tracing::warn!("Failed to acquire DB for debate turn save: {msg}");
+                }
             }
         }
 
@@ -521,7 +550,10 @@ async fn post_pr_comment(
 
     // Extract the HTML URL from the response JSON.
     let response: serde_json::Value =
-        serde_json::from_slice(&output.stdout).unwrap_or(serde_json::json!({}));
+        serde_json::from_slice(&output.stdout).unwrap_or_else(|e| {
+            tracing::warn!("Failed to parse gh API response as JSON: {e}");
+            serde_json::json!({})
+        });
     let url = response
         .get("html_url")
         .and_then(|v| v.as_str())
