@@ -21,12 +21,12 @@ const PROVIDERS: {
   label: string;
   description: string;
   defaultModel: string;
-  variants: string;
+  variants: string[];
 }[] = [
-  { value: 'claude', label: 'Claude', description: 'Anthropic Claude CLI', defaultModel: 'sonnet', variants: 'sonnet, opus, haiku' },
-  { value: 'codex', label: 'Codex', description: 'OpenAI Codex CLI', defaultModel: 'o3', variants: 'o3, o4-mini, gpt-5.4' },
-  { value: 'gemini', label: 'Gemini', description: 'Google Gemini CLI', defaultModel: 'gemini-2.5-pro', variants: 'gemini-2.5-pro' },
-  { value: 'copilot', label: 'Copilot', description: 'GitHub Copilot CLI', defaultModel: 'gpt-4o', variants: 'gpt-4o' },
+  { value: 'claude', label: 'Claude', description: 'Anthropic Claude CLI', defaultModel: 'sonnet', variants: ['sonnet', 'opus', 'haiku'] },
+  { value: 'codex', label: 'Codex', description: 'OpenAI Codex CLI', defaultModel: 'o3', variants: ['o3', 'o4-mini', 'gpt-5.4'] },
+  { value: 'gemini', label: 'Gemini', description: 'Google Gemini CLI', defaultModel: 'gemini-2.5-pro', variants: ['gemini-2.5-pro'] },
+  { value: 'copilot', label: 'Copilot', description: 'GitHub Copilot CLI', defaultModel: 'gpt-4o', variants: ['gpt-4o'] },
 ];
 
 const PALETTE = [
@@ -194,6 +194,7 @@ export default function AgentBuilder({
                   type="button"
                   onClick={() => {
                     setProvider(p.value);
+                    setModel(p.defaultModel);
                     if (errors.provider) setErrors((prev) => ({ ...prev, provider: undefined }));
                   }}
                   className={`flex flex-col rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
@@ -218,17 +219,18 @@ export default function AgentBuilder({
               <label htmlFor="agent-model" className="mb-1.5 block text-sm font-medium text-gray-300">
                 Model
               </label>
-              <input
+              <select
                 id="agent-model"
-                type="text"
-                value={model}
+                value={model || selectedProviderInfo.defaultModel}
                 onChange={(e) => setModel(e.target.value)}
-                placeholder={selectedProviderInfo.defaultModel}
-                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Variants: {selectedProviderInfo.variants}
-              </p>
+                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+              >
+                {selectedProviderInfo.variants.map((v) => (
+                  <option key={v} value={v}>
+                    {v}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
