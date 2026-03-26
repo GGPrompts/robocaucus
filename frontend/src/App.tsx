@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Code2, Users, Swords, FileCode } from 'lucide-react';
+import { Users, Swords, FileCode } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import AgentBuilder from './components/AgentBuilder';
 import PlaybookBrowser from './components/PlaybookBrowser';
 import RoomMembers from './components/RoomMembers';
-import { DevSidebar } from './components/DevSidebar';
 import { ThemeSelector } from './components/ThemeSelector';
 import { TabBar } from './components/TabBar';
 import { CodeViewer } from './components/CodeViewer';
+import { CommitView } from './components/git/CommitView';
 import { useChat } from './hooks/useChat';
 import {
   fetchConversations,
@@ -80,8 +80,6 @@ interface ChatPanelProps {
   allAgents: Agent[];
   theme: ThemeId;
   onThemeChange: (t: ThemeId) => void;
-  showDevSidebar: boolean;
-  onToggleDevSidebar: () => void;
   onAddAgent: (agentId: string) => void;
   onRemoveAgent: (agentId: string) => void;
   onUpdateRoom: (updates: Partial<Room>) => void;
@@ -93,8 +91,6 @@ function ChatPanel({
   allAgents,
   theme,
   onThemeChange,
-  showDevSidebar,
-  onToggleDevSidebar,
   onAddAgent,
   onRemoveAgent,
   onUpdateRoom,
@@ -186,17 +182,6 @@ function ChatPanel({
         )}
 
         <div className="flex-1" />
-        <button
-          onClick={onToggleDevSidebar}
-          className={`rounded p-1.5 transition-colors ${
-            showDevSidebar
-              ? 'bg-[var(--accent)] text-[var(--text-primary)]'
-              : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]'
-          }`}
-          title="Toggle developer sidebar"
-        >
-          <Code2 size={16} />
-        </button>
         <ThemeSelector currentTheme={theme} onThemeChange={onThemeChange} />
       </div>
 
@@ -323,7 +308,6 @@ export default function App() {
   const [roomMembersMap, setRoomMembersMap] = useState<Record<string, Agent[]>>({});
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const [showPlaybooks, setShowPlaybooks] = useState(false);
-  const [showDevSidebar, setShowDevSidebar] = useState(false);
   const [theme, setTheme] = useState<ThemeId>(getInitialTheme);
   const [defaultWorkspace, setDefaultWorkspace] = useState('');
   const [activeWorkspace, setActiveWorkspace] = useState<string | null>(loadActiveWorkspace);
@@ -355,7 +339,16 @@ export default function App() {
     setActiveTabId(tabId);
   }, []);
 
-  // Exposed for future use (e.g. DevSidebar file clicks, search results)
+  const openCommitTab = useCallback((hash: string) => {
+    const tabId = `commit-${hash}`;
+    const shortHash = hash.slice(0, 7);
+    setTabs((prev) => {
+      if (prev.some((t) => t.id === tabId)) return prev;
+      return [...prev, { id: tabId, type: 'commit', title: shortHash, commitHash: hash }];
+    });
+    setActiveTabId(tabId);
+  }, []);
+
   const openFileTab = useCallback((filePath: string) => {
     const tabId = `file-${filePath}`;
     const fileName = filePath.split('/').pop() ?? filePath;
@@ -365,14 +358,6 @@ export default function App() {
     });
     setActiveTabId(tabId);
   }, []);
-
-  // Make openFileTab available on the window for dev tools / external callers
-  useEffect(() => {
-    (window as unknown as Record<string, unknown>).__openFileTab = openFileTab;
-    return () => {
-      delete (window as unknown as Record<string, unknown>).__openFileTab;
-    };
-  }, [openFileTab]);
 
   const handleCloseTab = useCallback((tabId: string) => {
     setTabs((prev) => {
@@ -631,6 +616,8 @@ export default function App() {
         onCreateAgent={() => setShowAgentBuilder(true)}
         onOpenPlaybooks={() => setShowPlaybooks(true)}
         onWorkspaceChange={handleWorkspaceChange}
+        onFileSelect={openFileTab}
+        onCommitSelect={openCommitTab}
       />
 
       {/* Main editor area with tab bar */}
@@ -661,8 +648,6 @@ export default function App() {
                   allAgents={agents}
                   theme={theme}
                   onThemeChange={handleThemeChange}
-                  showDevSidebar={showDevSidebar}
-                  onToggleDevSidebar={() => setShowDevSidebar((v) => !v)}
                   onAddAgent={handleAddAgent}
                   onRemoveAgent={handleRemoveAgent}
                   onUpdateRoom={handleUpdateRoom}
@@ -686,16 +671,14 @@ export default function App() {
                 </div>
               </div>
             )}
+
+            {/* Commit tab content */}
+            {activeTab?.type === 'commit' && activeTab.commitHash && (
+              <CommitView hash={activeTab.commitHash} repoPath={effectiveWorkspace} />
+            )}
           </div>
         )}
       </div>
-
-      {showDevSidebar && selectedRoom && (
-        <DevSidebar
-          workspacePath={selectedRoom.workspacePath || effectiveWorkspace}
-          onClose={() => setShowDevSidebar(false)}
-        />
-      )}
       {showAgentBuilder && (
         <AgentBuilder
           onSave={handleCreateAgent}

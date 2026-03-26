@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { X, FolderTree, GitBranch, Search } from 'lucide-react';
 import { FileTree } from './FileTree';
-import { CodeViewer } from './CodeViewer';
 import { GitGraph } from './git/GitGraph';
 import { searchFiles, type SearchResult } from '../lib/api';
 
@@ -14,6 +13,7 @@ type Tab = 'files' | 'git' | 'search';
 interface DevSidebarProps {
   workspacePath: string;
   onClose: () => void;
+  onFileSelect?: (filePath: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -106,18 +106,16 @@ function SearchTab({
 // DevSidebar
 // ---------------------------------------------------------------------------
 
-export function DevSidebar({ workspacePath, onClose }: DevSidebarProps) {
+export function DevSidebar({ workspacePath, onClose, onFileSelect }: DevSidebarProps) {
   const [activeTab, setActiveTab] = useState<Tab>('files');
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
   const handleFileSelect = useCallback((path: string) => {
-    setSelectedFile(path);
-  }, []);
+    onFileSelect?.(path);
+  }, [onFileSelect]);
 
   const handleSearchResultClick = useCallback((file: string, _line: number) => {
-    setSelectedFile(file);
-    setActiveTab('files');
-  }, []);
+    onFileSelect?.(file);
+  }, [onFileSelect]);
 
   if (!workspacePath) {
     return (
@@ -178,38 +176,14 @@ export function DevSidebar({ workspacePath, onClose }: DevSidebarProps) {
       {/* Tab content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {activeTab === 'files' && (
-          <div className="flex flex-1 flex-col overflow-hidden">
-            {/* File tree pane */}
-            <div
-              className={`overflow-y-auto ${selectedFile ? 'h-1/3 shrink-0 border-b border-[var(--border-primary)]' : 'flex-1'}`}
-            >
-              <FileTree basePath={workspacePath} onFileSelect={handleFileSelect} />
-            </div>
-            {/* Code viewer pane */}
-            {selectedFile && (
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-primary)] px-3 py-1.5">
-                  <span className="truncate text-xs font-mono text-[var(--text-secondary)]">
-                    {selectedFile}
-                  </span>
-                  <button
-                    onClick={() => setSelectedFile(null)}
-                    className="ml-2 rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-                <div className="flex-1 overflow-auto">
-                  <CodeViewer filePath={selectedFile} basePath={workspacePath} />
-                </div>
-              </div>
-            )}
+          <div className="flex-1 overflow-y-auto">
+            <FileTree basePath={workspacePath} onFileSelect={handleFileSelect} />
           </div>
         )}
 
         {activeTab === 'git' && (
           <div className="flex-1 overflow-y-auto">
-            <GitGraph repoPath={workspacePath} fontSize={12} />
+            <GitGraph repoPath={workspacePath} fontSize={100} />
           </div>
         )}
 

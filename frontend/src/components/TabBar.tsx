@@ -1,4 +1,4 @@
-import { X, MessageSquare, FileCode } from 'lucide-react';
+import { X, MessageSquare, FileCode, GitCommit } from 'lucide-react';
 import type { EditorTab } from '../types';
 
 interface TabBarProps {
@@ -27,6 +27,8 @@ export function TabBar({ tabs, activeTabId, onSelectTab, onCloseTab }: TabBarPro
           >
             {tab.type === 'chat' ? (
               <MessageSquare size={12} className="shrink-0" />
+            ) : tab.type === 'commit' ? (
+              <GitCommit size={12} className="shrink-0" />
             ) : (
               <FileCode size={12} className="shrink-0" />
             )}

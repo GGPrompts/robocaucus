@@ -42,8 +42,9 @@ export interface Message {
 
 export interface EditorTab {
   id: string;
-  type: 'chat' | 'file';
+  type: 'chat' | 'file' | 'commit';
   title: string;
   roomId?: string;
   filePath?: string;
+  commitHash?: string;
 }

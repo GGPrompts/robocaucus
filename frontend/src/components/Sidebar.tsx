@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import type { Room, Agent } from '../types';
 import { FileTree } from './FileTree';
 import { GitGraph } from './git/GitGraph';
@@ -102,6 +102,8 @@ export interface SidebarProps {
   onCreateAgent?: () => void;
   onOpenPlaybooks?: () => void;
   onWorkspaceChange?: (path: string) => void;
+  onFileSelect?: (filePath: string) => void;
+  onCommitSelect?: (hash: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -121,12 +123,46 @@ export default function Sidebar({
   onCreateAgent,
   onOpenPlaybooks,
   onWorkspaceChange,
+  onFileSelect,
+  onCommitSelect,
 }: SidebarProps) {
   const displayRooms = propRooms ?? MOCK_ROOMS;
   const displayAgents = propAgents ?? MOCK_AGENTS;
   const [activeMode, setActiveMode] = useState<ActivityMode>('chat');
+  const [panelExpanded, setPanelExpanded] = useState(true);
+  const [panelWidth, setPanelWidth] = useState(240);
   const [activeRoomId, setActiveRoomId] = useState<string>('');
   const effectiveActiveId = selectedRoomId !== undefined ? selectedRoomId : activeRoomId;
+  const dragRef = useRef<{ startX: number; startWidth: number } | null>(null);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    dragRef.current = { startX: e.clientX, startWidth: panelWidth };
+
+    const handleDragMove = (ev: MouseEvent) => {
+      if (!dragRef.current) return;
+      const newWidth = Math.max(180, Math.min(600, dragRef.current.startWidth + ev.clientX - dragRef.current.startX));
+      setPanelWidth(newWidth);
+    };
+
+    const handleDragEnd = () => {
+      dragRef.current = null;
+      document.removeEventListener('mousemove', handleDragMove);
+      document.removeEventListener('mouseup', handleDragEnd);
+    };
+
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+  }, [panelWidth]);
+
+  function handleModeClick(mode: ActivityMode) {
+    if (activeMode === mode) {
+      setPanelExpanded((v) => !v);
+    } else {
+      setActiveMode(mode);
+      setPanelExpanded(true);
+    }
+  }
 
   // ---- handlers ----------------------------------------------------------
 
@@ -146,14 +182,14 @@ export default function Sidebar({
   return (
     <aside className="flex h-screen select-none text-sm text-[var(--text-secondary)]">
       {/* ===== Activity bar ===== */}
-      <div className="flex w-12 shrink-0 flex-col items-center gap-1 bg-[var(--bg-deeper)] pt-3">
+      <div className={`flex w-12 shrink-0 flex-col items-center gap-1 bg-[var(--bg-deeper)] pt-3 ${!panelExpanded ? 'border-r border-[var(--border-primary)]' : ''}`}>
         {activityButtons.map((btn) => (
           <button
             key={btn.mode}
             title={btn.label}
-            onClick={() => setActiveMode(btn.mode)}
+            onClick={() => handleModeClick(btn.mode)}
             className={`flex h-10 w-10 items-center justify-center rounded-lg text-lg transition-colors ${
-              activeMode === btn.mode
+              activeMode === btn.mode && panelExpanded
                 ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
                 : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-secondary)]'
             }`}
@@ -164,7 +200,8 @@ export default function Sidebar({
       </div>
 
       {/* ===== Rooms / Agents panel ===== */}
-      <div className="flex w-60 flex-col overflow-y-auto bg-[var(--bg-primary)] border-r border-[var(--border-primary)]">
+      {panelExpanded && (
+      <div className="relative flex flex-col overflow-y-auto bg-[var(--bg-primary)]" style={{ width: panelWidth }}>
         {/* Workspace selector */}
         <WorkspaceSelector
           currentWorkspace={workspacePath ?? null}
@@ -175,7 +212,7 @@ export default function Sidebar({
         {activeMode === 'files' ? (
           workspacePath ? (
             <div className="flex flex-1 flex-col overflow-y-auto">
-              <FileTree basePath={workspacePath} onFileSelect={() => {}} />
+              <FileTree basePath={workspacePath} onFileSelect={(path) => onFileSelect?.(path)} />
             </div>
           ) : (
             <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
@@ -185,7 +222,7 @@ export default function Sidebar({
         ) : activeMode === 'git' ? (
           workspacePath ? (
             <div className="flex flex-1 flex-col overflow-y-auto">
-              <GitGraph repoPath={workspacePath} fontSize={12} />
+              <GitGraph repoPath={workspacePath} fontSize={100} onCommitSelect={onCommitSelect} />
             </div>
           ) : (
             <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
@@ -336,7 +373,14 @@ export default function Sidebar({
           </ul>
         </div>
         </>)}
+        {/* Resize handle */}
+        <div
+          onMouseDown={handleDragStart}
+          className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-[var(--accent)] active:bg-[var(--accent)] transition-colors"
+          style={{ zIndex: 10 }}
+        />
       </div>
+      )}
     </aside>
   );
 }
