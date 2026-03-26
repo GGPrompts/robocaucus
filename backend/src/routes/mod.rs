@@ -5,6 +5,7 @@ pub mod conversations;
 pub mod files;
 pub mod git;
 pub mod playbooks;
+pub mod pr_review;
 pub mod providers;
 
 use axum::{routing::get, Router};
@@ -21,4 +22,5 @@ pub fn api_routes() -> Router<AppState> {
         .merge(git::git_routes())
         .merge(files::file_routes())
         .merge(playbooks::playbook_routes())
+        .merge(pr_review::pr_review_routes())
 }
