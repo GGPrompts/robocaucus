@@ -1,7 +1,40 @@
 @import "tailwindcss";
 
-/* Shiki CSS Variables - Default dark theme for RoboCaucus */
+/* ================================================================
+   ROBOCAUCUS UI VARIABLE SYSTEM
+   These variables control ALL UI chrome colors (sidebar, chat,
+   inputs, buttons, borders). Theme CSS files override these to
+   re-skin the entire application.
+================================================================ */
 :root {
+  /* ---- Backgrounds ---- */
+  --bg-deeper:    #030712;   /* deepest layer (activity bar) — gray-950 */
+  --bg-primary:   #111827;   /* main background — gray-900 */
+  --bg-secondary: #1f2937;   /* cards, inputs, elevated — gray-800 */
+  --bg-elevated:  #374151;   /* hover, active items — gray-700 */
+  --bg-surface:   #4b5563;   /* badges, chips — gray-600 */
+
+  /* ---- Text ---- */
+  --text-primary:   #f9fafb; /* white / gray-50 */
+  --text-secondary: #d1d5db; /* gray-300 */
+  --text-muted:     #6b7280; /* gray-500 */
+
+  /* ---- Accent (primary action color) ---- */
+  --accent:        #4f46e5;  /* indigo-600 */
+  --accent-hover:  #6366f1;  /* indigo-500 */
+  --accent-subtle: rgba(79, 70, 229, 0.15); /* indigo-600 at 15% */
+
+  /* ---- Borders ---- */
+  --border-primary:   #1f2937; /* gray-800 */
+  --border-secondary: #374151; /* gray-700 */
+
+  /* ---- Ring / focus ---- */
+  --ring-accent: rgba(99, 102, 241, 0.5); /* indigo-500/50 */
+
+  /* ---- Terminal background (for themes that define it) ---- */
+  --terminal-bg: #111827;
+
+  /* ---- Shiki Syntax Highlighting ---- */
   --shiki-foreground: #e0e0e8;
   --shiki-background: #1a1a2e;
   --shiki-token-constant: #79c0ff;
@@ -13,4 +46,35 @@
   --shiki-token-string-expression: #a5d6ff;
   --shiki-token-punctuation: #8b949e;
   --shiki-token-link: #6366f1;
+}
+
+/* ================================================================
+   THEME BRIDGE
+   When a theme sets --bg-primary, --bg-secondary, --accent, etc.,
+   auto-derive the UI chrome variables that components reference.
+   This means themes only need the standard set of variables and
+   the full application UI adapts automatically.
+================================================================ */
+[class*="theme-"] {
+  /* Deeper background: darken the primary bg */
+  --bg-deeper: color-mix(in srgb, var(--bg-primary) 70%, black);
+
+  /* Elevated: lighten secondary */
+  --bg-elevated: color-mix(in srgb, var(--bg-secondary) 70%, white);
+
+  /* Surface: even lighter */
+  --bg-surface: color-mix(in srgb, var(--bg-secondary) 50%, white);
+
+  /* Borders derived from the theme's --border */
+  --border-primary: var(--border);
+  --border-secondary: color-mix(in srgb, var(--border) 70%, white);
+
+  /* Accent subtle: the accent at low opacity for selected states */
+  --accent-subtle: color-mix(in srgb, var(--accent) 15%, transparent);
+
+  /* Ring / focus glow */
+  --ring-accent: color-mix(in srgb, var(--accent) 50%, transparent);
+
+  /* Fallback --text-muted if the theme didn't set it */
+  --text-muted: color-mix(in srgb, var(--text-secondary) 60%, transparent);
 }

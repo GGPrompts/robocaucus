@@ -75,7 +75,7 @@ function ChatPanel({
   const agentMap = Object.fromEntries(allAgents.map((a) => [a.id, a]));
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden bg-gray-900">
+    <div className="flex flex-1 flex-col overflow-hidden bg-[var(--bg-primary)]">
       {/* Room Members header (title, orchestration, add/remove agents) */}
       <RoomMembers
         room={room}
@@ -87,14 +87,14 @@ function ChatPanel({
       />
 
       {/* Toolbar row */}
-      <div className="flex h-10 shrink-0 items-center border-b border-gray-800 px-4 gap-3">
+      <div className="flex h-10 shrink-0 items-center border-b border-[var(--border-primary)] px-4 gap-3">
         <div className="flex-1" />
         <button
           onClick={onToggleDevSidebar}
           className={`rounded p-1.5 transition-colors ${
             showDevSidebar
-              ? 'bg-indigo-600 text-white'
-              : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+              ? 'bg-[var(--accent)] text-[var(--text-primary)]'
+              : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]'
           }`}
           title="Toggle developer sidebar"
         >
@@ -106,7 +106,7 @@ function ChatPanel({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-4">
         {messages.length === 0 && !streamingMessage && (
-          <div className="flex h-full items-center justify-center text-sm text-gray-500">
+          <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
             {members.length === 0
               ? 'No agents in this conversation. Add an agent to start chatting.'
               : 'No messages yet. Start the conversation.'}
@@ -132,7 +132,7 @@ function ChatPanel({
       </div>
 
       {/* Input */}
-      <div className="shrink-0 border-t border-gray-800 p-4">
+      <div className="shrink-0 border-t border-[var(--border-primary)] p-4">
         <ChatInput
           agents={members}
           onSend={(text, mentionedAgentIds) => {
@@ -160,14 +160,14 @@ function ChatPanel({
 
 function EmptyState({ onCreateRoom, theme, onThemeChange }: { onCreateRoom: () => void; theme: ThemeId; onThemeChange: (t: ThemeId) => void }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-gray-900 text-gray-500">
+    <div className="flex flex-1 flex-col items-center justify-center bg-[var(--bg-primary)] text-[var(--text-muted)]">
       <div className="absolute top-3 right-4">
         <ThemeSelector currentTheme={theme} onThemeChange={onThemeChange} />
       </div>
       <p className="mb-4 text-sm">Select a conversation or start a new one</p>
       <button
         onClick={onCreateRoom}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+        className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--accent-hover)]"
       >
         New Conversation
       </button>

@@ -119,7 +119,7 @@ export default function RoomMembers({
   );
 
   return (
-    <div className="select-none border-b border-gray-800 bg-gray-900">
+    <div className="select-none border-b border-[var(--border-primary)] bg-[var(--bg-primary)]">
       {/* ===== Room Header Bar ===== */}
       <div className="flex items-center gap-3 px-4 py-2">
         {/* Room title — click to edit */}
@@ -130,12 +130,12 @@ export default function RoomMembers({
             onChange={(e) => setTitleDraft(e.target.value)}
             onBlur={commitTitle}
             onKeyDown={handleTitleKeyDown}
-            className="min-w-0 flex-shrink-0 rounded bg-gray-800 px-2 py-0.5 text-sm font-semibold text-white outline-none ring-1 ring-indigo-500"
+            className="min-w-0 flex-shrink-0 rounded bg-[var(--bg-secondary)] px-2 py-0.5 text-sm font-semibold text-[var(--text-primary)] outline-none ring-1 ring-[var(--accent-hover)]"
           />
         ) : (
           <button
             onClick={() => setIsEditingTitle(true)}
-            className="truncate text-sm font-semibold text-white hover:text-indigo-400 transition-colors"
+            className="truncate text-sm font-semibold text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors"
             title="Click to rename"
           >
             {room.title}
@@ -150,7 +150,7 @@ export default function RoomMembers({
               orchestrationMode: e.target.value as Room['orchestrationMode'],
             })
           }
-          className="shrink-0 cursor-pointer rounded bg-gray-800 px-2 py-1 text-xs text-gray-300 outline-none ring-1 ring-gray-700 hover:ring-gray-600 focus:ring-indigo-500 transition-colors"
+          className="shrink-0 cursor-pointer rounded bg-[var(--bg-secondary)] px-2 py-1 text-xs text-[var(--text-secondary)] outline-none ring-1 ring-[var(--border-secondary)] hover:ring-[var(--bg-surface)] focus:ring-[var(--accent-hover)] transition-colors"
         >
           {ORCHESTRATION_MODES.map((mode) => (
             <option key={mode.value} value={mode.value}>
@@ -168,7 +168,7 @@ export default function RoomMembers({
             <span
               key={agent.id}
               title={agent.name}
-              className="inline-block h-6 w-6 rounded-full border-2 border-gray-900"
+              className="inline-block h-6 w-6 rounded-full border-2 border-[var(--bg-primary)]"
               style={{ backgroundColor: agent.color }}
             />
           ))}
@@ -178,7 +178,7 @@ export default function RoomMembers({
         <div className="relative" ref={pickerRef}>
           <button
             onClick={() => setShowAgentPicker((v) => !v)}
-            className="flex items-center gap-1 rounded bg-gray-800 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-gray-700 transition-colors hover:text-white hover:ring-gray-600"
+            className="flex items-center gap-1 rounded bg-[var(--bg-secondary)] px-2 py-1 text-xs font-medium text-[var(--text-secondary)] ring-1 ring-[var(--border-secondary)] transition-colors hover:text-[var(--text-primary)] hover:ring-[var(--bg-surface)]"
           >
             <svg
               className="h-3 w-3"
@@ -194,9 +194,9 @@ export default function RoomMembers({
 
           {/* ---- Agent Picker Dropdown ---- */}
           {showAgentPicker && (
-            <div className="absolute right-0 top-full z-50 mt-1 w-64 overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-lg">
+            <div className="absolute right-0 top-full z-50 mt-1 w-64 overflow-hidden rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] shadow-lg">
               {availableAgents.length === 0 ? (
-                <div className="px-3 py-3 text-center text-xs text-gray-500">
+                <div className="px-3 py-3 text-center text-xs text-[var(--text-muted)]">
                   All agents are already in this room
                 </div>
               ) : (
@@ -205,14 +205,14 @@ export default function RoomMembers({
                     <li key={agent.id}>
                       <button
                         onClick={() => handleAddAgent(agent.id)}
-                        className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
+                        className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
                       >
                         <span
                           className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
                           style={{ backgroundColor: agent.color }}
                         />
                         <span className="truncate font-medium">{agent.name}</span>
-                        <span className="ml-auto shrink-0 rounded bg-gray-700 px-1.5 py-0.5 text-[10px] leading-none font-medium text-gray-400">
+                        <span className="ml-auto shrink-0 rounded bg-[var(--bg-elevated)] px-1.5 py-0.5 text-[10px] leading-none font-medium text-[var(--text-secondary)]">
                           {MODEL_LABELS[agent.model]}
                         </span>
                       </button>
@@ -227,7 +227,7 @@ export default function RoomMembers({
         {/* Toggle member list */}
         <button
           onClick={() => setShowMemberList((v) => !v)}
-          className="flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300"
+          className="flex items-center gap-1 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
           title={showMemberList ? 'Collapse member list' : 'Expand member list'}
         >
           <span>{members.length} member{members.length !== 1 ? 's' : ''}</span>
@@ -245,12 +245,12 @@ export default function RoomMembers({
 
       {/* ===== Expandable Member List ===== */}
       {showMemberList && (
-        <div className="border-t border-gray-800 px-4 py-2">
+        <div className="border-t border-[var(--border-primary)] px-4 py-2">
           <ul className="space-y-1">
             {members.map((agent) => (
               <li
                 key={agent.id}
-                className="group relative flex items-center gap-2 rounded px-2 py-1 transition-colors hover:bg-gray-800"
+                className="group relative flex items-center gap-2 rounded px-2 py-1 transition-colors hover:bg-[var(--bg-secondary)]"
                 onMouseEnter={() => setHoveredAgentId(agent.id)}
                 onMouseLeave={() => setHoveredAgentId(null)}
               >
@@ -261,12 +261,12 @@ export default function RoomMembers({
                 />
 
                 {/* Name */}
-                <span className="truncate text-sm font-medium text-gray-300">
+                <span className="truncate text-sm font-medium text-[var(--text-secondary)]">
                   {agent.name}
                 </span>
 
                 {/* Model badge */}
-                <span className="shrink-0 rounded bg-gray-700 px-1.5 py-0.5 text-[10px] leading-none font-medium text-gray-400">
+                <span className="shrink-0 rounded bg-[var(--bg-elevated)] px-1.5 py-0.5 text-[10px] leading-none font-medium text-[var(--text-secondary)]">
                   {MODEL_LABELS[agent.model]}
                 </span>
 
@@ -276,7 +276,7 @@ export default function RoomMembers({
                 {/* Remove button */}
                 <button
                   onClick={() => onRemoveAgent(agent.id)}
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-gray-600 opacity-0 transition-all hover:bg-red-900/40 hover:text-red-400 group-hover:opacity-100"
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[var(--text-muted)] opacity-0 transition-all hover:bg-red-900/40 hover:text-red-400 group-hover:opacity-100"
                   title={`Remove ${agent.name}`}
                 >
                   <svg
@@ -292,11 +292,11 @@ export default function RoomMembers({
 
                 {/* System prompt tooltip on hover */}
                 {hoveredAgentId === agent.id && agent.systemPrompt && (
-                  <div className="absolute bottom-full left-0 z-50 mb-2 max-w-xs rounded-lg border border-gray-700 bg-gray-850 bg-gray-950 px-3 py-2 shadow-lg">
-                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                  <div className="absolute bottom-full left-0 z-50 mb-2 max-w-xs rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-deeper)] px-3 py-2 shadow-lg">
+                    <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                       System Prompt
                     </div>
-                    <p className="line-clamp-4 text-xs leading-relaxed text-gray-400">
+                    <p className="line-clamp-4 text-xs leading-relaxed text-[var(--text-secondary)]">
                       {agent.systemPrompt}
                     </p>
                   </div>
@@ -305,7 +305,7 @@ export default function RoomMembers({
             ))}
 
             {members.length === 0 && (
-              <li className="py-2 text-center text-xs text-gray-600">
+              <li className="py-2 text-center text-xs text-[var(--text-muted)]">
                 No agents in this room yet
               </li>
             )}

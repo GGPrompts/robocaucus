@@ -107,13 +107,13 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
       id="theme-dropdown-portal"
       role="listbox"
       aria-activedescendant={focusedIndex >= 0 ? `theme-option-${themes[focusedIndex].id}` : undefined}
-      className="fixed max-h-[320px] overflow-y-auto overflow-x-hidden rounded-lg border border-gray-700 shadow-xl"
+      className="fixed max-h-[320px] overflow-y-auto overflow-x-hidden rounded-lg border border-[var(--border-secondary)] shadow-xl"
       style={{
         top: dropdownPosition.top,
         left: dropdownPosition.left,
         width: dropdownPosition.width,
         zIndex: 9999,
-        backgroundColor: '#1f2937',
+        backgroundColor: 'var(--bg-secondary)',
       }}
     >
       {themes.map((theme, index) => {
@@ -174,7 +174,7 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-label={`Theme: ${currentThemeData.name}`}
-          className="px-3 py-1 cursor-pointer focus:outline-none flex items-center gap-2 min-w-[160px] justify-between rounded-lg border border-gray-700 bg-gray-800 text-sm text-gray-200 hover:bg-gray-700"
+          className="px-3 py-1 cursor-pointer focus:outline-none flex items-center gap-2 min-w-[160px] justify-between rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
         >
           <span
             style={{
@@ -185,7 +185,7 @@ export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProp
             {currentThemeData.name}
           </span>
           <svg
-            className="w-3.5 h-3.5 transition-transform text-gray-400"
+            className="w-3.5 h-3.5 transition-transform text-[var(--text-secondary)]"
             style={{
               transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
             }}

@@ -135,9 +135,9 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="flex h-screen select-none text-sm text-gray-300">
+    <aside className="flex h-screen select-none text-sm text-[var(--text-secondary)]">
       {/* ===== Activity bar ===== */}
-      <div className="flex w-12 shrink-0 flex-col items-center gap-1 bg-gray-950 pt-3">
+      <div className="flex w-12 shrink-0 flex-col items-center gap-1 bg-[var(--bg-deeper)] pt-3">
         {activityButtons.map((btn) => (
           <button
             key={btn.mode}
@@ -145,8 +145,8 @@ export default function Sidebar({
             onClick={() => setActiveMode(btn.mode)}
             className={`flex h-10 w-10 items-center justify-center rounded-lg text-lg transition-colors ${
               activeMode === btn.mode
-                ? 'bg-gray-700 text-white'
-                : 'text-gray-500 hover:bg-gray-800 hover:text-gray-300'
+                ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
+                : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-secondary)]'
             }`}
           >
             {btn.icon}
@@ -155,12 +155,12 @@ export default function Sidebar({
       </div>
 
       {/* ===== Rooms / Agents panel ===== */}
-      <div className="flex w-60 flex-col overflow-y-auto bg-gray-900 border-r border-gray-800">
+      <div className="flex w-60 flex-col overflow-y-auto bg-[var(--bg-primary)] border-r border-[var(--border-primary)]">
         {/* Workspace selector */}
-        <div className="flex h-12 items-center justify-between border-b border-gray-800 px-3">
-          <span className="truncate font-semibold text-white">My Projects</span>
+        <div className="flex h-12 items-center justify-between border-b border-[var(--border-primary)] px-3">
+          <span className="truncate font-semibold text-[var(--text-primary)]">My Projects</span>
           <svg
-            className="h-4 w-4 text-gray-500"
+            className="h-4 w-4 text-[var(--text-muted)]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -171,18 +171,18 @@ export default function Sidebar({
         </div>
 
         {activeMode !== 'chat' ? (
-          <div className="flex flex-1 items-center justify-center p-4 text-xs text-gray-500">
+          <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
             Coming soon
           </div>
         ) : (<>{/* ---- Chats section ---- */}
         <div className="px-2 pt-4">
           <div className="flex items-center justify-between px-1 pb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Chats
             </span>
             <button
               onClick={onCreateRoom}
-              className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-800 hover:text-gray-300"
+              className="flex h-5 w-5 items-center justify-center rounded text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-secondary)]"
               title="New room"
             >
               <svg
@@ -206,17 +206,17 @@ export default function Sidebar({
                     onClick={() => handleSelectRoom(room)}
                     className={`flex w-full flex-col rounded px-2 py-1.5 text-left transition-colors ${
                       isActive
-                        ? 'bg-gray-800 text-white'
-                        : 'hover:bg-gray-800/60 hover:text-white'
+                        ? 'bg-[var(--bg-secondary)] text-[var(--text-primary)]'
+                        : 'hover:bg-[var(--bg-secondary)]/60 hover:text-[var(--text-primary)]'
                     }`}
                   >
                     <span className="flex items-center gap-1.5">
                       <span className="truncate font-medium">{room.title}</span>
                       {room.unread && (
-                        <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
+                        <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-[var(--accent-hover)]" />
                       )}
                     </span>
-                    <span className="truncate text-xs text-gray-500 group-hover/room:text-gray-400">
+                    <span className="truncate text-xs text-[var(--text-muted)] group-hover/room:text-[var(--text-secondary)]">
                       {room.lastMessage}
                     </span>
                   </button>
@@ -226,7 +226,7 @@ export default function Sidebar({
                         e.stopPropagation();
                         onDeleteRoom(room.id);
                       }}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 hidden rounded p-1 text-gray-500 hover:bg-gray-700 hover:text-red-400 group-hover/room:flex items-center justify-center"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 hidden rounded p-1 text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-red-400 group-hover/room:flex items-center justify-center"
                       title="Delete conversation"
                     >
                       <svg
@@ -247,16 +247,16 @@ export default function Sidebar({
         </div>
 
         {/* ---- Divider ---- */}
-        <div className="mx-3 my-3 border-t border-gray-800" />
+        <div className="mx-3 my-3 border-t border-[var(--border-primary)]" />
 
         {/* ---- Playbooks section ---- */}
         <div className="px-2">
           <button
             onClick={onOpenPlaybooks}
-            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-gray-800/60 hover:text-white"
+            className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-[var(--bg-secondary)]/60 hover:text-[var(--text-primary)]"
           >
             <svg
-              className="h-4 w-4 shrink-0 text-gray-500"
+              className="h-4 w-4 shrink-0 text-[var(--text-muted)]"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -264,24 +264,24 @@ export default function Sidebar({
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Playbooks
             </span>
           </button>
         </div>
 
         {/* ---- Divider ---- */}
-        <div className="mx-3 my-3 border-t border-gray-800" />
+        <div className="mx-3 my-3 border-t border-[var(--border-primary)]" />
 
         {/* ---- Agents section ---- */}
         <div className="px-2">
           <div className="flex items-center justify-between px-1 pb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Agents
             </span>
             <button
               onClick={onCreateAgent}
-              className="flex h-5 w-5 items-center justify-center rounded text-gray-500 hover:bg-gray-800 hover:text-gray-300"
+              className="flex h-5 w-5 items-center justify-center rounded text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-secondary)]"
               title="Add agent"
             >
               <svg
@@ -301,7 +301,7 @@ export default function Sidebar({
               <li key={agent.id}>
                 <button
                   onClick={() => onSelectAgent?.(agent)}
-                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-gray-800/60 hover:text-white"
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left transition-colors hover:bg-[var(--bg-secondary)]/60 hover:text-[var(--text-primary)]"
                 >
                   {/* Color dot */}
                   <span
@@ -309,7 +309,7 @@ export default function Sidebar({
                     style={{ backgroundColor: agent.color }}
                   />
                   <span className="truncate font-medium">{agent.name}</span>
-                  <span className="ml-auto shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
+                  <span className="ml-auto shrink-0 rounded bg-[var(--bg-secondary)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
                     {PROVIDER_LABELS[agent.provider]}
                   </span>
                 </button>

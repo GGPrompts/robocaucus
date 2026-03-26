@@ -22,7 +22,7 @@ const FLOW_TYPE_COLORS: Record<string, string> = {
 };
 
 function flowBadgeClass(flowType: string): string {
-  return FLOW_TYPE_COLORS[flowType] ?? 'bg-gray-500/20 text-gray-400';
+  return FLOW_TYPE_COLORS[flowType] ?? 'bg-[var(--bg-surface)]/20 text-[var(--text-secondary)]';
 }
 
 // ---------------------------------------------------------------------------
@@ -69,13 +69,13 @@ export default function PlaybookBrowser({ onRunPlaybook, onClose }: PlaybookBrow
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
     >
-      <div className="w-full max-w-2xl rounded-xl bg-gray-900 shadow-2xl ring-1 ring-white/10 animate-[scaleIn_150ms_ease-out]">
+      <div className="w-full max-w-2xl rounded-xl bg-[var(--bg-primary)] shadow-2xl ring-1 ring-white/10 animate-[scaleIn_150ms_ease-out]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
-          <h2 className="text-lg font-semibold text-white">Playbooks</h2>
+        <div className="flex items-center justify-between border-b border-[var(--border-primary)] px-6 py-4">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Playbooks</h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
             aria-label="Close"
           >
             <svg
@@ -93,7 +93,7 @@ export default function PlaybookBrowser({ onRunPlaybook, onClose }: PlaybookBrow
         {/* Body */}
         <div className="px-6 py-5">
           {loading && (
-            <p className="text-center text-sm text-gray-400">Loading playbooks...</p>
+            <p className="text-center text-sm text-[var(--text-secondary)]">Loading playbooks...</p>
           )}
 
           {error && (
@@ -103,7 +103,7 @@ export default function PlaybookBrowser({ onRunPlaybook, onClose }: PlaybookBrow
           )}
 
           {!loading && playbooks.length === 0 && !error && (
-            <p className="text-center text-sm text-gray-500">No playbooks found.</p>
+            <p className="text-center text-sm text-[var(--text-muted)]">No playbooks found.</p>
           )}
 
           {!loading && playbooks.length > 0 && (
@@ -111,21 +111,21 @@ export default function PlaybookBrowser({ onRunPlaybook, onClose }: PlaybookBrow
               {playbooks.map((pb) => (
                 <div
                   key={pb.id}
-                  className="flex flex-col rounded-lg border border-gray-700 bg-gray-800/50 p-4 transition-colors hover:border-gray-600"
+                  className="flex flex-col rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)]/50 p-4 transition-colors hover:border-[var(--bg-surface)]"
                 >
                   <div className="mb-2 flex items-start justify-between gap-2">
-                    <h3 className="font-medium text-white">{pb.name}</h3>
+                    <h3 className="font-medium text-[var(--text-primary)]">{pb.name}</h3>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${flowBadgeClass(pb.flowType)}`}
                     >
                       {pb.flowType}
                     </span>
                   </div>
-                  <p className="mb-4 flex-1 text-xs text-gray-400">{pb.description}</p>
+                  <p className="mb-4 flex-1 text-xs text-[var(--text-secondary)]">{pb.description}</p>
                   <button
                     onClick={() => handleRun(pb.id)}
                     disabled={runningId !== null}
-                    className="mt-auto w-full rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-auto w-full rounded-lg bg-[var(--accent)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {runningId === pb.id ? 'Starting...' : 'Run'}
                   </button>

@@ -200,7 +200,7 @@ export default function ChatInput({
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className="absolute bottom-full left-0 z-50 mb-1 max-h-48 w-64 overflow-y-auto rounded-lg border border-gray-600 bg-gray-800 py-1 shadow-lg"
+          className="absolute bottom-full left-0 z-50 mb-1 max-h-48 w-64 overflow-y-auto rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] py-1 shadow-lg"
         >
           {filteredAgents.map((agent, i) => (
             <button
@@ -208,8 +208,8 @@ export default function ChatInput({
               type="button"
               className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm ${
                 i === highlightIndex
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-300 hover:bg-gray-700/50'
+                  ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]/50'
               }`}
               onMouseEnter={() => setHighlightIndex(i)}
               onMouseDown={(e) => {
@@ -226,7 +226,7 @@ export default function ChatInput({
               {/* Name */}
               <span className="truncate font-medium">{agent.name}</span>
               {/* Model badge */}
-              <span className="ml-auto shrink-0 rounded bg-gray-600 px-1.5 py-0.5 text-[10px] leading-none text-gray-400">
+              <span className="ml-auto shrink-0 rounded bg-[var(--bg-surface)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--text-secondary)]">
                 {MODEL_BADGES[agent.model]}
               </span>
             </button>
@@ -235,7 +235,7 @@ export default function ChatInput({
       )}
 
       {/* Input row */}
-      <div className="flex items-end gap-2 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2">
+      <div className="flex items-end gap-2 rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2">
         <textarea
           ref={textareaRef}
           value={text}
@@ -244,7 +244,7 @@ export default function ChatInput({
           placeholder={placeholder}
           disabled={isSending}
           rows={1}
-          className="max-h-[200px] min-h-[24px] flex-1 resize-none bg-transparent text-sm leading-6 text-gray-300 placeholder-gray-500 outline-none disabled:opacity-50"
+          className="max-h-[200px] min-h-[24px] flex-1 resize-none bg-transparent text-sm leading-6 text-[var(--text-secondary)] placeholder-[var(--text-muted)] outline-none disabled:opacity-50"
         />
 
         {/* Send button */}
@@ -252,7 +252,7 @@ export default function ChatInput({
           type="button"
           disabled={!canSend}
           onClick={send}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-indigo-600 text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--accent)] text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isSending ? (
             /* Loading spinner */

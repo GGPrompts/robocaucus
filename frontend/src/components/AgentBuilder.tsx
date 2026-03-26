@@ -134,15 +134,15 @@ export default function AgentBuilder({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_150ms_ease-out]"
     >
       {/* Panel */}
-      <div className="w-full max-w-lg rounded-xl bg-gray-900 shadow-2xl ring-1 ring-white/10 animate-[scaleIn_150ms_ease-out]">
+      <div className="w-full max-w-lg rounded-xl bg-[var(--bg-primary)] shadow-2xl ring-1 ring-white/10 animate-[scaleIn_150ms_ease-out]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
-          <h2 className="text-lg font-semibold text-white">
+        <div className="flex items-center justify-between border-b border-[var(--border-primary)] px-6 py-4">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">
             {isEditing ? 'Edit Agent' : 'Create Agent'}
           </h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-800 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
             aria-label="Close"
           >
             <svg
@@ -161,7 +161,7 @@ export default function AgentBuilder({
         <div className="space-y-5 px-6 py-5">
           {/* Name */}
           <div>
-            <label htmlFor="agent-name" className="mb-1.5 block text-sm font-medium text-gray-300">
+            <label htmlFor="agent-name" className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
               Name
             </label>
             <input
@@ -173,8 +173,8 @@ export default function AgentBuilder({
                 if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
               }}
               placeholder="e.g. Editor, Researcher, Critic"
-              className={`w-full rounded-lg border bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:ring-2 focus:ring-indigo-500/50 ${
-                errors.name ? 'border-red-500' : 'border-gray-700 focus:border-indigo-500'
+              className={`w-full rounded-lg border bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-colors focus:ring-2 focus:ring-[var(--ring-accent)] ${
+                errors.name ? 'border-red-500' : 'border-[var(--border-secondary)] focus:border-[var(--accent-hover)]'
               }`}
             />
             {errors.name && (
@@ -184,7 +184,7 @@ export default function AgentBuilder({
 
           {/* Provider */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-300">
+            <label className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
               Provider
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -199,12 +199,12 @@ export default function AgentBuilder({
                   }}
                   className={`flex flex-col rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                     provider === p.value
-                      ? 'border-indigo-500 bg-indigo-500/10 text-white'
-                      : 'border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600 hover:text-white'
+                      ? 'border-[var(--accent-hover)] bg-[var(--accent-subtle)] text-[var(--text-primary)]'
+                      : 'border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--bg-surface)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   <span className="font-medium">{p.label}</span>
-                  <span className="text-[11px] text-gray-500">{p.description}</span>
+                  <span className="text-[11px] text-[var(--text-muted)]">{p.description}</span>
                 </button>
               ))}
             </div>
@@ -216,14 +216,14 @@ export default function AgentBuilder({
           {/* Model variant (shown after provider selection) */}
           {provider && selectedProviderInfo && (
             <div>
-              <label htmlFor="agent-model" className="mb-1.5 block text-sm font-medium text-gray-300">
+              <label htmlFor="agent-model" className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
                 Model
               </label>
               <select
                 id="agent-model"
                 value={model || selectedProviderInfo.defaultModel}
                 onChange={(e) => setModel(e.target.value)}
-                className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+                className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-hover)] focus:ring-2 focus:ring-[var(--ring-accent)]"
               >
                 {selectedProviderInfo.variants.map((v) => (
                   <option key={v} value={v}>
@@ -236,7 +236,7 @@ export default function AgentBuilder({
 
           {/* Color */}
           <div>
-            <span className="mb-1.5 block text-sm font-medium text-gray-300">Color</span>
+            <span className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">Color</span>
             <div className="flex gap-2">
               {PALETTE.map((swatch) => (
                 <button
@@ -265,7 +265,7 @@ export default function AgentBuilder({
 
           {/* Instructions / System Prompt */}
           <div>
-            <label htmlFor="agent-prompt" className="mb-1.5 block text-sm font-medium text-gray-300">
+            <label htmlFor="agent-prompt" className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
               Instructions
             </label>
             <textarea
@@ -274,9 +274,9 @@ export default function AgentBuilder({
               onChange={(e) => setSystemPrompt(e.target.value)}
               placeholder="Describe this agent's role and behavior..."
               rows={4}
-              className="w-full resize-none rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+              className="w-full resize-none rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-hover)] focus:ring-2 focus:ring-[var(--ring-accent)]"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
               Instructions that shape this agent's behavior. Saved to the agent's config folder and discovered natively by the CLI.
             </p>
           </div>
@@ -284,8 +284,8 @@ export default function AgentBuilder({
           {/* Scope toggle */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="block text-sm font-medium text-gray-300">Scope</span>
-              <span className="text-xs text-gray-500">
+              <span className="block text-sm font-medium text-[var(--text-secondary)]">Scope</span>
+              <span className="text-xs text-[var(--text-muted)]">
                 {scope === 'global'
                   ? 'Global: available in all conversations across workspaces'
                   : 'Workspace: only available when working in a specific project directory'}
@@ -297,7 +297,7 @@ export default function AgentBuilder({
               aria-checked={scope === 'global'}
               onClick={() => setScope(scope === 'global' ? 'workspace' : 'global')}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
-                scope === 'global' ? 'bg-indigo-500' : 'bg-gray-600'
+                scope === 'global' ? 'bg-[var(--accent-hover)]' : 'bg-[var(--bg-surface)]'
               }`}
             >
               <span
@@ -310,11 +310,11 @@ export default function AgentBuilder({
 
           {/* MCP Servers & Tool Permissions — only for existing agents */}
           {isEditing && agent?.id && (
-            <div className="rounded-lg border border-gray-700">
+            <div className="rounded-lg border border-[var(--border-secondary)]">
               <button
                 type="button"
                 onClick={() => setConfigOpen((v) => !v)}
-                className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <span>MCP Servers &amp; Tool Permissions</span>
                 <svg
@@ -329,13 +329,13 @@ export default function AgentBuilder({
               </button>
 
               {configOpen && (
-                <div className="border-t border-gray-700 px-3 py-3 space-y-2">
+                <div className="border-t border-[var(--border-secondary)] px-3 py-3 space-y-2">
                   {configPath && (
-                    <p className="text-xs text-gray-500 break-all">{configPath} ({configFormat})</p>
+                    <p className="text-xs text-[var(--text-muted)] break-all">{configPath} ({configFormat})</p>
                   )}
 
                   {configLoading ? (
-                    <p className="text-xs text-gray-400">Loading config...</p>
+                    <p className="text-xs text-[var(--text-secondary)]">Loading config...</p>
                   ) : (
                     <>
                       <textarea
@@ -345,14 +345,14 @@ export default function AgentBuilder({
                           setConfigMsg(null);
                         }}
                         rows={10}
-                        className="w-full resize-y rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs font-mono text-white placeholder-gray-500 outline-none transition-colors focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50"
+                        className="w-full resize-y rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-xs font-mono text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-hover)] focus:ring-2 focus:ring-[var(--ring-accent)]"
                         placeholder={`Paste or edit your ${configFormat === 'toml' ? 'TOML' : 'JSON'} config here...`}
                       />
                       <div className="flex items-center gap-3">
                         <button
                           type="button"
                           onClick={handleSaveConfig}
-                          className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-500"
+                          className="rounded-lg bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-hover)]"
                         >
                           Save Config
                         </button>
@@ -371,16 +371,16 @@ export default function AgentBuilder({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-800 px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-primary)] px-6 py-4">
           <button
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500"
+            className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-hover)]"
           >
             {isEditing ? 'Save Changes' : 'Create Agent'}
           </button>

@@ -54,7 +54,7 @@ function SearchTab({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex gap-1 p-2 border-b border-gray-800">
+      <div className="flex gap-1 p-2 border-b border-[var(--border-primary)]">
         <input
           type="text"
           value={query}
@@ -63,12 +63,12 @@ function SearchTab({
             if (e.key === 'Enter') handleSearch();
           }}
           placeholder="Search files..."
-          className="flex-1 rounded bg-gray-800 px-2 py-1.5 text-sm text-gray-200 placeholder-gray-500 border border-gray-700 focus:border-indigo-500 focus:outline-none"
+          className="flex-1 rounded bg-[var(--bg-secondary)] px-2 py-1.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] border border-[var(--border-secondary)] focus:border-[var(--accent-hover)] focus:outline-none"
         />
         <button
           onClick={handleSearch}
           disabled={searching || !query.trim()}
-          className="rounded bg-indigo-600 px-3 py-1.5 text-sm text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded bg-[var(--accent)] px-3 py-1.5 text-sm text-[var(--text-primary)] hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {searching ? '...' : 'Go'}
         </button>
@@ -80,19 +80,19 @@ function SearchTab({
         )}
 
         {!error && searched && results.length === 0 && !searching && (
-          <div className="p-3 text-sm text-gray-500">No results found.</div>
+          <div className="p-3 text-sm text-[var(--text-muted)]">No results found.</div>
         )}
 
         {results.map((r, idx) => (
           <button
             key={`${r.file}:${r.line}:${idx}`}
             onClick={() => onResultClick(r.file, r.line)}
-            className="w-full text-left px-3 py-2 text-sm border-b border-gray-800/50 hover:bg-gray-800 transition-colors"
+            className="w-full text-left px-3 py-2 text-sm border-b border-[var(--border-primary)]/50 hover:bg-[var(--bg-secondary)] transition-colors"
           >
-            <div className="text-indigo-400 text-xs font-mono truncate">
+            <div className="text-[var(--accent)] text-xs font-mono truncate">
               {r.file}:{r.line}
             </div>
-            <div className="text-gray-300 text-xs font-mono truncate mt-0.5">
+            <div className="text-[var(--text-secondary)] text-xs font-mono truncate mt-0.5">
               {r.text}
             </div>
           </button>
@@ -121,17 +121,17 @@ export function DevSidebar({ workspacePath, onClose }: DevSidebarProps) {
 
   if (!workspacePath) {
     return (
-      <div className="flex w-96 flex-col border-l border-gray-800 bg-gray-900">
-        <div className="flex h-12 shrink-0 items-center justify-between border-b border-gray-800 px-4">
-          <span className="text-sm font-semibold text-white">Developer</span>
+      <div className="flex w-96 flex-col border-l border-[var(--border-primary)] bg-[var(--bg-primary)]">
+        <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--border-primary)] px-4">
+          <span className="text-sm font-semibold text-[var(--text-primary)]">Developer</span>
           <button
             onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-800 hover:text-white"
+            className="rounded p-1 text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
           >
             <X size={16} />
           </button>
         </div>
-        <div className="flex flex-1 items-center justify-center text-sm text-gray-500">
+        <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
           No workspace path set for this conversation.
         </div>
       </div>
@@ -145,28 +145,28 @@ export function DevSidebar({ workspacePath, onClose }: DevSidebarProps) {
   ];
 
   return (
-    <div className="flex w-96 flex-col border-l border-gray-800 bg-gray-900">
+    <div className="flex w-96 flex-col border-l border-[var(--border-primary)] bg-[var(--bg-primary)]">
       {/* Header */}
-      <div className="flex h-12 shrink-0 items-center justify-between border-b border-gray-800 px-4">
-        <span className="text-sm font-semibold text-white">Developer</span>
+      <div className="flex h-12 shrink-0 items-center justify-between border-b border-[var(--border-primary)] px-4">
+        <span className="text-sm font-semibold text-[var(--text-primary)]">Developer</span>
         <button
           onClick={onClose}
-          className="rounded p-1 text-gray-400 hover:bg-gray-800 hover:text-white"
+          className="rounded p-1 text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
         >
           <X size={16} />
         </button>
       </div>
 
       {/* Tab bar */}
-      <div className="flex shrink-0 border-b border-gray-800">
+      <div className="flex shrink-0 border-b border-[var(--border-primary)]">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-medium transition-colors ${
               activeTab === tab.id
-                ? 'border-b-2 border-indigo-500 text-indigo-400'
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'border-b-2 border-[var(--accent-hover)] text-[var(--accent)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
             }`}
           >
             {tab.icon}
@@ -181,20 +181,20 @@ export function DevSidebar({ workspacePath, onClose }: DevSidebarProps) {
           <div className="flex flex-1 flex-col overflow-hidden">
             {/* File tree pane */}
             <div
-              className={`overflow-y-auto ${selectedFile ? 'h-1/3 shrink-0 border-b border-gray-800' : 'flex-1'}`}
+              className={`overflow-y-auto ${selectedFile ? 'h-1/3 shrink-0 border-b border-[var(--border-primary)]' : 'flex-1'}`}
             >
               <FileTree basePath={workspacePath} onFileSelect={handleFileSelect} />
             </div>
             {/* Code viewer pane */}
             {selectedFile && (
               <div className="flex flex-1 flex-col overflow-hidden">
-                <div className="flex shrink-0 items-center justify-between border-b border-gray-800 px-3 py-1.5">
-                  <span className="truncate text-xs font-mono text-gray-400">
+                <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-primary)] px-3 py-1.5">
+                  <span className="truncate text-xs font-mono text-[var(--text-secondary)]">
                     {selectedFile}
                   </span>
                   <button
                     onClick={() => setSelectedFile(null)}
-                    className="ml-2 rounded p-0.5 text-gray-500 hover:bg-gray-800 hover:text-white"
+                    className="ml-2 rounded p-0.5 text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
                   >
                     <X size={12} />
                   </button>

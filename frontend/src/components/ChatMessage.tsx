@@ -37,13 +37,13 @@ function formatRelativeTime(timestamp: string): string {
 function StreamingDots() {
   return (
     <div className="flex items-center gap-1 py-2">
-      <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-gray-400" />
+      <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--text-secondary)]" />
       <span
-        className="inline-block h-2 w-2 animate-pulse rounded-full bg-gray-400"
+        className="inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--text-secondary)]"
         style={{ animationDelay: '0.2s' }}
       />
       <span
-        className="inline-block h-2 w-2 animate-pulse rounded-full bg-gray-400"
+        className="inline-block h-2 w-2 animate-pulse rounded-full bg-[var(--text-secondary)]"
         style={{ animationDelay: '0.4s' }}
       />
     </div>
@@ -67,11 +67,11 @@ export default function ChatMessage({ message, agent }: ChatMessageProps) {
     return (
       <div className="flex justify-end px-4 py-1">
         <div className="max-w-[70%]">
-          <div className="mb-0.5 text-right text-xs text-gray-400">You</div>
-          <div className="rounded-lg bg-gray-700 px-3 py-2 text-sm text-gray-100">
+          <div className="mb-0.5 text-right text-xs text-[var(--text-secondary)]">You</div>
+          <div className="rounded-lg bg-[var(--bg-elevated)] px-3 py-2 text-sm text-[var(--text-primary)]">
             <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
           </div>
-          <div className="mt-0.5 text-right text-xs text-gray-500">
+          <div className="mt-0.5 text-right text-xs text-[var(--text-muted)]">
             {relativeTime}
           </div>
         </div>
@@ -91,20 +91,20 @@ export default function ChatMessage({ message, agent }: ChatMessageProps) {
                 className="inline-block h-2.5 w-2.5 rounded-full"
                 style={{ backgroundColor: agent.color }}
               />
-              <span className="text-sm font-bold text-gray-100">
+              <span className="text-sm font-bold text-[var(--text-primary)]">
                 {agent.name}
               </span>
             </>
           )}
           {modelLabel && (
-            <span className="rounded-full bg-gray-600 px-2 py-0.5 text-[10px] leading-none font-medium text-gray-300">
+            <span className="rounded-full bg-[var(--bg-surface)] px-2 py-0.5 text-[10px] leading-none font-medium text-[var(--text-secondary)]">
               {modelLabel}
             </span>
           )}
         </div>
 
         {/* Message body */}
-        <div className="rounded-lg bg-gray-800 px-3 py-2 text-sm text-gray-100">
+        <div className="rounded-lg bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)]">
           {isStreaming ? (
             <StreamingDots />
           ) : (
@@ -115,7 +115,7 @@ export default function ChatMessage({ message, agent }: ChatMessageProps) {
         </div>
 
         {/* Timestamp */}
-        <div className="mt-0.5 text-xs text-gray-500">{relativeTime}</div>
+        <div className="mt-0.5 text-xs text-[var(--text-muted)]">{relativeTime}</div>
       </div>
     </div>
   );
