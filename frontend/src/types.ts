@@ -39,3 +39,11 @@ export interface Message {
   timestamp: string;
   usageJson?: string;
 }
+
+export interface EditorTab {
+  id: string;
+  type: 'chat' | 'file';
+  title: string;
+  roomId?: string;
+  filePath?: string;
+}

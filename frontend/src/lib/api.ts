@@ -7,6 +7,27 @@ export function apiUrl(path: string, base?: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Providers
+// ---------------------------------------------------------------------------
+
+export interface ProviderInfo {
+  id: string;
+  name: string;
+  available: boolean;
+  version: string | null;
+  cli_command: string;
+}
+
+export interface ProvidersResponse {
+  providers: ProviderInfo[];
+}
+
+export async function fetchProviders(base?: string): Promise<ProvidersResponse> {
+  const res = await fetch(apiUrl('/providers', base));
+  return jsonOrThrow<ProvidersResponse>(res);
+}
+
+// ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 

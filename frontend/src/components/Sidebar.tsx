@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { Room, Agent } from '../types';
+import { FileTree } from './FileTree';
+import { GitGraph } from './git/GitGraph';
 
 // ---------------------------------------------------------------------------
 // Mock data
@@ -90,6 +92,7 @@ export interface SidebarProps {
   rooms?: (Room & { lastMessage: string; unread: boolean })[];
   agents?: Agent[];
   selectedRoomId?: string;
+  workspacePath?: string;
   onSelectRoom?: (room: Room) => void;
   onDeleteRoom?: (roomId: string) => void;
   onSelectAgent?: (agent: Agent) => void;
@@ -106,6 +109,7 @@ export default function Sidebar({
   rooms: propRooms,
   agents: propAgents,
   selectedRoomId,
+  workspacePath,
   onSelectRoom,
   onDeleteRoom,
   onSelectAgent,
@@ -170,10 +174,26 @@ export default function Sidebar({
           </svg>
         </div>
 
-        {activeMode !== 'chat' ? (
-          <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
-            Coming soon
-          </div>
+        {activeMode === 'files' ? (
+          workspacePath ? (
+            <div className="flex flex-1 flex-col overflow-y-auto">
+              <FileTree basePath={workspacePath} onFileSelect={() => {}} />
+            </div>
+          ) : (
+            <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
+              No workspace path configured.
+            </div>
+          )
+        ) : activeMode === 'git' ? (
+          workspacePath ? (
+            <div className="flex flex-1 flex-col overflow-y-auto">
+              <GitGraph repoPath={workspacePath} fontSize={12} />
+            </div>
+          ) : (
+            <div className="flex flex-1 items-center justify-center p-4 text-xs text-[var(--text-muted)]">
+              No workspace path configured.
+            </div>
+          )
         ) : (<>{/* ---- Chats section ---- */}
         <div className="px-2 pt-4">
           <div className="flex items-center justify-between px-1 pb-1">

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Code2, Users, Swords } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { Code2, Users, Swords, FileCode } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
@@ -8,6 +8,8 @@ import PlaybookBrowser from './components/PlaybookBrowser';
 import RoomMembers from './components/RoomMembers';
 import { DevSidebar } from './components/DevSidebar';
 import { ThemeSelector } from './components/ThemeSelector';
+import { TabBar } from './components/TabBar';
+import { CodeViewer } from './components/CodeViewer';
 import { useChat } from './hooks/useChat';
 import {
   fetchConversations,
@@ -22,7 +24,7 @@ import {
   deleteConversation,
 } from './lib/api';
 import { themes, type ThemeId } from './themes';
-import type { Room, Agent } from './types';
+import type { Room, Agent, EditorTab } from './types';
 
 // TODO: [code-review] localStorage.getItem() can throw in private/incognito — wrap in try/catch (85%)
 function getInitialTheme(): ThemeId {
@@ -283,13 +285,89 @@ function EmptyState({ onCreateRoom, theme, onThemeChange }: { onCreateRoom: () =
 export default function App() {
   const [rooms, setRooms] = useState<RoomWithMeta[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [roomMembers, setRoomMembers] = useState<Agent[]>([]);
+  const [roomMembersMap, setRoomMembersMap] = useState<Record<string, Agent[]>>({});
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const [showPlaybooks, setShowPlaybooks] = useState(false);
   const [showDevSidebar, setShowDevSidebar] = useState(false);
   const [theme, setTheme] = useState<ThemeId>(getInitialTheme);
   const [defaultWorkspace, setDefaultWorkspace] = useState('');
+
+  // ---- Tab state -----------------------------------------------------------
+  const [tabs, setTabs] = useState<EditorTab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+
+  const activeTab = useMemo(
+    () => tabs.find((t) => t.id === activeTabId) ?? null,
+    [tabs, activeTabId],
+  );
+
+  // Derive selectedRoom from the active chat tab
+  const selectedRoom = useMemo(() => {
+    if (!activeTab || activeTab.type !== 'chat') return null;
+    return rooms.find((r) => r.id === activeTab.roomId) ?? null;
+  }, [activeTab, rooms]);
+
+  // ---- Tab helpers ---------------------------------------------------------
+
+  const openChatTab = useCallback((room: Room) => {
+    const tabId = `chat-${room.id}`;
+    setTabs((prev) => {
+      if (prev.some((t) => t.id === tabId)) return prev;
+      return [...prev, { id: tabId, type: 'chat', title: room.title, roomId: room.id }];
+    });
+    setActiveTabId(tabId);
+  }, []);
+
+  // Exposed for future use (e.g. DevSidebar file clicks, search results)
+  const openFileTab = useCallback((filePath: string) => {
+    const tabId = `file-${filePath}`;
+    const fileName = filePath.split('/').pop() ?? filePath;
+    setTabs((prev) => {
+      if (prev.some((t) => t.id === tabId)) return prev;
+      return [...prev, { id: tabId, type: 'file', title: fileName, filePath }];
+    });
+    setActiveTabId(tabId);
+  }, []);
+
+  // Make openFileTab available on the window for dev tools / external callers
+  useEffect(() => {
+    (window as unknown as Record<string, unknown>).__openFileTab = openFileTab;
+    return () => {
+      delete (window as unknown as Record<string, unknown>).__openFileTab;
+    };
+  }, [openFileTab]);
+
+  const handleCloseTab = useCallback((tabId: string) => {
+    setTabs((prev) => {
+      const idx = prev.findIndex((t) => t.id === tabId);
+      const next = prev.filter((t) => t.id !== tabId);
+      // If we closed the active tab, activate the nearest remaining tab
+      setActiveTabId((currentActive) => {
+        if (currentActive !== tabId) return currentActive;
+        if (next.length === 0) return null;
+        // Prefer the tab to the left, else the one that slid into this index
+        const newIdx = Math.min(idx, next.length - 1);
+        return next[newIdx].id;
+      });
+      return next;
+    });
+  }, []);
+
+  // Derive display tabs with up-to-date room titles (avoids setState-in-effect)
+  const displayTabs = useMemo(
+    () =>
+      tabs.map((tab) => {
+        if (tab.type !== 'chat' || !tab.roomId) return tab;
+        const room = rooms.find((r) => r.id === tab.roomId);
+        if (room && room.title !== tab.title) {
+          return { ...tab, title: room.title };
+        }
+        return tab;
+      }),
+    [tabs, rooms],
+  );
+
+  // ---- Theme ---------------------------------------------------------------
 
   function handleThemeChange(newTheme: ThemeId) {
     setTheme(newTheme);
@@ -297,6 +375,8 @@ export default function App() {
   }
 
   const themeClassName = themes.find((t) => t.id === theme)?.className ?? '';
+
+  // ---- Data fetching -------------------------------------------------------
 
   useEffect(() => {
     fetchConversations()
@@ -310,26 +390,33 @@ export default function App() {
 
   // Fetch conversation-specific agents when the selected room changes
   useEffect(() => {
-    if (!selectedRoom) {
-      setRoomMembers([]);
-      return;
-    }
+    if (!selectedRoom) return;
+    // Skip fetch if we already have members cached for this room
+    if (roomMembersMap[selectedRoom.id]) return;
     fetchConversationAgents(selectedRoom.id)
-      .then(setRoomMembers)
-      .catch(() => setRoomMembers([]));
+      .then((members) =>
+        setRoomMembersMap((prev) => ({ ...prev, [selectedRoom.id]: members })),
+      )
+      .catch(() =>
+        setRoomMembersMap((prev) => ({ ...prev, [selectedRoom.id]: [] })),
+      );
   }, [selectedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleSelectRoom = useCallback((room: Room) => {
-    setSelectedRoom(room);
-  }, []);
+  // ---- Room selection (from sidebar) opens/focuses a tab -------------------
+
+  const handleSelectRoom = useCallback(
+    (room: Room) => {
+      openChatTab(room);
+    },
+    [openChatTab],
+  );
 
   async function handleCreateRoom() {
     try {
-      // Include all current agents in the new conversation
       const agentIds = agents.map((a) => a.id);
       const room = await createConversation('New Chat', agentIds);
       setRooms((prev) => [{ ...room, lastMessage: '', unread: false }, ...prev]);
-      setSelectedRoom(room);
+      openChatTab(room);
     } catch (e) {
       console.error('Failed to create conversation', e);
     }
@@ -337,13 +424,11 @@ export default function App() {
 
   async function handleRunPlaybook(conversationId: string) {
     setShowPlaybooks(false);
-    // Refresh conversations and select the new one
     try {
       const convs = await fetchConversations();
       setRooms(convs.map((r) => ({ ...r, lastMessage: '', unread: false })));
       const newRoom = convs.find((c) => c.id === conversationId);
-      if (newRoom) setSelectedRoom(newRoom);
-      // Refresh agents since playbook run may have created new ones
+      if (newRoom) openChatTab(newRoom);
       const updatedAgents = await fetchAgents();
       setAgents(updatedAgents);
     } catch (e) {
@@ -373,9 +458,8 @@ export default function App() {
       if (!selectedRoom) return;
       try {
         await addAgentToConversation(selectedRoom.id, agentId);
-        // Re-fetch members to stay in sync with backend
         const members = await fetchConversationAgents(selectedRoom.id);
-        setRoomMembers(members);
+        setRoomMembersMap((prev) => ({ ...prev, [selectedRoom.id]: members }));
       } catch (e) {
         console.error('Failed to add agent to conversation', e);
       }
@@ -388,9 +472,8 @@ export default function App() {
       if (!selectedRoom) return;
       try {
         await removeAgentFromConversation(selectedRoom.id, agentId);
-        // Re-fetch members to stay in sync with backend
         const members = await fetchConversationAgents(selectedRoom.id);
-        setRoomMembers(members);
+        setRoomMembersMap((prev) => ({ ...prev, [selectedRoom.id]: members }));
       } catch (e) {
         console.error('Failed to remove agent from conversation', e);
       }
@@ -408,7 +491,6 @@ export default function App() {
           payload.orchestration_mode = updates.orchestrationMode;
 
         const updated = await updateConversation(selectedRoom.id, payload);
-        setSelectedRoom(updated);
         setRooms((prev) =>
           prev.map((r) =>
             r.id === updated.id ? { ...r, ...updated } : r,
@@ -427,15 +509,35 @@ export default function App() {
       try {
         await deleteConversation(roomId);
         setRooms((prev) => prev.filter((r) => r.id !== roomId));
-        if (selectedRoom?.id === roomId) {
-          setSelectedRoom(null);
-        }
+        // Close the tab for the deleted room
+        const tabId = `chat-${roomId}`;
+        handleCloseTab(tabId);
+        // Clean up cached members
+        setRoomMembersMap((prev) => {
+          const next = { ...prev };
+          delete next[roomId];
+          return next;
+        });
       } catch (e) {
         console.error('Failed to delete conversation', e);
       }
     },
-    [selectedRoom],
+    [handleCloseTab],
   );
+
+  // ---- Collect all open chat tabs' rooms for rendering (hidden/shown) ------
+
+  const openChatRooms = useMemo(() => {
+    const chatTabs = tabs.filter((t) => t.type === 'chat' && t.roomId);
+    return chatTabs
+      .map((t) => ({
+        tab: t,
+        room: rooms.find((r) => r.id === t.roomId),
+      }))
+      .filter((entry): entry is { tab: EditorTab; room: RoomWithMeta } => !!entry.room);
+  }, [tabs, rooms]);
+
+  // ---- Render --------------------------------------------------------------
 
   return (
     <div className={`flex h-screen overflow-hidden ${themeClassName}`}>
@@ -443,28 +545,71 @@ export default function App() {
         rooms={rooms}
         agents={agents}
         selectedRoomId={selectedRoom?.id}
+        workspacePath={selectedRoom?.workspacePath || defaultWorkspace}
         onSelectRoom={handleSelectRoom}
         onDeleteRoom={handleDeleteRoom}
         onCreateRoom={handleCreateRoom}
         onCreateAgent={() => setShowAgentBuilder(true)}
         onOpenPlaybooks={() => setShowPlaybooks(true)}
       />
-      {selectedRoom ? (
-        <ChatPanel
-          room={selectedRoom}
-          members={roomMembers}
-          allAgents={agents}
-          theme={theme}
-          onThemeChange={handleThemeChange}
-          showDevSidebar={showDevSidebar}
-          onToggleDevSidebar={() => setShowDevSidebar((v) => !v)}
-          onAddAgent={handleAddAgent}
-          onRemoveAgent={handleRemoveAgent}
-          onUpdateRoom={handleUpdateRoom}
+
+      {/* Main editor area with tab bar */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <TabBar
+          tabs={displayTabs}
+          activeTabId={activeTabId}
+          onSelectTab={setActiveTabId}
+          onCloseTab={handleCloseTab}
         />
-      ) : (
-        <EmptyState onCreateRoom={handleCreateRoom} theme={theme} onThemeChange={handleThemeChange} />
-      )}
+
+        {/* Tab content area */}
+        {tabs.length === 0 ? (
+          <EmptyState onCreateRoom={handleCreateRoom} theme={theme} onThemeChange={handleThemeChange} />
+        ) : (
+          <div className="relative flex flex-1 overflow-hidden">
+            {/* Render all open chat panels (hidden when not active) to preserve state */}
+            {openChatRooms.map(({ tab, room }) => (
+              <div
+                key={tab.id}
+                className={`absolute inset-0 flex flex-col ${
+                  tab.id === activeTabId ? '' : 'invisible pointer-events-none'
+                }`}
+              >
+                <ChatPanel
+                  room={room}
+                  members={roomMembersMap[room.id] ?? []}
+                  allAgents={agents}
+                  theme={theme}
+                  onThemeChange={handleThemeChange}
+                  showDevSidebar={showDevSidebar}
+                  onToggleDevSidebar={() => setShowDevSidebar((v) => !v)}
+                  onAddAgent={handleAddAgent}
+                  onRemoveAgent={handleRemoveAgent}
+                  onUpdateRoom={handleUpdateRoom}
+                />
+              </div>
+            ))}
+
+            {/* File tab content */}
+            {activeTab?.type === 'file' && activeTab.filePath && (
+              <div className="flex flex-1 flex-col overflow-hidden bg-[var(--bg-primary)]">
+                <div className="flex shrink-0 items-center gap-2 border-b border-[var(--border-primary)] px-4 py-2">
+                  <FileCode size={14} className="shrink-0 text-[var(--text-muted)]" />
+                  <span className="truncate text-xs font-mono text-[var(--text-secondary)]">
+                    {activeTab.filePath}
+                  </span>
+                  <div className="flex-1" />
+                  <ThemeSelector currentTheme={theme} onThemeChange={handleThemeChange} />
+                </div>
+                <div className="flex-1 overflow-auto">
+                  <CodeViewer filePath={activeTab.filePath} basePath={defaultWorkspace} />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {showDevSidebar && selectedRoom && (
         <DevSidebar
           workspacePath={selectedRoom.workspacePath || defaultWorkspace}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Agent } from '../types.ts';
-import { fetchAgentConfig, saveAgentConfig } from '../lib/api.ts';
+import { fetchAgentConfig, saveAgentConfig, fetchProviders } from '../lib/api.ts';
+import type { ProviderInfo } from '../lib/api.ts';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -56,6 +57,25 @@ export default function AgentBuilder({
   const [color, setColor] = useState(agent?.color ?? PALETTE[0].hex);
   const [systemPrompt, setSystemPrompt] = useState(agent?.systemPrompt ?? '');
   const [scope, setScope] = useState<Agent['scope']>(agent?.scope ?? 'global');
+
+  // Provider availability from backend CLI detection
+  const [providerAvailability, setProviderAvailability] = useState<Record<string, ProviderInfo>>({});
+  const [availabilityLoaded, setAvailabilityLoaded] = useState(false);
+
+  useEffect(() => {
+    fetchProviders()
+      .then((data) => {
+        const map: Record<string, ProviderInfo> = {};
+        for (const p of data.providers) {
+          map[p.id] = p;
+        }
+        setProviderAvailability(map);
+      })
+      .catch(() => {
+        // If the endpoint fails, treat all providers as available (graceful degradation)
+      })
+      .finally(() => setAvailabilityLoaded(true));
+  }, []);
 
   // Config editor state
   const [configOpen, setConfigOpen] = useState(false);
@@ -188,26 +208,40 @@ export default function AgentBuilder({
               Provider
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {PROVIDERS.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => {
-                    setProvider(p.value);
-                    setModel(p.defaultModel);
-                    if (errors.provider) setErrors((prev) => ({ ...prev, provider: undefined }));
-                  }}
-                  className={`flex flex-col rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
-                    provider === p.value
-                      ? 'border-[var(--accent-hover)] bg-[var(--accent-subtle)] text-[var(--text-primary)]'
-                      : 'border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--bg-surface)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  <span className="font-medium">{p.label}</span>
-                  <span className="text-[11px] text-[var(--text-muted)]">{p.description}</span>
-                </button>
-              ))}
+              {PROVIDERS.map((p) => {
+                const info = providerAvailability[p.value];
+                const isAvailable = !availabilityLoaded || !info || info.available;
+                return (
+                  <button
+                    key={p.value}
+                    type="button"
+                    onClick={() => {
+                      setProvider(p.value);
+                      setModel(p.defaultModel);
+                      if (errors.provider) setErrors((prev) => ({ ...prev, provider: undefined }));
+                    }}
+                    title={!isAvailable ? `${info.cli_command} not found on PATH` : undefined}
+                    className={`relative flex flex-col rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
+                      provider === p.value
+                        ? 'border-[var(--accent-hover)] bg-[var(--accent-subtle)] text-[var(--text-primary)]'
+                        : !isAvailable
+                          ? 'border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-[var(--text-muted)] opacity-50'
+                          : 'border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--bg-surface)] hover:text-[var(--text-primary)]'
+                    }`}
+                  >
+                    <span className="font-medium">{p.label}</span>
+                    <span className="text-[11px] text-[var(--text-muted)]">
+                      {!isAvailable ? 'Not installed' : info?.version ? `${p.description} (${info.version})` : p.description}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
+            {provider && availabilityLoaded && providerAvailability[provider] && !providerAvailability[provider].available && (
+              <p className="mt-1.5 text-xs text-yellow-400">
+                CLI not detected on this machine. The agent will be created but may fail to respond until the CLI is installed.
+              </p>
+            )}
             {errors.provider && (
               <p className="mt-1 text-xs text-red-400">{errors.provider}</p>
             )}
