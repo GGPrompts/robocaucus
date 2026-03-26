@@ -16,14 +16,17 @@ pub struct PanelConfig {
     /// The user prompt to send to every agent.
     pub prompt: String,
     /// The conversation this panel belongs to.
+    #[allow(dead_code)]
     pub conversation_id: String,
     /// IDs of agents to query (informational; the actual agents + adapters are
     /// passed to [`spawn_panel`]).
+    #[allow(dead_code)]
     pub agent_ids: Vec<String>,
 }
 
 /// Collected response from a single agent after the stream is fully consumed.
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct PanelResponse {
     pub agent_id: String,
     pub agent_name: String,
@@ -37,6 +40,7 @@ pub struct PanelResponse {
 #[derive(Debug)]
 pub struct TaggedChunk {
     pub agent_id: String,
+    #[allow(dead_code)]
     pub agent_name: String,
     pub chunk: OutputChunk,
 }

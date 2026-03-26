@@ -29,6 +29,7 @@ pub struct DebateConfig {
     /// unless the moderator is also a participant).
     pub participant_agent_ids: Vec<String>,
     /// Conversation this debate belongs to.
+    #[allow(dead_code)]
     pub conversation_id: String,
 }
 

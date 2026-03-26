@@ -13,6 +13,7 @@ pub struct MentionResult {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct MentionedAgent {
     pub agent_id: String,
     pub agent_name: String,

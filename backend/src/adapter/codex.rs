@@ -62,8 +62,12 @@ impl CliAdapter for CodexAdapter {
         }
 
         // Build the command: codex exec "<prompt>" --json
+        // --skip-git-repo-check: agent_home may not be a git repo
         let mut cmd = Command::new("codex");
-        cmd.arg("exec").arg(prompt).arg("--json");
+        cmd.arg("exec")
+            .arg(prompt)
+            .arg("--json")
+            .arg("--skip-git-repo-check");
 
         if let Some(home) = agent_home {
             cmd.current_dir(home);

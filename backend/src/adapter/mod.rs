@@ -32,6 +32,7 @@ pub enum ChunkType {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, thiserror::Error)]
+#[allow(dead_code)]
 pub enum AdapterError {
     #[error("CLI not found: {0}")]
     CliNotFound(String),
@@ -60,6 +61,7 @@ pub enum AdapterError {
 #[async_trait::async_trait]
 pub trait CliAdapter: Send + Sync {
     /// Human-readable name of the backing CLI (e.g. "claude").
+    #[allow(dead_code)]
     fn name(&self) -> &str;
 
     /// Spawn the CLI with the given prompt and return a receiver that yields
@@ -78,5 +80,6 @@ pub trait CliAdapter: Send + Sync {
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError>;
 
     /// Send SIGTERM to the process identified by `process_id`.
+    #[allow(dead_code)]
     async fn cancel(&self, process_id: u32) -> Result<(), AdapterError>;
 }

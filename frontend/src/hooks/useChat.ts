@@ -164,7 +164,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
             switch (sse.event) {
               case 'text': {
                 const parsed = safeParse(sse.data);
-                const chunk = typeof parsed === 'string' ? parsed : (parsed as { text?: string })?.text ?? sse.data;
+                const chunk = typeof parsed === 'string' ? parsed : (parsed as { content?: string })?.content ?? sse.data;
                 content += chunk;
                 setStreamingMessage({
                   ...initialMessageBase,
@@ -177,7 +177,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
               case 'thinking': {
                 // Append thinking text wrapped in a collapsible marker
                 const parsed = safeParse(sse.data);
-                const thought = typeof parsed === 'string' ? parsed : (parsed as { text?: string })?.text ?? sse.data;
+                const thought = typeof parsed === 'string' ? parsed : (parsed as { content?: string })?.content ?? sse.data;
                 content += `\n\n<details><summary>Thinking...</summary>\n\n${thought}\n\n</details>\n\n`;
                 setStreamingMessage({
                   ...initialMessageBase,
@@ -214,7 +214,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
 
               case 'error': {
                 const parsed = safeParse(sse.data);
-                const errMsg = typeof parsed === 'string' ? parsed : (parsed as { message?: string })?.message ?? sse.data;
+                const errMsg = typeof parsed === 'string' ? parsed : (parsed as { content?: string })?.content ?? sse.data;
                 setError(errMsg);
                 setStreamingMessage(null);
                 setIsStreaming(false);

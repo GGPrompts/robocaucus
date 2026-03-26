@@ -31,6 +31,7 @@ pub struct UpdateAgentRequest {
     pub name: String,
     pub model: String,
     pub provider: Option<String>,
+    #[allow(dead_code)]
     pub agent_home: Option<String>,
     pub color: String,
     pub scope: Option<String>,

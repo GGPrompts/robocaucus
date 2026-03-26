@@ -64,6 +64,7 @@ impl CliAdapter for ClaudeAdapter {
         // Build the command.
         let mut cmd = Command::new("claude");
         cmd.arg("-p")
+            .arg("--verbose")
             .arg("--output-format")
             .arg("stream-json")
             .arg(prompt);
@@ -254,10 +255,21 @@ fn parse_claude_event(event: &serde_json::Value) -> Vec<OutputChunk> {
     };
 
     match event_type {
-        // Full assistant message (non-streaming fallback).
+        // Full assistant message.
+        // Non-verbose format: content array at top level (.content[])
+        // Verbose format: content array nested under .message.content[]
         "assistant" => {
-            if let Some(content_arr) = event.get("content").and_then(|v| v.as_array()) {
-                for block in content_arr {
+            let content_arr = event
+                .get("content")
+                .and_then(|v| v.as_array())
+                .or_else(|| {
+                    event
+                        .get("message")
+                        .and_then(|m| m.get("content"))
+                        .and_then(|v| v.as_array())
+                });
+            if let Some(arr) = content_arr {
+                for block in arr {
                     if let Some(chunk) = parse_content_block(block) {
                         chunks.push(chunk);
                     }
@@ -477,6 +489,25 @@ mod tests {
         assert_eq!(chunks.len(), 1);
         assert!(matches!(chunks[0].chunk_type, ChunkType::Text));
         assert_eq!(chunks[0].content, "start");
+    }
+
+    #[test]
+    fn test_parse_verbose_assistant_event() {
+        // Verbose stream-json nests content under .message.content[]
+        let event: serde_json::Value = serde_json::json!({
+            "type": "assistant",
+            "message": {
+                "role": "assistant",
+                "content": [
+                    { "type": "text", "text": "Hello from verbose!" }
+                ]
+            },
+            "session_id": "abc-123"
+        });
+        let chunks = parse_claude_event(&event);
+        assert_eq!(chunks.len(), 1);
+        assert!(matches!(chunks[0].chunk_type, ChunkType::Text));
+        assert_eq!(chunks[0].content, "Hello from verbose!");
     }
 
     #[test]
