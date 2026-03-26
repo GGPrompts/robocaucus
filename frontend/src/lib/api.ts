@@ -123,10 +123,18 @@ export async function fetchPlaybook(id: string, base?: string): Promise<Playbook
 
 export async function runPlaybook(
   id: string,
+  yamlContent?: string,
   base?: string,
 ): Promise<{ conversation_id: string }> {
+  const hasBody = yamlContent !== undefined;
   const res = await fetch(apiUrl(`/playbooks/${id}/run`, base), {
     method: 'POST',
+    ...(hasBody
+      ? {
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ yaml_content: yamlContent }),
+        }
+      : {}),
   });
   return jsonOrThrow<{ conversation_id: string }>(res);
 }

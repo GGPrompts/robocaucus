@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Streamdown } from 'streamdown';
 import { code } from '@streamdown/code';
+import { mermaid } from '@streamdown/mermaid';
+import { math } from '@streamdown/math';
 import type { Agent, Message } from '../types.ts';
 
 // Extend Message with optional streaming flag for local use
@@ -50,7 +52,7 @@ function StreamingDots() {
   );
 }
 
-const plugins = { code };
+const plugins = { code, mermaid, math };
 
 export default function ChatMessage({ message, agent }: ChatMessageProps) {
   const isUser = message.role === 'user';

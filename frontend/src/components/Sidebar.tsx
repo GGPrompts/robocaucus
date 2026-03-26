@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Room, Agent } from '../types';
 import { FileTree } from './FileTree';
 import { GitGraph } from './git/GitGraph';
+import WorkspaceSelector from './WorkspaceSelector';
 
 // ---------------------------------------------------------------------------
 // Mock data
@@ -93,12 +94,14 @@ export interface SidebarProps {
   agents?: Agent[];
   selectedRoomId?: string;
   workspacePath?: string;
+  recentWorkspaces?: string[];
   onSelectRoom?: (room: Room) => void;
   onDeleteRoom?: (roomId: string) => void;
   onSelectAgent?: (agent: Agent) => void;
   onCreateRoom?: () => void;
   onCreateAgent?: () => void;
   onOpenPlaybooks?: () => void;
+  onWorkspaceChange?: (path: string) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,12 +113,14 @@ export default function Sidebar({
   agents: propAgents,
   selectedRoomId,
   workspacePath,
+  recentWorkspaces = [],
   onSelectRoom,
   onDeleteRoom,
   onSelectAgent,
   onCreateRoom,
   onCreateAgent,
   onOpenPlaybooks,
+  onWorkspaceChange,
 }: SidebarProps) {
   const displayRooms = propRooms ?? MOCK_ROOMS;
   const displayAgents = propAgents ?? MOCK_AGENTS;
@@ -161,18 +166,11 @@ export default function Sidebar({
       {/* ===== Rooms / Agents panel ===== */}
       <div className="flex w-60 flex-col overflow-y-auto bg-[var(--bg-primary)] border-r border-[var(--border-primary)]">
         {/* Workspace selector */}
-        <div className="flex h-12 items-center justify-between border-b border-[var(--border-primary)] px-3">
-          <span className="truncate font-semibold text-[var(--text-primary)]">My Projects</span>
-          <svg
-            className="h-4 w-4 text-[var(--text-muted)]"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        <WorkspaceSelector
+          currentWorkspace={workspacePath ?? null}
+          recentWorkspaces={recentWorkspaces}
+          onSelect={(path) => onWorkspaceChange?.(path)}
+        />
 
         {activeMode === 'files' ? (
           workspacePath ? (

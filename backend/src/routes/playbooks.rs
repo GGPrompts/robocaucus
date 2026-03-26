@@ -44,6 +44,13 @@ pub struct UpdatePlaybookRequest {
     pub description: Option<String>,
 }
 
+#[derive(Deserialize, Default)]
+pub struct RunPlaybookRequest {
+    /// Optional YAML content override with user-filled placeholder values.
+    /// If provided, this is used instead of the stored playbook YAML.
+    pub yaml_content: Option<String>,
+}
+
 // ---------------------------------------------------------------------------
 // Handlers
 // ---------------------------------------------------------------------------
@@ -173,6 +180,7 @@ const ROLE_COLORS: &[&str] = &[
 async fn run_playbook(
     State(state): State<AppState>,
     Path(id): Path<String>,
+    body: Option<Json<RunPlaybookRequest>>,
 ) -> impl IntoResponse {
     let db = match state.db() {
         Ok(db) => db,
@@ -200,6 +208,11 @@ async fn run_playbook(
         }
     };
 
+    // Use provided yaml_content override (with filled placeholders) or fall back to stored content
+    let yaml_content = body
+        .and_then(|b| b.0.yaml_content)
+        .unwrap_or(playbook.yaml_content);
+
     // 2. Create a conversation with the playbook's name and flow type
     let conversation = match db.create_conversation(&playbook.name, None, &playbook.flow_type) {
         Ok(c) => c,
@@ -213,7 +226,7 @@ async fn run_playbook(
     };
 
     // 3. Parse YAML to extract roles
-    let parsed: PlaybookYaml = match serde_yaml::from_str(&playbook.yaml_content) {
+    let parsed: PlaybookYaml = match serde_yaml::from_str(&yaml_content) {
         Ok(p) => p,
         Err(e) => {
             return (

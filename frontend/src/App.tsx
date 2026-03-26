@@ -28,9 +28,44 @@ import type { Room, Agent, EditorTab } from './types';
 
 // TODO: [code-review] localStorage.getItem() can throw in private/incognito — wrap in try/catch (85%)
 function getInitialTheme(): ThemeId {
-  const stored = localStorage.getItem('robocaucus-theme');
-  if (stored && themes.some((t) => t.id === stored)) return stored as ThemeId;
+  try {
+    const stored = localStorage.getItem('robocaucus-theme');
+    if (stored && themes.some((t) => t.id === stored)) return stored as ThemeId;
+  } catch { /* ignore */ }
   return 'noir';
+}
+
+const RECENT_WORKSPACES_KEY = 'robocaucus-recent-workspaces';
+const ACTIVE_WORKSPACE_KEY = 'robocaucus-active-workspace';
+
+function loadRecentWorkspaces(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_WORKSPACES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.filter((x): x is string => typeof x === 'string');
+    }
+  } catch { /* ignore */ }
+  return [];
+}
+
+function saveRecentWorkspaces(paths: string[]) {
+  try {
+    localStorage.setItem(RECENT_WORKSPACES_KEY, JSON.stringify(paths));
+  } catch { /* ignore */ }
+}
+
+function loadActiveWorkspace(): string | null {
+  try {
+    return localStorage.getItem(ACTIVE_WORKSPACE_KEY);
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveActiveWorkspace(path: string) {
+  try {
+    localStorage.setItem(ACTIVE_WORKSPACE_KEY, path);
+  } catch { /* ignore */ }
 }
 
 type RoomWithMeta = Room & { lastMessage: string; unread: boolean };
@@ -291,6 +326,8 @@ export default function App() {
   const [showDevSidebar, setShowDevSidebar] = useState(false);
   const [theme, setTheme] = useState<ThemeId>(getInitialTheme);
   const [defaultWorkspace, setDefaultWorkspace] = useState('');
+  const [activeWorkspace, setActiveWorkspace] = useState<string | null>(loadActiveWorkspace);
+  const [recentWorkspaces, setRecentWorkspaces] = useState<string[]>(loadRecentWorkspaces);
 
   // ---- Tab state -----------------------------------------------------------
   const [tabs, setTabs] = useState<EditorTab[]>([]);
@@ -375,6 +412,45 @@ export default function App() {
   }
 
   const themeClassName = themes.find((t) => t.id === theme)?.className ?? '';
+
+  // ---- Workspace management ------------------------------------------------
+
+  // The effective workspace: user-selected > default from backend config
+  const effectiveWorkspace = activeWorkspace || defaultWorkspace;
+
+  // Build the deduplicated recent-workspaces list for the dropdown.
+  // Always includes the default workspace (from backend config) as the first
+  // entry so the user can easily switch back to it.
+  const allRecentWorkspaces = useMemo(() => {
+    const combined: string[] = [];
+    if (defaultWorkspace) combined.push(defaultWorkspace);
+    for (const ws of recentWorkspaces) {
+      if (ws && !combined.includes(ws)) combined.push(ws);
+    }
+    return combined;
+  }, [defaultWorkspace, recentWorkspaces]);
+
+  const handleWorkspaceChange = useCallback(
+    (path: string) => {
+      setActiveWorkspace(path);
+      saveActiveWorkspace(path);
+      // Add to recent list (deduplicated, most recent first, cap at 10)
+      setRecentWorkspaces((prev) => {
+        const next = [path, ...prev.filter((w) => w !== path)].slice(0, 10);
+        saveRecentWorkspaces(next);
+        return next;
+      });
+    },
+    [],
+  );
+
+  // When defaultWorkspace arrives from the backend and no active workspace
+  // has been chosen yet, seed the active workspace with the default.
+  useEffect(() => {
+    if (defaultWorkspace && !activeWorkspace) {
+      setActiveWorkspace(defaultWorkspace);
+    }
+  }, [defaultWorkspace]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Data fetching -------------------------------------------------------
 
@@ -545,12 +621,14 @@ export default function App() {
         rooms={rooms}
         agents={agents}
         selectedRoomId={selectedRoom?.id}
-        workspacePath={selectedRoom?.workspacePath || defaultWorkspace}
+        workspacePath={selectedRoom?.workspacePath || effectiveWorkspace}
+        recentWorkspaces={allRecentWorkspaces}
         onSelectRoom={handleSelectRoom}
         onDeleteRoom={handleDeleteRoom}
         onCreateRoom={handleCreateRoom}
         onCreateAgent={() => setShowAgentBuilder(true)}
         onOpenPlaybooks={() => setShowPlaybooks(true)}
+        onWorkspaceChange={handleWorkspaceChange}
       />
 
       {/* Main editor area with tab bar */}
@@ -602,7 +680,7 @@ export default function App() {
                   <ThemeSelector currentTheme={theme} onThemeChange={handleThemeChange} />
                 </div>
                 <div className="flex-1 overflow-auto">
-                  <CodeViewer filePath={activeTab.filePath} basePath={defaultWorkspace} />
+                  <CodeViewer filePath={activeTab.filePath} basePath={effectiveWorkspace} />
                 </div>
               </div>
             )}
@@ -612,7 +690,7 @@ export default function App() {
 
       {showDevSidebar && selectedRoom && (
         <DevSidebar
-          workspacePath={selectedRoom.workspacePath || defaultWorkspace}
+          workspacePath={selectedRoom.workspacePath || effectiveWorkspace}
           onClose={() => setShowDevSidebar(false)}
         />
       )}
