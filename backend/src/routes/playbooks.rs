@@ -261,6 +261,7 @@ async fn run_playbook(
                 "global",
                 prompt,
                 None,
+                None,
             ) {
                 Ok(a) => a,
                 Err(e) => {

@@ -24,6 +24,7 @@ pub struct CreateAgentRequest {
     pub scope: Option<String>,
     pub system_prompt: Option<String>,
     pub workspace_path: Option<String>,
+    pub cli_config: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -37,6 +38,7 @@ pub struct UpdateAgentRequest {
     pub scope: Option<String>,
     pub system_prompt: Option<String>,
     pub workspace_path: Option<String>,
+    pub cli_config: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -87,7 +89,7 @@ async fn create_agent(
         }
     }
 
-    match db.create_agent(&body.name, &body.model, provider, &agent_home, &body.color, scope, system_prompt, workspace_path) {
+    match db.create_agent(&body.name, &body.model, provider, &agent_home, &body.color, scope, system_prompt, workspace_path, body.cli_config.as_deref()) {
         Ok(agent) => (StatusCode::CREATED, Json(agent)).into_response(),
         Err(e) => (
             StatusCode::INTERNAL_SERVER_ERROR,
@@ -158,7 +160,7 @@ async fn update_agent(
     let system_prompt = body.system_prompt.as_deref().unwrap_or("");
     let workspace_path = body.workspace_path.as_deref();
 
-    match db.update_agent(&id, &body.name, &body.model, provider, agent_home, &body.color, scope, system_prompt, workspace_path) {
+    match db.update_agent(&id, &body.name, &body.model, provider, agent_home, &body.color, scope, system_prompt, workspace_path, body.cli_config.as_deref()) {
         Ok(Some(agent)) => (StatusCode::OK, Json(agent)).into_response(),
         Ok(None) => (
             StatusCode::NOT_FOUND,

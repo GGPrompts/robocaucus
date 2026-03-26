@@ -47,6 +47,7 @@ async fn main() {
                 &agent.scope,
                 &agent.system_prompt,
                 agent.workspace_path.as_deref(),
+                agent.cli_config.as_deref(),
             )
             .expect("failed to update agent_home");
         }

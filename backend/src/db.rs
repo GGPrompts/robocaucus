@@ -27,6 +27,7 @@ pub struct Agent {
     pub scope: String,
     pub system_prompt: String,
     pub workspace_path: Option<String>,
+    pub cli_config: Option<String>,
     pub created_at: String,
     pub updated_at: String,
 }
@@ -107,6 +108,7 @@ impl Database {
                 scope          TEXT NOT NULL DEFAULT 'global',
                 system_prompt  TEXT NOT NULL DEFAULT '',
                 workspace_path TEXT,
+                cli_config     TEXT,
                 created_at     TEXT NOT NULL,
                 updated_at     TEXT NOT NULL
             );
@@ -156,6 +158,7 @@ impl Database {
         let migrations = [
             "ALTER TABLE agents ADD COLUMN provider TEXT NOT NULL DEFAULT ''",
             "ALTER TABLE agents ADD COLUMN agent_home TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE agents ADD COLUMN cli_config TEXT",
         ];
         for sql in migrations {
             match self.conn.execute(sql, []) {
@@ -338,13 +341,14 @@ impl Database {
         scope: &str,
         system_prompt: &str,
         workspace_path: Option<&str>,
+        cli_config: Option<&str>,
     ) -> SqlResult<Agent> {
         let id = Uuid::new_v4().to_string();
         let now = Self::now_iso8601();
         self.conn.execute(
-            "INSERT INTO agents (id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, created_at, updated_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
-            params![id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, now, now],
+            "INSERT INTO agents (id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+            params![id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, now, now],
         )?;
         Ok(Agent {
             id,
@@ -356,6 +360,7 @@ impl Database {
             scope: scope.to_owned(),
             system_prompt: system_prompt.to_owned(),
             workspace_path: workspace_path.map(|s| s.to_owned()),
+            cli_config: cli_config.map(|s| s.to_owned()),
             created_at: now.clone(),
             updated_at: now,
         })
@@ -365,13 +370,13 @@ impl Database {
         let (sql, filter_params): (String, Vec<Box<dyn rusqlite::types::ToSql>>) =
             match scope_filter {
                 Some(scope) => (
-                    "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, created_at, updated_at
+                    "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, created_at, updated_at
                      FROM agents WHERE scope = ?1 ORDER BY name"
                         .to_owned(),
                     vec![Box::new(scope.to_owned()) as Box<dyn rusqlite::types::ToSql>],
                 ),
                 None => (
-                    "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, created_at, updated_at
+                    "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, created_at, updated_at
                      FROM agents ORDER BY name"
                         .to_owned(),
                     vec![],
@@ -390,8 +395,9 @@ impl Database {
                 scope: row.get(6)?,
                 system_prompt: row.get(7)?,
                 workspace_path: row.get(8)?,
-                created_at: row.get(9)?,
-                updated_at: row.get(10)?,
+                cli_config: row.get(9)?,
+                created_at: row.get(10)?,
+                updated_at: row.get(11)?,
             })
         })?;
         rows.collect()
@@ -399,7 +405,7 @@ impl Database {
 
     pub fn get_agent(&self, id: &str) -> SqlResult<Option<Agent>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, created_at, updated_at
+            "SELECT id, name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, created_at, updated_at
              FROM agents WHERE id = ?1",
         )?;
         let mut rows = stmt.query_map(params![id], |row| {
@@ -413,8 +419,9 @@ impl Database {
                 scope: row.get(6)?,
                 system_prompt: row.get(7)?,
                 workspace_path: row.get(8)?,
-                created_at: row.get(9)?,
-                updated_at: row.get(10)?,
+                cli_config: row.get(9)?,
+                created_at: row.get(10)?,
+                updated_at: row.get(11)?,
             })
         })?;
         match rows.next() {
@@ -435,13 +442,15 @@ impl Database {
         scope: &str,
         system_prompt: &str,
         workspace_path: Option<&str>,
+        cli_config: Option<&str>,
     ) -> SqlResult<Option<Agent>> {
         let now = Self::now_iso8601();
         let changed = self.conn.execute(
             "UPDATE agents SET name = ?1, model = ?2, provider = ?3, agent_home = ?4,
-                    color = ?5, scope = ?6, system_prompt = ?7, workspace_path = ?8, updated_at = ?9
-             WHERE id = ?10",
-            params![name, model, provider, agent_home, color, scope, system_prompt, workspace_path, now, id],
+                    color = ?5, scope = ?6, system_prompt = ?7, workspace_path = ?8,
+                    cli_config = ?9, updated_at = ?10
+             WHERE id = ?11",
+            params![name, model, provider, agent_home, color, scope, system_prompt, workspace_path, cli_config, now, id],
         )?;
         if changed == 0 {
             return Ok(None);
@@ -628,7 +637,7 @@ impl Database {
     pub fn get_conversation_agents(&self, conversation_id: &str) -> SqlResult<Vec<Agent>> {
         let mut stmt = self.conn.prepare(
             "SELECT a.id, a.name, a.model, a.provider, a.agent_home, a.color, a.scope,
-                    a.system_prompt, a.workspace_path, a.created_at, a.updated_at
+                    a.system_prompt, a.workspace_path, a.cli_config, a.created_at, a.updated_at
              FROM agents a
              INNER JOIN conversation_agents ca ON ca.agent_id = a.id
              WHERE ca.conversation_id = ?1
@@ -645,8 +654,9 @@ impl Database {
                 scope: row.get(6)?,
                 system_prompt: row.get(7)?,
                 workspace_path: row.get(8)?,
-                created_at: row.get(9)?,
-                updated_at: row.get(10)?,
+                cli_config: row.get(9)?,
+                created_at: row.get(10)?,
+                updated_at: row.get(11)?,
             })
         })?;
         rows.collect()
@@ -709,7 +719,7 @@ mod tests {
     fn test_create_and_list_agents() {
         let db = Database::new_in_memory().unwrap();
         let agent = db
-            .create_agent("Claude", "sonnet", "claude", "/tmp/agents/claude", "#7c3aed", "global", "You are helpful.", None)
+            .create_agent("Claude", "sonnet", "claude", "/tmp/agents/claude", "#7c3aed", "global", "You are helpful.", None, None)
             .unwrap();
         assert_eq!(agent.name, "Claude");
         assert_eq!(agent.provider, "claude");
@@ -732,7 +742,7 @@ mod tests {
             .create_conversation("Msg test", None, "manual")
             .unwrap();
         let agent = db
-            .create_agent("Bot", "sonnet", "claude", "", "#000000", "global", "", None)
+            .create_agent("Bot", "sonnet", "claude", "", "#000000", "global", "", None, None)
             .unwrap();
 
         let user_msg = db
@@ -765,10 +775,10 @@ mod tests {
             .create_conversation("Join test", None, "panel")
             .unwrap();
         let a1 = db
-            .create_agent("Agent A", "sonnet", "claude", "", "#111111", "global", "", None)
+            .create_agent("Agent A", "sonnet", "claude", "", "#111111", "global", "", None, None)
             .unwrap();
         let a2 = db
-            .create_agent("Agent B", "gemini-2.5-pro", "gemini", "", "#222222", "global", "", None)
+            .create_agent("Agent B", "gemini-2.5-pro", "gemini", "", "#222222", "global", "", None, None)
             .unwrap();
 
         db.add_agent_to_conversation(&conv.id, &a1.id).unwrap();
@@ -786,6 +796,62 @@ mod tests {
         assert_eq!(sanitize_name("  spaces  "), "spaces");
         assert_eq!(sanitize_name("A--B__C"), "a-b-c");
         assert_eq!(sanitize_name("simple"), "simple");
+    }
+
+    #[test]
+    fn test_cli_config_round_trip() {
+        let db = Database::new_in_memory().unwrap();
+        let config_json = r#"{"max_tokens":4096,"verbose":true}"#;
+
+        // Create with cli_config
+        let agent = db
+            .create_agent("ConfigBot", "sonnet", "claude", "", "#aabbcc", "global", "", None, Some(config_json))
+            .unwrap();
+        assert_eq!(agent.cli_config.as_deref(), Some(config_json));
+
+        // Verify via get_agent
+        let fetched = db.get_agent(&agent.id).unwrap().unwrap();
+        assert_eq!(fetched.cli_config.as_deref(), Some(config_json));
+
+        // Verify via list_agents
+        let all = db.list_agents(None).unwrap();
+        assert_eq!(all[0].cli_config.as_deref(), Some(config_json));
+
+        // Update cli_config
+        let new_config = r#"{"max_tokens":8192}"#;
+        let updated = db
+            .update_agent(&agent.id, "ConfigBot", "sonnet", "claude", "", "#aabbcc", "global", "", None, Some(new_config))
+            .unwrap()
+            .unwrap();
+        assert_eq!(updated.cli_config.as_deref(), Some(new_config));
+
+        // Clear cli_config
+        let cleared = db
+            .update_agent(&agent.id, "ConfigBot", "sonnet", "claude", "", "#aabbcc", "global", "", None, None)
+            .unwrap()
+            .unwrap();
+        assert!(cleared.cli_config.is_none());
+
+        // Create without cli_config
+        let agent2 = db
+            .create_agent("PlainBot", "sonnet", "claude", "", "#112233", "global", "", None, None)
+            .unwrap();
+        assert!(agent2.cli_config.is_none());
+    }
+
+    #[test]
+    fn test_cli_config_in_conversation_agents() {
+        let db = Database::new_in_memory().unwrap();
+        let config_json = r#"{"temperature":0.7}"#;
+        let conv = db.create_conversation("Config test", None, "manual").unwrap();
+        let agent = db
+            .create_agent("ConfigAgent", "sonnet", "claude", "", "#000000", "global", "", None, Some(config_json))
+            .unwrap();
+        db.add_agent_to_conversation(&conv.id, &agent.id).unwrap();
+
+        let agents = db.get_conversation_agents(&conv.id).unwrap();
+        assert_eq!(agents.len(), 1);
+        assert_eq!(agents[0].cli_config.as_deref(), Some(config_json));
     }
 
     #[test]

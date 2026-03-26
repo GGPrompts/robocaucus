@@ -188,6 +188,7 @@ async fn pr_review_tribunal(
                 "global",
                 role.system_prompt,
                 None,
+                None,
             ) {
                 Ok(a) => a,
                 Err(e) => {

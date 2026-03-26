@@ -129,6 +129,7 @@ pub fn seed_starter_agents(db: &Database) -> Result<usize, rusqlite::Error> {
             "global",
             tpl.system_prompt,
             None,
+            None,
         )?;
     }
 

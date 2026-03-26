@@ -25,10 +25,12 @@ const PROVIDERS: {
   variants: string[];
 }[] = [
   { value: 'claude', label: 'Claude', description: 'Anthropic Claude CLI', defaultModel: 'sonnet', variants: ['sonnet', 'opus', 'haiku'] },
-  { value: 'codex', label: 'Codex', description: 'OpenAI Codex CLI', defaultModel: 'o3', variants: ['o3', 'o4-mini', 'gpt-5.4'] },
-  { value: 'gemini', label: 'Gemini', description: 'Google Gemini CLI', defaultModel: 'gemini-2.5-pro', variants: ['gemini-2.5-pro'] },
-  { value: 'copilot', label: 'Copilot', description: 'GitHub Copilot CLI', defaultModel: 'gpt-4o', variants: ['gpt-4o'] },
+  { value: 'codex', label: 'Codex', description: 'OpenAI Codex CLI', defaultModel: 'o3', variants: ['o3', 'o4-mini', 'gpt-5-codex', 'gpt-5.1-codex', 'gpt-5.2-codex', 'gpt-5.4', 'gpt-5.4-mini'] },
+  { value: 'gemini', label: 'Gemini', description: 'Google Gemini CLI', defaultModel: 'auto', variants: ['auto', 'pro', 'flash', 'flash-lite'] },
+  { value: 'copilot', label: 'Copilot', description: 'GitHub Copilot CLI', defaultModel: 'claude-sonnet-4.6', variants: ['claude-sonnet-4.6', 'claude-opus-4.6', 'claude-haiku-4.5', 'gpt-5.4', 'gpt-5.2', 'gpt-5.1-codex', 'gpt-5.4-mini', 'gpt-4.1', 'gemini-3-pro-preview'] },
 ];
+
+const CUSTOM_MODEL_SENTINEL = '__custom__';
 
 const PALETTE = [
   { name: 'purple', hex: '#a855f7' },
@@ -57,6 +59,12 @@ export default function AgentBuilder({
   const [color, setColor] = useState(agent?.color ?? PALETTE[0].hex);
   const [systemPrompt, setSystemPrompt] = useState(agent?.systemPrompt ?? '');
   const [scope, setScope] = useState<Agent['scope']>(agent?.scope ?? 'global');
+
+  // Custom model state: detect if existing agent uses a model not in the known variants
+  const initProvider = PROVIDERS.find((p) => p.value === agent?.provider);
+  const isInitialCustom = Boolean(agent?.model && initProvider && !initProvider.variants.includes(agent.model));
+  const [customModel, setCustomModel] = useState(isInitialCustom ? (agent?.model ?? '') : '');
+  const [useCustomModel, setUseCustomModel] = useState(isInitialCustom);
 
   // Provider availability from backend CLI detection
   const [providerAvailability, setProviderAvailability] = useState<Record<string, ProviderInfo>>({});
@@ -129,10 +137,12 @@ export default function AgentBuilder({
       return;
     }
 
+    const resolvedModel = useCustomModel ? customModel.trim() : (model.trim() || (selectedProviderInfo?.defaultModel ?? ''));
+
     onSave({
       name: name.trim(),
       provider: provider as Agent['provider'],
-      model: model.trim() || (selectedProviderInfo?.defaultModel ?? ''),
+      model: resolvedModel,
       color,
       scope,
       systemPrompt,
@@ -218,6 +228,8 @@ export default function AgentBuilder({
                     onClick={() => {
                       setProvider(p.value);
                       setModel(p.defaultModel);
+                      setUseCustomModel(false);
+                      setCustomModel('');
                       if (errors.provider) setErrors((prev) => ({ ...prev, provider: undefined }));
                     }}
                     title={!isAvailable ? `${info.cli_command} not found on PATH` : undefined}
@@ -255,8 +267,17 @@ export default function AgentBuilder({
               </label>
               <select
                 id="agent-model"
-                value={model || selectedProviderInfo.defaultModel}
-                onChange={(e) => setModel(e.target.value)}
+                value={useCustomModel ? CUSTOM_MODEL_SENTINEL : (model || selectedProviderInfo.defaultModel)}
+                onChange={(e) => {
+                  if (e.target.value === CUSTOM_MODEL_SENTINEL) {
+                    setUseCustomModel(true);
+                    setCustomModel('');
+                  } else {
+                    setUseCustomModel(false);
+                    setCustomModel('');
+                    setModel(e.target.value);
+                  }
+                }}
                 className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-hover)] focus:ring-2 focus:ring-[var(--ring-accent)]"
               >
                 {selectedProviderInfo.variants.map((v) => (
@@ -264,7 +285,18 @@ export default function AgentBuilder({
                     {v}
                   </option>
                 ))}
+                <option value={CUSTOM_MODEL_SENTINEL}>Custom...</option>
               </select>
+              {useCustomModel && (
+                <input
+                  type="text"
+                  value={customModel}
+                  onChange={(e) => setCustomModel(e.target.value)}
+                  placeholder="Enter custom model name"
+                  className="mt-2 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] outline-none transition-colors focus:border-[var(--accent-hover)] focus:ring-2 focus:ring-[var(--ring-accent)]"
+                  autoFocus
+                />
+              )}
             </div>
           )}
 

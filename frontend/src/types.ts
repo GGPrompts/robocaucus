@@ -17,6 +17,7 @@ export interface Agent {
   scope: 'global' | 'workspace';
   systemPrompt: string;
   workspacePath?: string;
+  cliConfig?: Record<string, unknown>;
 }
 
 export interface Playbook {

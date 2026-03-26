@@ -121,6 +121,7 @@ mod tests {
             scope: "global".to_owned(),
             system_prompt: prompt.to_owned(),
             workspace_path: None,
+            cli_config: None,
             created_at: "2026-01-01T00:00:00Z".to_owned(),
             updated_at: "2026-01-01T00:00:00Z".to_owned(),
         }

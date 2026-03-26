@@ -260,6 +260,7 @@ mod tests {
             scope: "global".to_owned(),
             system_prompt: String::new(),
             workspace_path: None,
+            cli_config: None,
             created_at: String::new(),
             updated_at: String::new(),
         }

@@ -73,12 +73,15 @@ export async function createAgent(
   color: string,
   scope: string,
   systemPrompt: string,
+  cliConfig?: Record<string, unknown>,
   base?: string,
 ): Promise<Agent> {
+  const payload: Record<string, unknown> = { name, model, provider, color, scope, system_prompt: systemPrompt };
+  if (cliConfig !== undefined) payload.cli_config = JSON.stringify(cliConfig);
   const res = await fetch(apiUrl('/agents', base), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, model, provider, color, scope, system_prompt: systemPrompt }),
+    body: JSON.stringify(payload),
   });
   return jsonOrThrow<Agent>(res);
 }

@@ -43,6 +43,7 @@ async fn import_agent(
         &data.scope,
         &data.system_prompt,
         None,
+        None,
     ) {
         Ok(agent) => (StatusCode::CREATED, Json(agent)).into_response(),
         Err(e) => (

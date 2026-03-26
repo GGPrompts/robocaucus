@@ -199,6 +199,7 @@ Push back on passive voice and jargon.
             scope: "global".into(),
             system_prompt: "Be helpful.".into(),
             workspace_path: None,
+            cli_config: None,
             created_at: "2026-01-01T00:00:00Z".into(),
             updated_at: "2026-01-01T00:00:00Z".into(),
         };
