@@ -440,7 +440,7 @@ async fn chat_send(
         false
     };
 
-    let mut rx = match adapter.spawn(&prompt, agent_home, workspace).await {
+    let mut rx = match adapter.spawn(&prompt, agent_home, workspace, target_agent.cli_config.as_deref()).await {
         Ok(rx) => rx,
         Err(e) => {
             // Clean up tmux session on spawn failure.
@@ -1078,7 +1078,7 @@ async fn chat_debate(
                 .as_deref()
                 .or(agent.workspace_path.as_deref());
 
-            let mut chunk_rx = match adapter.spawn(&prompt, effective_home.as_deref(), workspace).await {
+            let mut chunk_rx = match adapter.spawn(&prompt, effective_home.as_deref(), workspace, agent.cli_config.as_deref()).await {
                 Ok(rx) => rx,
                 Err(e) => {
                     let err_data = serde_json::json!({

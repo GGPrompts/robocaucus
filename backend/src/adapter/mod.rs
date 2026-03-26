@@ -72,11 +72,14 @@ pub trait CliAdapter: Send + Sync {
     ///                  .codex/instructions.md); used as the process cwd so the
     ///                  CLI discovers its instructions natively.
     /// * `workspace`  – optional workspace directory to expose via `--add-dir`.
+    /// * `cli_config` – optional JSON string with provider-specific CLI flag
+    ///                  overrides (deserialized into the provider's config struct).
     async fn spawn(
         &self,
         prompt: &str,
         agent_home: Option<&str>,
         workspace: Option<&str>,
+        cli_config: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError>;
 
     /// Send SIGTERM to the process identified by `process_id`.

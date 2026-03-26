@@ -6,7 +6,41 @@ use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::{timeout, Duration};
 
+use serde::Deserialize;
+
 use super::{AdapterError, ChunkType, CliAdapter, OutputChunk};
+
+// ---------------------------------------------------------------------------
+// Provider-specific CLI config
+// ---------------------------------------------------------------------------
+
+/// Provider-specific CLI flag overrides for the Codex adapter.
+///
+/// Deserialized from the agent's `cli_config` JSON column.
+#[derive(Debug, Deserialize, Default)]
+#[serde(default)]
+pub struct CodexConfig {
+    /// Maps to `-s` / `--sandbox` (e.g. "full-auto", "permissive", "locked-down").
+    pub sandbox: Option<String>,
+    /// Maps to `-a` / `--approval-policy` (e.g. "suggest", "auto-edit", "full-auto").
+    pub approval_policy: Option<String>,
+    /// Maps to `-c model_reasoning_effort="X"`.
+    pub reasoning_effort: Option<String>,
+    /// Maps to `-c model_reasoning_summary="X"`.
+    pub reasoning_summary: Option<String>,
+    /// Maps to `-c model_verbosity="X"`.
+    pub model_verbosity: Option<String>,
+    /// Maps to `-c service_tier="X"`.
+    pub service_tier: Option<String>,
+    /// Maps to `--search` (enable web search).
+    pub web_search: Option<bool>,
+    /// Maps to `-p` / `--profile`.
+    pub profile: Option<String>,
+    /// Each entry becomes a separate `-c key=value` argument.
+    pub config_overrides: Option<Vec<String>>,
+    /// Feature toggles: key = feature name, value = true for `--enable`, false for `--disable`.
+    pub features: Option<std::collections::HashMap<String, bool>>,
+}
 
 // ---------------------------------------------------------------------------
 // Codex adapter
@@ -49,6 +83,7 @@ impl CliAdapter for CodexAdapter {
         prompt: &str,
         agent_home: Option<&str>,
         workspace: Option<&str>,
+        cli_config: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -60,6 +95,11 @@ impl CliAdapter for CodexAdapter {
         if !which.status.success() {
             return Err(AdapterError::CliNotFound("codex".into()));
         }
+
+        // Parse provider-specific config (if any).
+        let cfg: CodexConfig = cli_config
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
 
         // Build the command: codex exec "<prompt>" --json
         // --skip-git-repo-check: agent_home may not be a git repo
@@ -75,6 +115,46 @@ impl CliAdapter for CodexAdapter {
 
         if let Some(ws) = workspace {
             cmd.arg("--add-dir").arg(ws);
+        }
+
+        // Apply provider-specific CLI flags from config.
+        if let Some(ref sandbox) = cfg.sandbox {
+            cmd.arg("-s").arg(sandbox);
+        }
+        if let Some(ref approval) = cfg.approval_policy {
+            cmd.arg("-a").arg(approval);
+        }
+        if let Some(ref effort) = cfg.reasoning_effort {
+            cmd.arg("-c").arg(format!("model_reasoning_effort={effort}"));
+        }
+        if let Some(ref summary) = cfg.reasoning_summary {
+            cmd.arg("-c").arg(format!("model_reasoning_summary={summary}"));
+        }
+        if let Some(ref verbosity) = cfg.model_verbosity {
+            cmd.arg("-c").arg(format!("model_verbosity={verbosity}"));
+        }
+        if let Some(ref tier) = cfg.service_tier {
+            cmd.arg("-c").arg(format!("service_tier={tier}"));
+        }
+        if cfg.web_search == Some(true) {
+            cmd.arg("--search");
+        }
+        if let Some(ref profile) = cfg.profile {
+            cmd.arg("-p").arg(profile);
+        }
+        if let Some(ref overrides) = cfg.config_overrides {
+            for kv in overrides {
+                cmd.arg("-c").arg(kv);
+            }
+        }
+        if let Some(ref features) = cfg.features {
+            for (feature, enabled) in features {
+                if *enabled {
+                    cmd.arg("--enable").arg(feature);
+                } else {
+                    cmd.arg("--disable").arg(feature);
+                }
+            }
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

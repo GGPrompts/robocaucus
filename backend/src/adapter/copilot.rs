@@ -6,7 +6,50 @@ use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::{timeout, Duration};
 
+use serde::Deserialize;
+
 use super::{AdapterError, ChunkType, CliAdapter, OutputChunk};
+
+// ---------------------------------------------------------------------------
+// Provider-specific CLI config
+// ---------------------------------------------------------------------------
+
+/// Provider-specific CLI flag overrides for the Copilot adapter.
+///
+/// Deserialized from the agent's `cli_config` JSON column.
+#[derive(Debug, Deserialize, Default)]
+#[serde(default)]
+pub struct CopilotConfig {
+    /// Maps to `--effort` (e.g. "low", "medium", "high").
+    pub reasoning_effort: Option<String>,
+    /// Maps to `--autopilot`.
+    pub autopilot: Option<bool>,
+    /// Maps to `--max-autopilot-continues`.
+    pub max_autopilot_continues: Option<u32>,
+    /// Maps to `--no-ask-user`.
+    pub no_ask_user: Option<bool>,
+    /// Maps to permission presets: "allow-all" -> `--allow-all`,
+    /// "allow-all-tools" -> `--allow-all-tools`.
+    pub permission_preset: Option<String>,
+    /// Each entry becomes a separate `--allow-tool` argument.
+    pub allowed_tools: Option<Vec<String>>,
+    /// Each entry becomes a separate `--deny-tool` argument.
+    pub denied_tools: Option<Vec<String>>,
+    /// Each entry becomes a separate `--allow-url` argument.
+    pub allowed_urls: Option<Vec<String>>,
+    /// Each entry becomes a separate `--deny-url` argument.
+    pub denied_urls: Option<Vec<String>>,
+    /// Each entry becomes a separate `--secret-env-vars` argument.
+    pub secret_env_vars: Option<Vec<String>>,
+    /// Maps to `--disable-builtin-mcps`.
+    pub disable_builtin_mcps: Option<bool>,
+    /// Maps to `--enable-all-github-mcp-tools`.
+    pub enable_all_github_mcp_tools: Option<bool>,
+    /// Maps to `--no-custom-instructions`.
+    pub no_custom_instructions: Option<bool>,
+    /// Maps to `--stream` (e.g. "full", "diff").
+    pub stream: Option<String>,
+}
 
 // ---------------------------------------------------------------------------
 // Copilot adapter
@@ -52,6 +95,7 @@ impl CliAdapter for CopilotAdapter {
         prompt: &str,
         agent_home: Option<&str>,
         workspace: Option<&str>,
+        cli_config: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -64,13 +108,28 @@ impl CliAdapter for CopilotAdapter {
             return Err(AdapterError::CliNotFound("copilot".into()));
         }
 
-        // Build the command: copilot -p "<prompt>" --output-format json --allow-all-tools
+        // Parse provider-specific config (if any).
+        let cfg: CopilotConfig = cli_config
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
+
+        // Build the command: copilot -p "<prompt>" --output-format json
+        // --allow-all-tools is the default unless overridden by permission_preset.
         let mut cmd = Command::new("copilot");
         cmd.arg("-p")
             .arg(prompt)
             .arg("--output-format")
-            .arg("json")
-            .arg("--allow-all-tools");
+            .arg("json");
+
+        // Apply permission preset or default to --allow-all-tools.
+        match cfg.permission_preset.as_deref() {
+            Some("allow-all") => { cmd.arg("--allow-all"); }
+            Some("allow-all-tools") | None => { cmd.arg("--allow-all-tools"); }
+            Some(other) => {
+                tracing::warn!("Unknown copilot permission_preset '{}', defaulting to --allow-all-tools", other);
+                cmd.arg("--allow-all-tools");
+            }
+        }
 
         if let Some(home) = agent_home {
             cmd.current_dir(home);
@@ -78,6 +137,57 @@ impl CliAdapter for CopilotAdapter {
 
         if let Some(ws) = workspace {
             cmd.arg("--add-dir").arg(ws);
+        }
+
+        // Apply provider-specific CLI flags from config.
+        if let Some(ref effort) = cfg.reasoning_effort {
+            cmd.arg("--effort").arg(effort);
+        }
+        if cfg.autopilot == Some(true) {
+            cmd.arg("--autopilot");
+        }
+        if let Some(max) = cfg.max_autopilot_continues {
+            cmd.arg("--max-autopilot-continues").arg(max.to_string());
+        }
+        if cfg.no_ask_user == Some(true) {
+            cmd.arg("--no-ask-user");
+        }
+        if let Some(ref tools) = cfg.allowed_tools {
+            for tool in tools {
+                cmd.arg("--allow-tool").arg(tool);
+            }
+        }
+        if let Some(ref tools) = cfg.denied_tools {
+            for tool in tools {
+                cmd.arg("--deny-tool").arg(tool);
+            }
+        }
+        if let Some(ref urls) = cfg.allowed_urls {
+            for url in urls {
+                cmd.arg("--allow-url").arg(url);
+            }
+        }
+        if let Some(ref urls) = cfg.denied_urls {
+            for url in urls {
+                cmd.arg("--deny-url").arg(url);
+            }
+        }
+        if let Some(ref vars) = cfg.secret_env_vars {
+            for var in vars {
+                cmd.arg("--secret-env-vars").arg(var);
+            }
+        }
+        if cfg.disable_builtin_mcps == Some(true) {
+            cmd.arg("--disable-builtin-mcps");
+        }
+        if cfg.enable_all_github_mcp_tools == Some(true) {
+            cmd.arg("--enable-all-github-mcp-tools");
+        }
+        if cfg.no_custom_instructions == Some(true) {
+            cmd.arg("--no-custom-instructions");
+        }
+        if let Some(ref stream_mode) = cfg.stream {
+            cmd.arg("--stream").arg(stream_mode);
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

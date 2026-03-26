@@ -6,7 +6,37 @@ use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::{timeout, Duration};
 
+use serde::Deserialize;
+
 use super::{AdapterError, ChunkType, CliAdapter, OutputChunk};
+
+// ---------------------------------------------------------------------------
+// Provider-specific CLI config
+// ---------------------------------------------------------------------------
+
+/// Provider-specific CLI flag overrides for the Gemini adapter.
+///
+/// Deserialized from the agent's `cli_config` JSON column.
+#[derive(Debug, Deserialize, Default)]
+#[serde(default)]
+pub struct GeminiConfig {
+    /// Maps to `--approval-mode` (e.g. "auto", "ask", "deny").
+    pub approval_mode: Option<String>,
+    /// Maps to `--sandbox`.
+    pub sandbox: Option<bool>,
+    /// Each entry becomes a separate `-e` (extension) argument.
+    pub extensions: Option<Vec<String>>,
+    /// Each entry becomes a separate `--policy` argument.
+    pub policy_paths: Option<Vec<String>>,
+    /// Each entry becomes a separate `--allowed-mcp-server-names` argument.
+    pub allowed_mcp_server_names: Option<Vec<String>>,
+    /// Each entry becomes a separate `--include-directories` argument.
+    pub include_directories: Option<Vec<String>>,
+    /// Maps to `--raw-output`.
+    pub raw_output: Option<bool>,
+    /// Maps to `--debug`.
+    pub debug: Option<bool>,
+}
 
 // ---------------------------------------------------------------------------
 // Gemini adapter
@@ -51,6 +81,7 @@ impl CliAdapter for GeminiAdapter {
         prompt: &str,
         agent_home: Option<&str>,
         workspace: Option<&str>,
+        cli_config: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -62,6 +93,11 @@ impl CliAdapter for GeminiAdapter {
         if !which.status.success() {
             return Err(AdapterError::CliNotFound("gemini".into()));
         }
+
+        // Parse provider-specific config (if any).
+        let cfg: GeminiConfig = cli_config
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
 
         // Build the command: gemini -p "<prompt>" --output-format stream-json
         // Note: -p takes the prompt as its value (not a positional arg).
@@ -77,6 +113,40 @@ impl CliAdapter for GeminiAdapter {
 
         if let Some(ws) = workspace {
             cmd.arg("--include-directories").arg(ws);
+        }
+
+        // Apply provider-specific CLI flags from config.
+        if let Some(ref mode) = cfg.approval_mode {
+            cmd.arg("--approval-mode").arg(mode);
+        }
+        if cfg.sandbox == Some(true) {
+            cmd.arg("--sandbox");
+        }
+        if let Some(ref exts) = cfg.extensions {
+            for ext in exts {
+                cmd.arg("-e").arg(ext);
+            }
+        }
+        if let Some(ref policies) = cfg.policy_paths {
+            for policy in policies {
+                cmd.arg("--policy").arg(policy);
+            }
+        }
+        if let Some(ref names) = cfg.allowed_mcp_server_names {
+            for name in names {
+                cmd.arg("--allowed-mcp-server-names").arg(name);
+            }
+        }
+        if let Some(ref dirs) = cfg.include_directories {
+            for dir in dirs {
+                cmd.arg("--include-directories").arg(dir);
+            }
+        }
+        if cfg.raw_output == Some(true) {
+            cmd.arg("--raw-output");
+        }
+        if cfg.debug == Some(true) {
+            cmd.arg("--debug");
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

@@ -428,7 +428,7 @@ async fn run_debate(
         let mut turn_content = String::new();
         match timeout(
             DEBATE_TURN_TIMEOUT,
-            adapter.spawn(&prompt, agent_home.as_deref(), None),
+            adapter.spawn(&prompt, agent_home.as_deref(), None, agent.cli_config.as_deref()),
         )
         .await
         {

@@ -6,7 +6,41 @@ use tokio::process::Command;
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::{timeout, Duration};
 
+use serde::Deserialize;
+
 use super::{AdapterError, ChunkType, CliAdapter, OutputChunk};
+
+// ---------------------------------------------------------------------------
+// Provider-specific CLI config
+// ---------------------------------------------------------------------------
+
+/// Provider-specific CLI flag overrides for the Claude adapter.
+///
+/// Deserialized from the agent's `cli_config` JSON column.
+#[derive(Debug, Deserialize, Default)]
+#[serde(default)]
+pub struct ClaudeConfig {
+    /// Maps to `--effort` (e.g. "low", "medium", "high").
+    pub effort: Option<String>,
+    /// Maps to `--permission-mode` (e.g. "default", "acceptEdits", "bypassPermissions").
+    pub permission_mode: Option<String>,
+    /// Maps to `--max-budget-usd`.
+    pub max_budget_usd: Option<f64>,
+    /// Maps to `--max-turns`.
+    pub max_turns: Option<u32>,
+    /// Each entry becomes a separate `--allowedTools` argument.
+    pub allowed_tools: Option<Vec<String>>,
+    /// Each entry becomes a separate `--disallowedTools` argument.
+    pub disallowed_tools: Option<Vec<String>>,
+    /// Maps to `--append-system-prompt`.
+    pub append_system_prompt: Option<String>,
+    /// Maps to `--bare`.
+    pub bare: Option<bool>,
+    /// Controls `--verbose` (already default, but can be toggled off).
+    pub verbose: Option<bool>,
+    /// Maps to `--fallback-model`.
+    pub fallback_model: Option<String>,
+}
 
 // ---------------------------------------------------------------------------
 // Claude adapter
@@ -49,6 +83,7 @@ impl CliAdapter for ClaudeAdapter {
         prompt: &str,
         agent_home: Option<&str>,
         workspace: Option<&str>,
+        cli_config: Option<&str>,
     ) -> Result<mpsc::Receiver<OutputChunk>, AdapterError> {
         // Verify the CLI exists on PATH before spawning.
         let which = Command::new("which")
@@ -61,11 +96,21 @@ impl CliAdapter for ClaudeAdapter {
             return Err(AdapterError::CliNotFound("claude".into()));
         }
 
+        // Parse provider-specific config (if any).
+        let cfg: ClaudeConfig = cli_config
+            .and_then(|s| serde_json::from_str(s).ok())
+            .unwrap_or_default();
+
         // Build the command.
         let mut cmd = Command::new("claude");
-        cmd.arg("-p")
-            .arg("--verbose")
-            .arg("--output-format")
+        cmd.arg("-p");
+
+        // --verbose is the default unless explicitly disabled.
+        if cfg.verbose != Some(false) {
+            cmd.arg("--verbose");
+        }
+
+        cmd.arg("--output-format")
             .arg("stream-json")
             .arg(prompt);
 
@@ -75,6 +120,39 @@ impl CliAdapter for ClaudeAdapter {
 
         if let Some(ws) = workspace {
             cmd.arg("--add-dir").arg(ws);
+        }
+
+        // Apply provider-specific CLI flags from config.
+        if let Some(ref effort) = cfg.effort {
+            cmd.arg("--effort").arg(effort);
+        }
+        if let Some(ref permission_mode) = cfg.permission_mode {
+            cmd.arg("--permission-mode").arg(permission_mode);
+        }
+        if let Some(budget) = cfg.max_budget_usd {
+            cmd.arg("--max-budget-usd").arg(budget.to_string());
+        }
+        if let Some(turns) = cfg.max_turns {
+            cmd.arg("--max-turns").arg(turns.to_string());
+        }
+        if let Some(ref tools) = cfg.allowed_tools {
+            for tool in tools {
+                cmd.arg("--allowedTools").arg(tool);
+            }
+        }
+        if let Some(ref tools) = cfg.disallowed_tools {
+            for tool in tools {
+                cmd.arg("--disallowedTools").arg(tool);
+            }
+        }
+        if let Some(ref prompt_text) = cfg.append_system_prompt {
+            cmd.arg("--append-system-prompt").arg(prompt_text);
+        }
+        if cfg.bare == Some(true) {
+            cmd.arg("--bare");
+        }
+        if let Some(ref model) = cfg.fallback_model {
+            cmd.arg("--fallback-model").arg(model);
         }
 
         // We only need stdout; inherit stderr so operator can see diagnostics.

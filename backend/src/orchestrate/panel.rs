@@ -100,6 +100,7 @@ pub fn spawn_panel(
             Some(agent.agent_home.clone())
         };
         let workspace = agent.workspace_path.clone();
+        let cli_config = agent.cli_config.clone();
 
         tokio::spawn(async move {
             // Attempt to spawn the CLI process for this agent.
@@ -108,6 +109,7 @@ pub fn spawn_panel(
                     &prompt,
                     agent_home.as_deref(),
                     workspace.as_deref(),
+                    cli_config.as_deref(),
                 )
                 .await
             {
