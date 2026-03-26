@@ -108,6 +108,12 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   // Guard against state updates after unmount
   const mountedRef = useRef(true);
 
+  // Ref to hold the latest attemptReconnect to break stale closure cycle
+  const attemptReconnectRef = useRef<(
+    currentContent: string,
+    messageBase: Omit<StreamingMessage, 'content' | 'streaming'>,
+  ) => Promise<void>>(async () => {});
+
   const clearError = useCallback(() => setError(null), []);
 
   // ------------------------------------------------------------------
@@ -257,8 +263,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         if (signal.aborted) return;
         if (mountedRef.current) {
           setError(err instanceof Error ? err.message : 'Stream read failed');
-          // Attempt reconnection
-          attemptReconnect(content, initialMessageBase);
+          // Attempt reconnection via ref to avoid stale closure
+          attemptReconnectRef.current(content, initialMessageBase);
         }
       } finally {
         reader.releaseLock();
@@ -313,6 +319,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     },
     [conversationId, apiBase, readSSEStream],
   );
+
+  // Keep the ref in sync with the latest attemptReconnect
+  useEffect(() => {
+    attemptReconnectRef.current = attemptReconnect;
+  }, [attemptReconnect]);
 
   // ------------------------------------------------------------------
   // sendMessage

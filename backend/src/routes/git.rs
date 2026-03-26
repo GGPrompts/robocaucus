@@ -19,6 +19,17 @@ pub fn git_routes() -> Router<AppState> {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+/// Validate that a string is a plausible git ref (commit hash, branch name, etc.)
+/// and cannot be used for flag injection or null-byte attacks.
+fn is_valid_git_ref(s: &str) -> bool {
+    !s.is_empty()
+        && s.len() <= 128
+        && !s.starts_with('-')
+        && !s.contains('\0')
+        && s.chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '/' | '.' | '_' | '-' | '^' | '~'))
+}
+
 /// Resolve a path, expanding `~` to `$HOME`.
 fn expand_path(raw: &str) -> String {
     if raw.starts_with('~') {
@@ -185,6 +196,13 @@ async fn git_commit_details(
         Err(e) => return e,
     };
 
+    if !is_valid_git_ref(&hash) {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "invalid commit hash"})),
+        );
+    }
+
     // Get commit info with body
     let format_str = "%H|%h|%an|%ae|%aI|%P|%D|%s|%b";
     let output = tokio::process::Command::new("git")
@@ -194,6 +212,7 @@ async fn git_commit_details(
             "log",
             "-1",
             &format!("--format={}", format_str),
+            "--",
             &hash,
         ])
         .output()
@@ -249,6 +268,7 @@ async fn git_commit_details(
             "--no-commit-id",
             "--name-status",
             "-r",
+            "--",
             &hash,
         ])
         .output()
@@ -263,6 +283,7 @@ async fn git_commit_details(
             "--no-commit-id",
             "--numstat",
             "-r",
+            "--",
             &hash,
         ])
         .output()
@@ -374,6 +395,15 @@ async fn git_diff(Query(params): Query<GitDiffParams>) -> impl IntoResponse {
     let base = params.base.unwrap_or_default();
     let file = params.file.unwrap_or_default();
 
+    if !base.is_empty() && !is_valid_git_ref(&base) {
+        let body = serde_json::json!({"error": "invalid base ref"});
+        return (
+            StatusCode::BAD_REQUEST,
+            [("content-type", "application/json")],
+            body.to_string(),
+        );
+    }
+
     let mut args = vec!["-C".to_string(), git_root.clone(), "diff".to_string()];
 
     if !base.is_empty() {
@@ -385,8 +415,9 @@ async fn git_diff(Query(params): Query<GitDiffParams>) -> impl IntoResponse {
         }
     }
 
+    // Always add -- to separate refs from paths
+    args.push("--".to_string());
     if !file.is_empty() {
-        args.push("--".to_string());
         args.push(file.clone());
     }
 

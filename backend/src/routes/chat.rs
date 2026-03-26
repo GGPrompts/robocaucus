@@ -106,6 +106,13 @@ fn reconnect_buffer() -> &'static ReconnectBuffer {
 }
 
 // ---------------------------------------------------------------------------
+// Input limits
+// ---------------------------------------------------------------------------
+
+const MAX_MESSAGE_LEN: usize = 100_000;
+const MAX_DEBATE_ROUNDS: usize = 20;
+
+// ---------------------------------------------------------------------------
 // Request / response types
 // ---------------------------------------------------------------------------
 
@@ -177,6 +184,16 @@ async fn chat_send(
     Json(req): Json<ChatSendRequest>,
 ) -> impl IntoResponse {
     let conversation_id = req.conversation_id.clone();
+
+    if req.content.len() > MAX_MESSAGE_LEN {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorBody {
+                error: format!("Message too long (max {} chars)", MAX_MESSAGE_LEN),
+            }),
+        )
+            .into_response();
+    }
 
     // ------------------------------------------------------------------
     // 1. Validate conversation exists
@@ -572,6 +589,16 @@ async fn chat_panel(
 ) -> impl IntoResponse {
     let conversation_id = req.conversation_id.clone();
 
+    if req.content.len() > MAX_MESSAGE_LEN {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorBody {
+                error: format!("Message too long (max {} chars)", MAX_MESSAGE_LEN),
+            }),
+        )
+            .into_response();
+    }
+
     // 1. Validate conversation exists
     let conversation = {
         let db = match state.db() {
@@ -803,6 +830,7 @@ async fn chat_panel(
                     if !text.is_empty() {
                         match db.lock() {
                             Ok(db) => {
+                                // TODO: [code-review] Silently dropped create_message result — consider logging on error (88%)
                                 let _ = db.create_message(
                                     &conv_id,
                                     Some(&tagged.agent_id),
@@ -856,8 +884,18 @@ async fn chat_debate(
     Json(req): Json<DebateRequest>,
 ) -> impl IntoResponse {
     let conversation_id = req.conversation_id.clone();
-    // TODO: [code-review] Validate num_rounds upper bound (e.g., max 20) to prevent DoS (85%)
-    let num_rounds = req.num_rounds.unwrap_or(2);
+
+    if req.topic.len() > MAX_MESSAGE_LEN {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(ErrorBody {
+                error: format!("Topic too long (max {} chars)", MAX_MESSAGE_LEN),
+            }),
+        )
+            .into_response();
+    }
+
+    let num_rounds = req.num_rounds.unwrap_or(2).min(MAX_DEBATE_ROUNDS);
 
     // 1. Validate conversation
     let conversation = {
@@ -1143,6 +1181,7 @@ async fn chat_debate(
                 let saved_content = format!("[{}] {}", phase_label, turn_text);
                 match db.lock() {
                     Ok(db) => {
+                        // TODO: [code-review] Silently dropped create_message result — consider logging on error (88%)
                         let _ = db.create_message(
                             &conv_id,
                             Some(&agent.id),

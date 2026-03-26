@@ -196,9 +196,11 @@ impl CliAdapter for CopilotAdapter {
 
         let mut child = cmd.spawn().map_err(AdapterError::SpawnFailed)?;
 
-        let pid = child
-            .id()
-            .expect("child should have a PID immediately after spawn");
+        let pid = child.id().ok_or_else(|| {
+            AdapterError::SpawnFailed(std::io::Error::other(
+                "child process exited before PID could be read",
+            ))
+        })?;
 
         // Take ownership of stdout before storing the child.
         let stdout = child
