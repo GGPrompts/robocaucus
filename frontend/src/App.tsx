@@ -1,14 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Code2 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import AgentBuilder from './components/AgentBuilder';
 import PlaybookBrowser from './components/PlaybookBrowser';
+import RoomMembers from './components/RoomMembers';
 import { DevSidebar } from './components/DevSidebar';
 import { ThemeSelector } from './components/ThemeSelector';
 import { useChat } from './hooks/useChat';
-import { fetchConversations, fetchAgents, createConversation, createAgent } from './lib/api';
+import {
+  fetchConversations,
+  fetchAgents,
+  createConversation,
+  createAgent,
+  fetchConfig,
+  fetchConversationAgents,
+  addAgentToConversation,
+  removeAgentFromConversation,
+  updateConversation,
+} from './lib/api';
 import { themes, type ThemeId } from './themes';
 import type { Room, Agent } from './types';
 
@@ -25,7 +36,31 @@ type RoomWithMeta = Room & { lastMessage: string; unread: boolean };
 // Chat panel
 // ---------------------------------------------------------------------------
 
-function ChatPanel({ room, agents, theme, onThemeChange, showDevSidebar, onToggleDevSidebar }: { room: Room; agents: Agent[]; theme: ThemeId; onThemeChange: (t: ThemeId) => void; showDevSidebar: boolean; onToggleDevSidebar: () => void }) {
+interface ChatPanelProps {
+  room: Room;
+  members: Agent[];
+  allAgents: Agent[];
+  theme: ThemeId;
+  onThemeChange: (t: ThemeId) => void;
+  showDevSidebar: boolean;
+  onToggleDevSidebar: () => void;
+  onAddAgent: (agentId: string) => void;
+  onRemoveAgent: (agentId: string) => void;
+  onUpdateRoom: (updates: Partial<Room>) => void;
+}
+
+function ChatPanel({
+  room,
+  members,
+  allAgents,
+  theme,
+  onThemeChange,
+  showDevSidebar,
+  onToggleDevSidebar,
+  onAddAgent,
+  onRemoveAgent,
+  onUpdateRoom,
+}: ChatPanelProps) {
   const { messages, streamingMessage, sendMessage, isStreaming, error } = useChat({
     conversationId: room.id,
   });
@@ -36,55 +71,43 @@ function ChatPanel({ room, agents, theme, onThemeChange, showDevSidebar, onToggl
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, streamingMessage]);
 
-  const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
+  const agentMap = Object.fromEntries(allAgents.map((a) => [a.id, a]));
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-gray-900">
-      {/* Header */}
-      <div className="flex h-12 shrink-0 items-center border-b border-gray-800 px-4 gap-3">
-        <span className="font-semibold text-white">{room.title}</span>
-        <span className="rounded bg-gray-800 px-2 py-0.5 text-[11px] text-gray-400 capitalize">
-          {room.orchestrationMode}
-        </span>
-        <div className="ml-auto flex items-center gap-3">
-          <button
-            onClick={onToggleDevSidebar}
-            className={`rounded p-1.5 transition-colors ${
-              showDevSidebar
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-            }`}
-            title="Toggle developer sidebar"
-          >
-            <Code2 size={16} />
-          </button>
-          <ThemeSelector currentTheme={theme} onThemeChange={onThemeChange} />
-          {agents.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              {agents.map((a) => (
-                <span
-                  key={a.id}
-                  title={a.name}
-                  className="inline-flex h-5 items-center gap-1 rounded-full bg-gray-800 px-2 text-[10px] text-gray-400"
-                >
-                  <span
-                    className="inline-block h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: a.color }}
-                  />
-                  {a.name}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Room Members header (title, orchestration, add/remove agents) */}
+      <RoomMembers
+        room={room}
+        members={members}
+        allAgents={allAgents}
+        onAddAgent={onAddAgent}
+        onRemoveAgent={onRemoveAgent}
+        onUpdateRoom={onUpdateRoom}
+      />
+
+      {/* Toolbar row */}
+      <div className="flex h-10 shrink-0 items-center border-b border-gray-800 px-4 gap-3">
+        <div className="flex-1" />
+        <button
+          onClick={onToggleDevSidebar}
+          className={`rounded p-1.5 transition-colors ${
+            showDevSidebar
+              ? 'bg-indigo-600 text-white'
+              : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+          }`}
+          title="Toggle developer sidebar"
+        >
+          <Code2 size={16} />
+        </button>
+        <ThemeSelector currentTheme={theme} onThemeChange={onThemeChange} />
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto py-4">
         {messages.length === 0 && !streamingMessage && (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            {agents.length === 0
-              ? 'No agents in this conversation. Create an agent first.'
+            {members.length === 0
+              ? 'No agents in this conversation. Add an agent to start chatting.'
               : 'No messages yet. Start the conversation.'}
           </div>
         )}
@@ -110,18 +133,18 @@ function ChatPanel({ room, agents, theme, onThemeChange, showDevSidebar, onToggl
       {/* Input */}
       <div className="shrink-0 border-t border-gray-800 p-4">
         <ChatInput
-          agents={agents}
+          agents={members}
           onSend={(text, mentionedAgentIds) => {
-            // Use explicitly @mentioned agent, or fall back to first agent in conversation
-            const agentId = mentionedAgentIds[0] ?? agents[0]?.id;
+            // Use explicitly @mentioned agent, or fall back to first member in conversation
+            const agentId = mentionedAgentIds[0] ?? members[0]?.id;
             sendMessage(text, agentId);
           }}
           isSending={isStreaming}
           placeholder={
-            agents.length === 0
+            members.length === 0
               ? 'Add agents to this conversation to start chatting...'
-              : agents.length === 1
-              ? `Message ${agents[0].name}...`
+              : members.length === 1
+              ? `Message ${members[0].name}...`
               : 'Message the group... (use @mention to target a specific agent)'
           }
         />
@@ -159,10 +182,12 @@ export default function App() {
   const [rooms, setRooms] = useState<RoomWithMeta[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [roomMembers, setRoomMembers] = useState<Agent[]>([]);
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const [showPlaybooks, setShowPlaybooks] = useState(false);
   const [showDevSidebar, setShowDevSidebar] = useState(false);
   const [theme, setTheme] = useState<ThemeId>(getInitialTheme);
+  const [defaultWorkspace, setDefaultWorkspace] = useState('');
 
   function handleThemeChange(newTheme: ThemeId) {
     setTheme(newTheme);
@@ -176,6 +201,24 @@ export default function App() {
       .then((convs) => setRooms(convs.map((r) => ({ ...r, lastMessage: '', unread: false }))))
       .catch(() => {});
     fetchAgents().then(setAgents).catch(() => {});
+    fetchConfig()
+      .then((cfg) => setDefaultWorkspace(cfg.default_workspace))
+      .catch(() => {});
+  }, []);
+
+  // Fetch conversation-specific agents when the selected room changes
+  useEffect(() => {
+    if (!selectedRoom) {
+      setRoomMembers([]);
+      return;
+    }
+    fetchConversationAgents(selectedRoom.id)
+      .then(setRoomMembers)
+      .catch(() => setRoomMembers([]));
+  }, [selectedRoom?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSelectRoom = useCallback((room: Room) => {
+    setSelectedRoom(room);
   }, []);
 
   async function handleCreateRoom() {
@@ -223,13 +266,66 @@ export default function App() {
     }
   }
 
+  const handleAddAgent = useCallback(
+    async (agentId: string) => {
+      if (!selectedRoom) return;
+      try {
+        await addAgentToConversation(selectedRoom.id, agentId);
+        // Re-fetch members to stay in sync with backend
+        const members = await fetchConversationAgents(selectedRoom.id);
+        setRoomMembers(members);
+      } catch (e) {
+        console.error('Failed to add agent to conversation', e);
+      }
+    },
+    [selectedRoom],
+  );
+
+  const handleRemoveAgent = useCallback(
+    async (agentId: string) => {
+      if (!selectedRoom) return;
+      try {
+        await removeAgentFromConversation(selectedRoom.id, agentId);
+        // Re-fetch members to stay in sync with backend
+        const members = await fetchConversationAgents(selectedRoom.id);
+        setRoomMembers(members);
+      } catch (e) {
+        console.error('Failed to remove agent from conversation', e);
+      }
+    },
+    [selectedRoom],
+  );
+
+  const handleUpdateRoom = useCallback(
+    async (updates: Partial<Room>) => {
+      if (!selectedRoom) return;
+      try {
+        const payload: { title?: string; orchestration_mode?: string } = {};
+        if (updates.title !== undefined) payload.title = updates.title;
+        if (updates.orchestrationMode !== undefined)
+          payload.orchestration_mode = updates.orchestrationMode;
+
+        const updated = await updateConversation(selectedRoom.id, payload);
+        setSelectedRoom(updated);
+        setRooms((prev) =>
+          prev.map((r) =>
+            r.id === updated.id ? { ...r, ...updated } : r,
+          ),
+        );
+      } catch (e) {
+        console.error('Failed to update conversation', e);
+      }
+    },
+    [selectedRoom],
+  );
+
   return (
     <div className={`flex h-screen overflow-hidden ${themeClassName}`}>
       <Sidebar
         rooms={rooms}
         agents={agents}
         selectedRoomId={selectedRoom?.id}
-        onSelectRoom={setSelectedRoom}
+        onSelectRoom={handleSelectRoom}
         onCreateRoom={handleCreateRoom}
         onCreateAgent={() => setShowAgentBuilder(true)}
         onOpenPlaybooks={() => setShowPlaybooks(true)}
@@ -237,18 +333,22 @@ export default function App() {
       {selectedRoom ? (
         <ChatPanel
           room={selectedRoom}
-          agents={agents}
+          members={roomMembers}
+          allAgents={agents}
           theme={theme}
           onThemeChange={handleThemeChange}
           showDevSidebar={showDevSidebar}
           onToggleDevSidebar={() => setShowDevSidebar((v) => !v)}
+          onAddAgent={handleAddAgent}
+          onRemoveAgent={handleRemoveAgent}
+          onUpdateRoom={handleUpdateRoom}
         />
       ) : (
         <EmptyState onCreateRoom={handleCreateRoom} theme={theme} onThemeChange={handleThemeChange} />
       )}
       {showDevSidebar && selectedRoom && (
         <DevSidebar
-          workspacePath={selectedRoom.workspacePath ?? ''}
+          workspacePath={selectedRoom.workspacePath || defaultWorkspace}
           onClose={() => setShowDevSidebar(false)}
         />
       )}

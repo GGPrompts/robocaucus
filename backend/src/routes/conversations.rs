@@ -1,7 +1,7 @@
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    routing::{delete, get, post, put},
+    routing::get,
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -240,6 +240,73 @@ async fn create_message(
 }
 
 // ---------------------------------------------------------------------------
+// Conversation-Agent membership
+// ---------------------------------------------------------------------------
+
+/// POST /conversations/:id/agents/:agent_id — add an agent to a conversation
+async fn add_agent(
+    State(state): State<AppState>,
+    Path((id, agent_id)): Path<(String, String)>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    let db = state.db()?;
+
+    // Verify conversation exists
+    db.get_conversation(&id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Conversation {id} not found")))?;
+
+    // Verify agent exists
+    db.get_agent(&agent_id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Agent {agent_id} not found")))?;
+
+    db.add_agent_to_conversation(&id, &agent_id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+/// DELETE /conversations/:id/agents/:agent_id — remove an agent from a conversation
+async fn remove_agent(
+    State(state): State<AppState>,
+    Path((id, agent_id)): Path<(String, String)>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    let db = state.db()?;
+
+    let removed = db
+        .remove_agent_from_conversation(&id, &agent_id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?;
+
+    if removed {
+        Ok(StatusCode::NO_CONTENT)
+    } else {
+        Err((
+            StatusCode::NOT_FOUND,
+            format!("Agent {agent_id} not in conversation {id}"),
+        ))
+    }
+}
+
+/// GET /conversations/:id/agents — list agents in a conversation
+async fn list_conversation_agents(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<Vec<Agent>>, (StatusCode, String)> {
+    let db = state.db()?;
+
+    // Verify conversation exists
+    db.get_conversation(&id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Conversation {id} not found")))?;
+
+    let agents = db
+        .get_conversation_agents(&id)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {e}")))?;
+
+    Ok(Json(agents))
+}
+
+// ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
 
@@ -258,5 +325,13 @@ pub fn conversation_routes() -> Router<AppState> {
         .route(
             "/conversations/{id}/messages",
             get(list_messages).post(create_message),
+        )
+        .route(
+            "/conversations/{id}/agents",
+            get(list_conversation_agents),
+        )
+        .route(
+            "/conversations/{id}/agents/{agent_id}",
+            axum::routing::post(add_agent).delete(remove_agent),
         )
 }

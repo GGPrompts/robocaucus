@@ -6,6 +6,19 @@ export function apiUrl(path: string, base?: string): string {
   return `${base ?? API_BASE}${path}`;
 }
 
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+export interface AppConfig {
+  default_workspace: string;
+}
+
+export async function fetchConfig(base?: string): Promise<AppConfig> {
+  const res = await fetch(apiUrl('/config', base));
+  return jsonOrThrow<AppConfig>(res);
+}
+
 async function jsonOrThrow<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
@@ -132,6 +145,74 @@ export async function createConversation(
     body: JSON.stringify({ title, agent_ids: agentIds }),
   });
   return jsonOrThrow<Room>(res);
+}
+
+export interface ConversationDetail {
+  id: string;
+  title: string;
+  workspacePath?: string;
+  orchestrationMode: string;
+  createdAt: string;
+  updatedAt: string;
+  agents: Agent[];
+  messages: Message[];
+}
+
+export async function fetchConversation(
+  id: string,
+  base?: string,
+): Promise<ConversationDetail> {
+  const res = await fetch(apiUrl(`/conversations/${id}`, base));
+  return jsonOrThrow<ConversationDetail>(res);
+}
+
+export async function updateConversation(
+  id: string,
+  updates: { title?: string; orchestration_mode?: string; agent_ids?: string[] },
+  base?: string,
+): Promise<Room> {
+  const res = await fetch(apiUrl(`/conversations/${id}`, base), {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  return jsonOrThrow<Room>(res);
+}
+
+export async function fetchConversationAgents(
+  conversationId: string,
+  base?: string,
+): Promise<Agent[]> {
+  const res = await fetch(apiUrl(`/conversations/${conversationId}/agents`, base));
+  return jsonOrThrow<Agent[]>(res);
+}
+
+export async function addAgentToConversation(
+  conversationId: string,
+  agentId: string,
+  base?: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/conversations/${conversationId}/agents/${agentId}`, base), {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`API ${res.status}: ${text}`);
+  }
+}
+
+export async function removeAgentFromConversation(
+  conversationId: string,
+  agentId: string,
+  base?: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/conversations/${conversationId}/agents/${agentId}`, base), {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(`API ${res.status}: ${text}`);
+  }
 }
 
 // ── File API ──────────────────────────────────────────────────────────────

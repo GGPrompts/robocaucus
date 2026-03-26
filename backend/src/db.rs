@@ -72,6 +72,7 @@ impl Database {
     }
 
     /// Create an in-memory database – useful for tests.
+    #[cfg(test)]
     pub fn new_in_memory() -> SqlResult<Self> {
         let conn = Connection::open_in_memory()?;
         let db = Self { conn };
@@ -148,6 +149,21 @@ impl Database {
                 ON conversation_agents(agent_id);
             ",
         )?;
+
+        // Migrations: add columns that may be missing from older databases.
+        // SQLite has no IF NOT EXISTS for ALTER TABLE ADD COLUMN, so we
+        // ignore "duplicate column" errors.
+        let migrations = [
+            "ALTER TABLE agents ADD COLUMN provider TEXT NOT NULL DEFAULT ''",
+            "ALTER TABLE agents ADD COLUMN agent_home TEXT NOT NULL DEFAULT ''",
+        ];
+        for sql in migrations {
+            match self.conn.execute(sql, []) {
+                Ok(_) => {}
+                Err(e) if e.to_string().contains("duplicate column") => {}
+                Err(e) => return Err(e),
+            }
+        }
 
         Ok(())
     }
@@ -294,6 +310,18 @@ impl Database {
             params![conversation_id],
         )?;
         Ok(())
+    }
+
+    pub fn remove_agent_from_conversation(
+        &self,
+        conversation_id: &str,
+        agent_id: &str,
+    ) -> SqlResult<bool> {
+        let changed = self.conn.execute(
+            "DELETE FROM conversation_agents WHERE conversation_id = ?1 AND agent_id = ?2",
+            params![conversation_id, agent_id],
+        )?;
+        Ok(changed > 0)
     }
 
     // -----------------------------------------------------------------------

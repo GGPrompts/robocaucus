@@ -1,6 +1,7 @@
 pub mod agentmd;
 pub mod agents;
 pub mod chat;
+pub mod config;
 pub mod conversations;
 pub mod files;
 pub mod git;
@@ -23,4 +24,5 @@ pub fn api_routes() -> Router<AppState> {
         .merge(files::file_routes())
         .merge(playbooks::playbook_routes())
         .merge(pr_review::pr_review_routes())
+        .merge(config::config_routes())
 }
