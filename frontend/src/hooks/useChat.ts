@@ -27,6 +27,19 @@ export interface UseChatReturn {
 }
 
 // ---------------------------------------------------------------------------
+// HTML escaping — prevents XSS when interpolating server data into templates
+// ---------------------------------------------------------------------------
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ---------------------------------------------------------------------------
 // SSE line parser – works with chunked ReadableStream text
 // ---------------------------------------------------------------------------
 
@@ -180,7 +193,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
                 // Append thinking text wrapped in a collapsible marker
                 const parsed = safeParse(sse.data);
                 const thought = typeof parsed === 'string' ? parsed : (parsed as { content?: string })?.content ?? sse.data;
-                content += `\n\n<details><summary>Thinking...</summary>\n\n${thought}\n\n</details>\n\n`;
+                content += `\n\n<details><summary>Thinking...</summary>\n\n${escapeHtml(thought)}\n\n</details>\n\n`;
                 setStreamingMessage({
                   ...initialMessageBase,
                   content,
@@ -192,7 +205,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
               case 'tool_use': {
                 // Show tool usage inline
                 const parsed = safeParse(sse.data);
-                const toolName = (parsed as { name?: string })?.name ?? 'tool';
+                const toolName = escapeHtml((parsed as { name?: string })?.name ?? 'tool');
                 content += `\n\n> Using tool: **${toolName}**\n\n`;
                 setStreamingMessage({
                   ...initialMessageBase,
@@ -440,8 +453,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
                   typeof parsed === 'string'
                     ? parsed
                     : (parsed as { content?: string })?.content ?? sse.data;
-                const agentName = (parsed as { agent_name?: string })?.agent_name ?? '';
-                content += `\n\n<details><summary>${agentName ? agentName + ' thinking...' : 'Thinking...'}</summary>\n\n${thought}\n\n</details>\n\n`;
+                const agentName = escapeHtml((parsed as { agent_name?: string })?.agent_name ?? '');
+                content += `\n\n<details><summary>${agentName ? agentName + ' thinking...' : 'Thinking...'}</summary>\n\n${escapeHtml(thought)}\n\n</details>\n\n`;
                 setStreamingMessage({
                   ...streamBase,
                   content,

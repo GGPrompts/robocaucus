@@ -408,7 +408,9 @@ export default function App() {
 
   function handleThemeChange(newTheme: ThemeId) {
     setTheme(newTheme);
-    localStorage.setItem('robocaucus-theme', newTheme);
+    try {
+      localStorage.setItem('robocaucus-theme', newTheme);
+    } catch { /* ignore — private/incognito may block storage */ }
   }
 
   const themeClassName = themes.find((t) => t.id === theme)?.className ?? '';

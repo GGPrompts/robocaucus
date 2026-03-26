@@ -505,13 +505,18 @@ async fn chat_send(
                 if had_text {
                     match db.lock() {
                         Ok(db) => {
-                            let _ = db.create_message(
+                            if let Err(e) = db.create_message(
                                 &conv_id,
                                 Some(&agent_id),
                                 "assistant",
                                 &full_response,
                                 Some(&agent_model),
-                            );
+                            ) {
+                                tracing::error!(
+                                    "Failed to save assistant message for conversation {}: {e}",
+                                    conv_id
+                                );
+                            }
                         }
                         Err(e) => {
                             tracing::error!(
@@ -823,6 +828,7 @@ async fn chat_debate(
     Json(req): Json<DebateRequest>,
 ) -> impl IntoResponse {
     let conversation_id = req.conversation_id.clone();
+    // TODO: [code-review] Validate num_rounds upper bound (e.g., max 20) to prevent DoS (85%)
     let num_rounds = req.num_rounds.unwrap_or(2);
 
     // 1. Validate conversation
@@ -872,6 +878,7 @@ async fn chat_debate(
                     .into_response();
             }
         };
+        // TODO: [code-review] Validate topic length (e.g., max 10000 chars) (82%)
         let topic_msg = format!("[Debate Topic]: {}", req.topic);
         if let Err(e) = db.create_message(
             &conversation_id,
