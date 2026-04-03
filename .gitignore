@@ -3,3 +3,7 @@
 *.db-shm
 *.db-wal
 package-lock.json
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+.beads-credential-key
