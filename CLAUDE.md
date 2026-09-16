@@ -9,13 +9,16 @@ A multi-agent chat platform where multiple AI agents (backed by CLI tools: Claud
 ## Build & Run
 
 ```bash
+# Install frontend dependencies (first run)
+npm --prefix frontend ci
+
 # Start both backend and frontend (idempotent, checks ports first)
 ./start.sh
 
-# Backend only (Rust/Axum, port 7331)
-cargo run -p backend
+# Backend only (Rust/Axum, port 17431)
+PORT=17431 cargo run -p backend
 
-# Frontend only (React/Vite, port 7330, proxies /api to backend)
+# Frontend only (React/Vite, port 17430, proxies /api to backend)
 cd frontend && npm run dev
 
 # Run all Rust tests (backend + common)
@@ -132,6 +135,6 @@ The adapter spawns with `cwd = agent_home` (for native config discovery) and pas
 - **Adapter trait**: `spawn(prompt, agent_home, workspace)` -- agent_home sets cwd for config discovery, workspace passed via CLI flags.
 - **Tmux persistence**: CLI processes run inside `rc-` prefixed tmux sessions. TmuxManager is optional in AppState -- graceful fallback when tmux is not installed. Reconciliation on startup detects orphaned/live sessions.
 - **CSS variable theming**: All UI colors use CSS variables (--bg-primary, --text-primary, --accent, etc.) defined in `:root` with defaults. Theme files override variables. A bridge block using `[class*="theme-"]` auto-derives missing variables via `color-mix()` so themes don't need to define every variable.
-- **Ports**: Backend 7331, Frontend 7330. Vite proxies `/api` requests to the backend.
+- **Ports**: Backend 17431, Frontend 17430. Vite proxies `/api` requests to the backend. `start.sh` explicitly sets the backend port to ignore an inherited `PORT` from other apps.
 - **DB file**: `robocaucus.db` (SQLite WAL) created in the project root.
 - **Startup seeding**: `seed_starter_agents()` and `seed_starter_playbooks()` run idempotently on startup. Agent config folders are scaffolded for each seeded agent.

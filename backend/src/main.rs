@@ -90,7 +90,7 @@ async fn main() {
 
     let cors = CorsLayer::new()
         .allow_origin([
-            "http://localhost:7330".parse().unwrap(),
+            "http://localhost:17430".parse().unwrap(),
         ])
         .allow_methods(Any)
         .allow_headers(Any);
@@ -101,7 +101,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "7331".to_string());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "17431".to_string());
     let addr = format!("0.0.0.0:{port}");
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     tracing::info!("listening on {}", listener.local_addr().unwrap());

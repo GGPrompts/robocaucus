@@ -27,7 +27,7 @@ No API keys. No extra billing. Just the subscriptions you already pay for, worki
 ### Prerequisites
 
 - [Rust](https://rustup.rs/) (stable)
-- [Node.js](https://nodejs.org/) (v20+)
+- [Node.js](https://nodejs.org/) (20.19+ or 22.12+; Node 24 works)
 - At least one AI CLI installed and authenticated:
   - `claude` ([Claude Code](https://claude.ai/code))
   - `codex` ([OpenAI Codex](https://github.com/openai/codex))
@@ -39,20 +39,23 @@ No API keys. No extra billing. Just the subscriptions you already pay for, worki
 ```bash
 # Clone and start (checks ports, idempotent)
 git clone <repo-url> && cd robocaucus
+npm --prefix frontend ci
 ./start.sh
 
 # Or run backend and frontend separately:
-cargo run -p backend          # Port 7331
-cd frontend && npm run dev    # Port 7330 (proxies /api to backend)
+PORT=17431 cargo run -p backend          # Port 17431
+cd frontend && npm run dev    # Port 17430 (proxies /api to backend)
 ```
 
-Open [http://localhost:7330](http://localhost:7330). On first launch, 9 starter agents and 3 playbooks are seeded automatically.
+The start script pins the backend to port 17431 even if your shell has `PORT` set for another app. Cargo downloads Rust dependencies automatically on the first run.
+
+Open [http://localhost:17430](http://localhost:17430). On first launch, 9 starter agents and 3 playbooks are seeded automatically.
 
 ## Architecture
 
 ```
 [React Frontend]  <--SSE-->  [Rust Backend (Axum)]  --spawns-->  [claude -p]
-     :7330                         :7331                          [codex exec]
+     :17430                         :17431                          [codex exec]
                                     |                             [gemini]
                                 [SQLite]                          [gh copilot -p]
                             (WAL mode, local)

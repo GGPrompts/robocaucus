@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-BACKEND_PORT=7331
-FRONTEND_PORT=7330
+BACKEND_PORT=17431
+FRONTEND_PORT=17430
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+if [[ ! -x "$ROOT/frontend/node_modules/.bin/vite" ]]; then
+    echo "Frontend dependencies are missing. Run:"
+    echo "  npm --prefix \"$ROOT/frontend\" ci"
+    exit 1
+fi
 
 check_port() {
     ss -tlnp 2>/dev/null | grep -q ":$1 "
@@ -14,7 +20,7 @@ if check_port "$BACKEND_PORT"; then
 else
     echo "Starting backend..."
     cd "$ROOT"
-    cargo run -p backend &
+    PORT="$BACKEND_PORT" cargo run -p backend &
     BACKEND_PID=$!
     echo "Backend PID: $BACKEND_PID"
 fi
